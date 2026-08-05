@@ -29,6 +29,7 @@ const CONTENT = {
       members: "Miembros",
       researchers: "Chilenos en Suecia",
       resources: "Recursos",
+      contact: "Contacto",
     },
     hero: {
       title: "AICHIS",
@@ -52,6 +53,7 @@ const CONTENT = {
           text: "Ser un puente activo entre Chile y Suecia, impulsando la ciencia, la cultura y las oportunidades para las próximas generaciones.",
         },
       ],
+      cta: "Postula a socio/a",
     },
     explora: {
       title: "Explora Nobel",
@@ -61,6 +63,7 @@ const CONTENT = {
     members: {
       title: "Miembros",
       lead: "Conoce a nuestra directiva. Pronto sumaremos más miembros y perfiles.",
+      photoCaption: "La directiva de AICHIS, 2024",
     },
     researchers: {
       title: "Chilenos en Suecia",
@@ -70,6 +73,10 @@ const CONTENT = {
     resources: {
       title: "Recursos",
       lead: "Enlaces y materiales útiles para investigadores chilenos en Suecia. Iremos ampliando esta sección.",
+    },
+    contact: {
+      title: "Contacto",
+      lead: "¿Quieres colaborar, sumarte o saber más? Escríbenos y te responderemos.",
     },
     footer: {
       tagline: "Asociación de Investigadores Chilenos en Suecia",
@@ -88,6 +95,7 @@ const CONTENT = {
       members: "Members",
       researchers: "Chileans in Sweden",
       resources: "Resources",
+      contact: "Contact",
     },
     hero: {
       title: "AICHIS",
@@ -111,6 +119,7 @@ const CONTENT = {
           text: "To be an active bridge between Chile and Sweden, advancing science, culture, and opportunities for the next generations.",
         },
       ],
+      cta: "Apply to become a member",
     },
     explora: {
       title: "Explora Nobel",
@@ -120,6 +129,7 @@ const CONTENT = {
     members: {
       title: "Members",
       lead: "Meet our board. We'll add more members and profiles soon.",
+      photoCaption: "The AICHIS board, 2024",
     },
     researchers: {
       title: "Chileans in Sweden",
@@ -129,6 +139,10 @@ const CONTENT = {
     resources: {
       title: "Resources",
       lead: "Useful links and materials for Chilean researchers in Sweden. We will keep expanding this section.",
+    },
+    contact: {
+      title: "Contact",
+      lead: "Want to collaborate, join, or learn more? Write to us and we'll get back to you.",
     },
     footer: {
       tagline: "Association of Chilean Researchers in Sweden",
@@ -147,6 +161,7 @@ const CONTENT = {
       members: "Medlemmar",
       researchers: "Chilenare i Sverige",
       resources: "Resurser",
+      contact: "Kontakt",
     },
     hero: {
       title: "AICHIS",
@@ -170,6 +185,7 @@ const CONTENT = {
           text: "Att vara en aktiv bro mellan Chile och Sverige som främjar vetenskap, kultur och möjligheter för kommande generationer.",
         },
       ],
+      cta: "Ansök om medlemskap",
     },
     explora: {
       title: "Explora Nobel",
@@ -179,6 +195,7 @@ const CONTENT = {
     members: {
       title: "Medlemmar",
       lead: "Möt vår styrelse. Vi lägger till fler medlemmar och profiler snart.",
+      photoCaption: "AICHIS styrelse, 2024",
     },
     researchers: {
       title: "Chilenare i Sverige",
@@ -188,6 +205,10 @@ const CONTENT = {
     resources: {
       title: "Resurser",
       lead: "Användbara länkar och material för chilenska forskare i Sverige. Vi fortsätter att utöka denna sektion.",
+    },
+    contact: {
+      title: "Kontakt",
+      lead: "Vill du samarbeta, gå med eller veta mer? Skriv till oss så återkommer vi.",
     },
     footer: {
       tagline: "Föreningen för chilenska forskare i Sverige",
@@ -246,12 +267,12 @@ const ROLES = {
 };
 
 const MEMBERS = [
-  { name: "Carolina Oses",       role: ROLES.president,   affiliation: "", photo: "", link: "" },
-  { name: "Rodrigo Morales",     role: ROLES.treasurer,   affiliation: "", photo: "", link: "" },
+  { name: "Carolina Oses",       role: ROLES.president,   affiliation: "", photo: "assets/img/aichis_profiles_board/carola.jpeg",  link: "" },
+  { name: "Rodrigo Morales",     role: ROLES.treasurer,   affiliation: "", photo: "assets/img/aichis_profiles_board/Rodrigo.jpeg", link: "" },
   { name: "Markos Saravia",      role: ROLES.boardMember, affiliation: "", photo: "", link: "" },
-  { name: "Giorgio Giusti",      role: ROLES.boardMember, affiliation: "", photo: "", link: "" },
-  { name: "Sofía Bobadilla",     role: ROLES.boardMember, affiliation: "", photo: "", link: "" },
-  { name: "Gustavo Monasterio",  role: ROLES.deputy,      affiliation: "", photo: "", link: "" },
+  { name: "Giorgio Giusti",      role: ROLES.boardMember, affiliation: "", photo: "assets/img/aichis_profiles_board/giorgio.jpeg", link: "" },
+  { name: "Sofía Bobadilla",     role: ROLES.boardMember, affiliation: "", photo: "assets/img/aichis_profiles_board/sofia.jpg",    link: "" },
+  { name: "Gustavo Monasterio",  role: ROLES.deputy,      affiliation: "", photo: "assets/img/aichis_profiles_board/gustavo.jpeg", link: "" },
   { name: "Ignacio Verdugo",     role: ROLES.deputy,      affiliation: "", photo: "", link: "" },
   // --- copy a block above to add another member ---
 ];
@@ -285,16 +306,16 @@ const RESEARCHERS = [
 const RESOURCES = [
   {
     title: {
-      es: "Ejemplo de recurso",
-      en: "Example resource",
-      sv: "Exempelresurs",
+      es: "Postula a socio/a",
+      en: "Apply to become a member",
+      sv: "Ansök om medlemskap",
     },
     description: {
-      es: "Una breve descripción de este recurso y por qué es útil.",
-      en: "A short description of this resource and why it is useful.",
-      sv: "En kort beskrivning av denna resurs och varför den är användbar.",
+      es: "Completa el formulario para unirte a AICHIS.",
+      en: "Fill in the form to join AICHIS.",
+      sv: "Fyll i formuläret för att gå med i AICHIS.",
     },
-    link: "https://example.com",
+    link: "https://docs.google.com/forms/d/e/1FAIpQLScxO0kY5NXIgE2tnDj89NMqDgbERNBkMglJiaVMCAWDYrog8w/viewform",
   },
   // --- copy the block above to add another resource ---
 ];
