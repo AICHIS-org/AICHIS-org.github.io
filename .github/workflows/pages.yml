@@ -40,5 +40,3 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          timeout: 1800000 # 30 min; avoids failing when Pages deployment stays queued for >10 min
