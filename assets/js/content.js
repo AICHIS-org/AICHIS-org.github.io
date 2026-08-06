@@ -27,6 +27,7 @@ const CONTENT = {
       about: "Sobre nosotros",
       explora: "Explora Nobel",
       members: "Miembros",
+      board: "Directiva",
       researchers: "Chilenos en Suecia",
       resources: "Recursos",
       contact: "Contacto",
@@ -53,7 +54,6 @@ const CONTENT = {
           text: "Ser un puente activo entre Chile y Suecia, impulsando la ciencia, la cultura y las oportunidades para las próximas generaciones.",
         },
       ],
-      cta: "Postula a socio/a",
     },
     explora: {
       title: "Explora Nobel",
@@ -62,8 +62,14 @@ const CONTENT = {
     },
     members: {
       title: "Miembros",
-      lead: "Conoce a nuestra directiva. Pronto sumaremos más miembros y perfiles.",
-      photoCaption: "La directiva de AICHIS, 2024",
+      lead: "AICHIS está abierta a investigadoras e investigadores chilenos que viven y trabajan en Suecia. ¿Quieres sumarte? Postula a través de nuestro formulario.",
+      cta: "Postula a socio/a",
+      photoCaption: "Miembros de AICHIS junto al embajador de Chile en Suecia, Tucapel Jiménez, en la Embajada de Chile en Estocolmo, Suecia, 2023",
+    },
+    board: {
+      title: "Directiva",
+      lead: "Esta es la directiva de AICHIS para el período 2026.",
+      historyTitle: "Directivas anteriores",
     },
     researchers: {
       title: "Chilenos en Suecia",
@@ -93,6 +99,7 @@ const CONTENT = {
       about: "About us",
       explora: "Explora Nobel",
       members: "Members",
+      board: "Board",
       researchers: "Chileans in Sweden",
       resources: "Resources",
       contact: "Contact",
@@ -119,7 +126,6 @@ const CONTENT = {
           text: "To be an active bridge between Chile and Sweden, advancing science, culture, and opportunities for the next generations.",
         },
       ],
-      cta: "Apply to become a member",
     },
     explora: {
       title: "Explora Nobel",
@@ -128,8 +134,14 @@ const CONTENT = {
     },
     members: {
       title: "Members",
-      lead: "Meet our board. We'll add more members and profiles soon.",
-      photoCaption: "The AICHIS board, 2024",
+      lead: "AICHIS is open to Chilean researchers living and working in Sweden. Want to join? Apply through our form.",
+      cta: "Apply to become a member",
+      photoCaption: "AICHIS members with the Chilean Ambassador to Sweden, Tucapel Jiménez, at the Chilean Embassy in Stockholm, Sweden, 2023",
+    },
+    board: {
+      title: "Board",
+      lead: "This is the AICHIS board for the 2026 term.",
+      historyTitle: "Previous boards",
     },
     researchers: {
       title: "Chileans in Sweden",
@@ -159,6 +171,7 @@ const CONTENT = {
       about: "Om oss",
       explora: "Explora Nobel",
       members: "Medlemmar",
+      board: "Styrelse",
       researchers: "Chilenare i Sverige",
       resources: "Resurser",
       contact: "Kontakt",
@@ -185,7 +198,6 @@ const CONTENT = {
           text: "Att vara en aktiv bro mellan Chile och Sverige som främjar vetenskap, kultur och möjligheter för kommande generationer.",
         },
       ],
-      cta: "Ansök om medlemskap",
     },
     explora: {
       title: "Explora Nobel",
@@ -194,8 +206,14 @@ const CONTENT = {
     },
     members: {
       title: "Medlemmar",
-      lead: "Möt vår styrelse. Vi lägger till fler medlemmar och profiler snart.",
-      photoCaption: "AICHIS styrelse, 2024",
+      lead: "AICHIS är öppen för chilenska forskare som bor och arbetar i Sverige. Vill du gå med? Ansök via vårt formulär.",
+      cta: "Ansök om medlemskap",
+      photoCaption: "AICHIS-medlemmar med Chiles ambassadör i Sverige, Tucapel Jiménez, på Chiles ambassad i Stockholm, Sverige, 2023",
+    },
+    board: {
+      title: "Styrelse",
+      lead: "Detta är AICHIS styrelse för perioden 2026.",
+      historyTitle: "Tidigare styrelser",
     },
     researchers: {
       title: "Chilenare i Sverige",
@@ -251,30 +269,123 @@ const EXPLORA_EDITIONS = [
 ];
 
 /* =========================================================================
-   MEMBERS
+   PROFILES  (people behind AICHIS)
    -------------------------------------------------------------------------
-   Listed board (directiva) first, then any other members you add after.
-   Names, photos and links are the same in every language; `role` is
-   translated per language. `photo` is optional — leave "" to show initials.
-   To add a member, copy one { ... } block and edit the values.
+   One entry per person — `name`, `photo` and `link` are the same in every
+   language and shown wherever that person appears. `photo` is optional —
+   leave "" to show initials instead.
+
+   What sections a person shows up in depends on which of these two extra
+   keys they have:
+
+   - `board`  { role }                       -> shows in the Board section.
+   - `member` { role, field, institution }   -> shows in the Members section.
+
+   A person can have one, the other, or both (e.g. a board member who is
+   also a paying member). Omit whichever doesn't apply — don't set it to {}.
+   `role`/`field` are translated per language; reuse `ROLES.xxx` for board
+   roles and `TBD` for member details that aren't confirmed yet.
+
+   To add someone, copy one { ... } block below and edit the values.
    ========================================================================= */
 
 const ROLES = {
   president: { es: "Presidenta", en: "President", sv: "Ordförande" },
+  presidentM: { es: "Presidente", en: "President", sv: "Ordförande" },
+  vicePresident: { es: "Vicepresidente", en: "Vice President", sv: "Vice ordförande" },
+  secretary: { es: "Secretario", en: "Secretary", sv: "Sekreterare" },
+  communications: { es: "Encargado de comunicaciones", en: "Communications Officer", sv: "Kommunikationsansvarig" },
   treasurer: { es: "Tesorero", en: "Treasurer", sv: "Kassör" },
-  boardMember: { es: "Miembro titular", en: "Board member", sv: "Styrelseledamot" },
-  deputy: { es: "Miembro suplente", en: "Deputy member", sv: "Suppleant" },
+  boardMember: { es: "Miembro titular", en: "Board Member", sv: "Styrelseledamot" },
+  deputy: { es: "Miembro suplente", en: "Deputy Member", sv: "Suppleant" },
 };
 
-const MEMBERS = [
-  { name: "Carolina Oses",       role: ROLES.president,   affiliation: "", photo: "assets/img/aichis_profiles_board/carola.jpeg",  link: "" },
-  { name: "Rodrigo Morales",     role: ROLES.treasurer,   affiliation: "", photo: "assets/img/aichis_profiles_board/Rodrigo.jpeg", link: "" },
-  { name: "Markos Saravia",      role: ROLES.boardMember, affiliation: "", photo: "", link: "" },
-  { name: "Giorgio Giusti",      role: ROLES.boardMember, affiliation: "", photo: "assets/img/aichis_profiles_board/giorgio.jpeg", link: "" },
-  { name: "Sofía Bobadilla",     role: ROLES.boardMember, affiliation: "", photo: "assets/img/aichis_profiles_board/sofia.jpg",    link: "" },
-  { name: "Gustavo Monasterio",  role: ROLES.deputy,      affiliation: "", photo: "assets/img/aichis_profiles_board/gustavo.jpeg", link: "" },
-  { name: "Ignacio Verdugo",     role: ROLES.deputy,      affiliation: "", photo: "", link: "" },
-  // --- copy a block above to add another member ---
+const TBD = { es: "Por confirmar", en: "To be confirmed", sv: "Att bekräftas" };
+
+const PROFILES = [
+  {
+    name: "Carolina Oses",
+    photo: "assets/img/aichis_profiles_board/carolina-oses.jpeg",
+    link: "",
+    board: { role: ROLES.president },
+    member: { role: TBD, field: TBD, institution: "" },
+  },
+  {
+    name: "Rodrigo Morales",
+    photo: "assets/img/aichis_profiles_board/rodrigo-morales.jpeg",
+    link: "",
+    board: { role: ROLES.treasurer },
+    member: { role: TBD, field: TBD, institution: "" },
+  },
+  {
+    name: "Markos Saravia",
+    photo: "",
+    link: "",
+    board: { role: ROLES.boardMember },
+    member: { role: TBD, field: TBD, institution: "" },
+  },
+  {
+    name: "Giorgio Giusti",
+    photo: "assets/img/aichis_profiles_board/giorgio-giusti.jpeg",
+    link: "",
+    board: { role: ROLES.boardMember },
+    member: { role: TBD, field: TBD, institution: "" },
+  },
+  {
+    name: "Sofía Bobadilla",
+    photo: "assets/img/aichis_profiles_board/sofia-bobadilla.jpg",
+    link: "",
+    board: { role: ROLES.boardMember },
+    member: {
+      role: { es: "Estudiante de doctorado", en: "PhD Student", sv: "Doktorand" },
+      field: { es: "Investigación en Ingeniería de Software", en: "Software Engineering Research", sv: "Forskning inom mjukvaruteknik" },
+      institution: "KTH Royal Institute of Technology",
+    },
+  },
+  {
+    name: "Gustavo Monasterio",
+    photo: "assets/img/aichis_profiles_board/gustavo-monasterio.jpeg",
+    link: "",
+    board: { role: ROLES.deputy },
+    member: { role: TBD, field: TBD, institution: "" },
+  },
+  {
+    name: "Ignacio Verdugo",
+    photo: "assets/img/aichis_profiles_board/ignacio-verdugo.jpeg",
+    link: "",
+    board: { role: ROLES.deputy },
+    member: {
+      role: { es: "Estudiante de doctorado", en: "PhD Student", sv: "Doktorand" },
+      field: { es: "Física Médica", en: "Medical Physics", sv: "Medicinsk fysik" },
+      institution: "Stockholm University",
+    },
+  },
+  // --- copy a block above to add another profile ---
+];
+
+/* =========================================================================
+   BOARD HISTORY  (previous directivas)
+   -------------------------------------------------------------------------
+   `PROFILES` above only holds the *current* (2026) board — this list is for
+   past years, shown under "Previous boards". One entry per year; `members`
+   is a plain array of { name, role, photo } — `role` is translated per
+   language (reuse `ROLES.xxx` or write a new `{ es, en, sv }` object).
+   `photo` is optional — leave "" to show initials.
+   Leave `members` empty (`[]`) until you have the real roster for that year.
+   ========================================================================= */
+
+const BOARD_HISTORY = [
+  {
+    year: 2025,
+    members: [
+      { name: "Eduardo Sagredo",    role: ROLES.presidentM,     photo: "" },
+      { name: "Gustavo Monasterio", role: ROLES.vicePresident,  photo: "assets/img/aichis_profiles_board/gustavo-monasterio.jpeg" },
+      { name: "Rodrigo Morales",    role: ROLES.treasurer,      photo: "assets/img/aichis_profiles_board/rodrigo-morales.jpeg" },
+      { name: "Markos Saravia",     role: ROLES.secretary,      photo: "" },
+      { name: "Ignacio Verdugo",    role: ROLES.communications, photo: "assets/img/aichis_profiles_board/ignacio-verdugo.jpeg" },
+    ],
+  },
+  { year: 2024, members: [] },
 ];
 
 /* =========================================================================

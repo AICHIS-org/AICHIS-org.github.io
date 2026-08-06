@@ -29,6 +29,7 @@
           <li><a href="#about" data-i18n="nav.about"></a></li>
           <li><a href="#explora" data-i18n="nav.explora"></a></li>
           <li><a href="#members" data-i18n="nav.members"></a></li>
+          <li><a href="#board" data-i18n="nav.board"></a></li>
           <li><a href="#researchers" data-i18n="nav.researchers"></a></li>
           <li><a href="#resources" data-i18n="nav.resources"></a></li>
           <li><a href="#contact" data-i18n="nav.contact"></a></li>
@@ -61,9 +62,6 @@
         <h2 class="section-title" data-i18n="about.title"></h2>
         <p class="section-lead" data-i18n="about.lead"></p>
         <div class="cards" id="about-cards"><!-- populated from content.js --></div>
-        <div class="section-cta">
-          <a class="btn btn-primary" href="https://docs.google.com/forms/d/e/1FAIpQLScxO0kY5NXIgE2tnDj89NMqDgbERNBkMglJiaVMCAWDYrog8w/viewform" target="_blank" rel="noopener" data-i18n="about.cta"></a>
-        </div>
       </div>
     </section>
 
@@ -95,13 +93,25 @@
       <div class="container">
         <h2 class="section-title" data-i18n="members.title"></h2>
         <p class="section-lead" data-i18n="members.lead"></p>
+        <div class="members-grid" id="members-grid"><!-- populated from content.js --></div>
+        <div class="section-cta">
+          <a class="btn btn-primary" href="https://docs.google.com/forms/d/e/1FAIpQLScxO0kY5NXIgE2tnDj89NMqDgbERNBkMglJiaVMCAWDYrog8w/viewform" target="_blank" rel="noopener" data-i18n="members.cta"></a>
+        </div>
+      </div>
+    </section>
 
-        <figure class="members-photo">
-          <img src="assets/img/aichis2024.jpg" alt="AICHIS board and members, 2024" loading="lazy" />
-          <figcaption data-i18n="members.photoCaption"></figcaption>
+    <!-- ===================== BOARD ===================== -->
+    <section id="board" class="section">
+      <div class="container">
+        <h2 class="section-title" data-i18n="board.title"></h2>
+        <p class="section-lead" data-i18n="board.lead"></p>
+
+        <figure class="board-banner">
+          <img src="assets/img/aichis2024.jpg" alt="AICHIS board, 2024" loading="lazy" />
+          <figcaption data-i18n="board.photoCaption"></figcaption>
         </figure>
 
-        <div class="members-grid" id="members-grid"><!-- populated from content.js --></div>
+        <div class="board-grid" id="board-grid"><!-- populated from content.js --></div>
       </div>
     </section>
 

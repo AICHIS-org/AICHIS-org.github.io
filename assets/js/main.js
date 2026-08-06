@@ -57,33 +57,98 @@
     }).join("");
   }
 
-  /* --- render the Members grid ----------------------------------------- */
-  function renderMembers(lang) {
-    const el = document.getElementById("members-grid");
-    if (!MEMBERS.length) {
+  /* --- shared helpers for PROFILES-based sections ----------------------- */
+  function initialsOf(name) {
+    return name
+      .split(" ")
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+  }
+
+  function linkedName(p) {
+    return p.link
+      ? `<a href="${p.link}" target="_blank" rel="noopener">${p.name}</a>`
+      : p.name;
+  }
+
+  /* --- render the Board grid --------------------------------------------- */
+  function renderBoard(lang) {
+    const el = document.getElementById("board-grid");
+    if (!el) return;
+    const board = PROFILES.filter((p) => p.board);
+    if (!board.length) {
       el.innerHTML = `<p class="empty-note">—</p>`;
       return;
     }
-    el.innerHTML = MEMBERS.map((m) => {
-      const role = typeof m.role === "object" ? m.role[lang] : m.role;
-      const initials = m.name
-        .split(" ")
-        .map((w) => w[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase();
-      const avatar = m.photo
-        ? `<img class="member-photo" src="${m.photo}" alt="${m.name}" />`
-        : `<div class="member-avatar" aria-hidden="true">${initials}</div>`;
-      const name = m.link
-        ? `<a href="${m.link}" target="_blank" rel="noopener">${m.name}</a>`
-        : m.name;
+    el.innerHTML = board.map((p) => {
+      const role = typeof p.board.role === "object" ? p.board.role[lang] : p.board.role;
+      const avatar = p.photo
+        ? `<img class="board-photo" src="${p.photo}" alt="${p.name}" />`
+        : `<div class="board-avatar" aria-hidden="true">${initialsOf(p.name)}</div>`;
+      return `
+        <article class="board-card">
+          ${avatar}
+          <h3 class="board-name">${linkedName(p)}</h3>
+          <p class="board-role">${role || ""}</p>
+        </article>`;
+    }).join("");
+  }
+
+  /* --- render previous boards (Board section, "Previous boards") -------- */
+  function renderBoardHistory(lang) {
+    const el = document.getElementById("board-history");
+    if (!el) return;
+    el.innerHTML = BOARD_HISTORY.map((entry) => {
+      const body = entry.members.length
+        ? `<div class="board-history-grid">${entry.members.map((m) => {
+            const role = typeof m.role === "object" ? m.role[lang] : m.role;
+            const avatar = m.photo
+              ? `<img class="board-photo" src="${m.photo}" alt="${m.name}" />`
+              : `<div class="board-avatar" aria-hidden="true">${initialsOf(m.name)}</div>`;
+            return `
+              <article class="board-card board-history-card">
+                ${avatar}
+                <h4 class="board-name">${m.name}</h4>
+                <p class="board-role">${role || ""}</p>
+              </article>`;
+          }).join("")}</div>`
+        : `<p class="empty-note">—</p>`;
+      return `
+        <div class="board-history-group">
+          <h4 class="board-history-year">${entry.year}</h4>
+          ${body}
+        </div>`;
+    }).join("");
+  }
+
+  /* --- render the Members roster ---------------------------------------- */
+  function renderMembers(lang) {
+    const el = document.getElementById("members-grid");
+    if (!el) return;
+    const members = PROFILES.filter((p) => p.member);
+    if (!members.length) {
+      el.innerHTML = `<p class="empty-note">—</p>`;
+      return;
+    }
+    el.innerHTML = members.map((p) => {
+      const role = typeof p.member.role === "object" ? p.member.role[lang] : p.member.role;
+      const field = typeof p.member.field === "object" ? p.member.field[lang] : p.member.field;
+      const avatar = p.photo
+        ? `<img class="member-photo" src="${p.photo}" alt="${p.name}" />`
+        : `<div class="member-avatar" aria-hidden="true">${initialsOf(p.name)}</div>`;
       return `
         <article class="member-card">
-          ${avatar}
-          <h3 class="member-name">${name}</h3>
-          <p class="member-role">${role || ""}</p>
-          <p class="member-aff">${m.affiliation || ""}</p>
+          <div class="member-head">
+            ${avatar}
+            <div>
+              <h3 class="member-name">${linkedName(p)}</h3>
+              <p class="member-role">${role || ""}</p>
+            </div>
+          </div>
+          <p class="member-field">${field || ""}</p>
+          <p class="member-inst">${p.member.institution || ""}</p>
         </article>`;
     }).join("");
   }
@@ -144,6 +209,8 @@
     renderAbout(lang);
     renderExplora(lang);
     renderMembers(lang);
+    renderBoard(lang);
+    renderBoardHistory(lang);
     renderResearchers(lang);
     renderResources(lang);
 
