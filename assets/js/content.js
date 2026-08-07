@@ -294,8 +294,12 @@ const ROLES = {
   presidentM: { es: "Presidente", en: "President", sv: "Ordförande" },
   vicePresident: { es: "Vicepresidente", en: "Vice President", sv: "Vice ordförande" },
   secretary: { es: "Secretario", en: "Secretary", sv: "Sekreterare" },
+  secretaryF: { es: "Secretaria", en: "Secretary", sv: "Sekreterare" },
   communications: { es: "Encargado de comunicaciones", en: "Communications Officer", sv: "Kommunikationsansvarig" },
+  communicationsDirectorM: { es: "Director de Comunicaciones", en: "Communications Director", sv: "Kommunikationsdirektör" },
+  communicationsDirectorF: { es: "Directora de Comunicaciones", en: "Communications Director", sv: "Kommunikationsdirektör" },
   treasurer: { es: "Tesorero", en: "Treasurer", sv: "Kassör" },
+  treasurerF: { es: "Tesorera", en: "Treasurer", sv: "Kassör" },
   boardMember: { es: "Miembro titular", en: "Board Member", sv: "Styrelseledamot" },
   deputy: { es: "Miembro suplente", en: "Deputy Member", sv: "Suppleant" },
 };
@@ -385,7 +389,26 @@ const BOARD_HISTORY = [
       { name: "Ignacio Verdugo",    role: ROLES.communications, photo: "assets/img/aichis_profiles_board/ignacio-verdugo.jpeg" },
     ],
   },
-  { year: 2024, members: [] },
+  {
+    year: 2024,
+    members: [
+      { name: "Eduardo Sagredo",       role: ROLES.presidentM,               photo: "" },
+      { name: "Gustavo Monasterio",    role: ROLES.vicePresident,            photo: "assets/img/aichis_profiles_board/gustavo-monasterio.jpeg" },
+      { name: "Rodrigo Morales",       role: ROLES.treasurer,                photo: "assets/img/aichis_profiles_board/rodrigo-morales.jpeg" },
+      { name: "Aristides Progulakis",  role: ROLES.communicationsDirectorM,  photo: "" },
+      { name: "Maria Jose Pino",       role: ROLES.secretaryF,               photo: "" },
+    ],
+  },
+  {
+    year: 2023,
+    members: [
+      { name: "Gustavo Monasterio",  role: ROLES.presidentM,               photo: "assets/img/aichis_profiles_board/gustavo-monasterio.jpeg" },
+      { name: "Eduardo Sagredo",     role: ROLES.vicePresident,            photo: "" },
+      { name: "Macarena Carrasco",   role: ROLES.treasurerF,               photo: "" },
+      { name: "Carolina Mendez",     role: ROLES.communicationsDirectorF,  photo: "" },
+      { name: "Rodrigo Morales",     role: ROLES.secretary,                photo: "assets/img/aichis_profiles_board/rodrigo-morales.jpeg" },
+    ],
+  },
 ];
 
 /* =========================================================================
