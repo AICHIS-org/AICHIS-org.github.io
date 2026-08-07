@@ -112,12 +112,34 @@ python3 -m http.server 8000
 
 The site is live at **https://aichis-org.github.io/** and deploys **automatically**
 on every push to `main` via GitHub Actions (see
-[`.github/workflows/pages.yml`](.github/workflows/pages.yml)). You don't need to
-do anything to publish — just push (or merge a PR).
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml)). Merging a PR
+into `main` is what triggers a deploy — see below for how changes get into
+`main`.
 
 The repo is named `AICHIS-org.github.io` (matching the organisation), which is
 what makes the clean root URL work. Pages source is set to **GitHub Actions**
 under Settings → Pages.
+
+---
+
+## 🔒 Branch protection
+
+`main` is protected: **direct pushes are disabled for everyone, including
+repo admins.** Every change — no matter how small — has to go through a pull
+request. This applies even if you have write access; there is currently no
+required review/approval count, so a PR can be merged as soon as it's open
+(no waiting on someone else), but it still has to exist as a PR first.
+
+There's also a [PR checks workflow](.github/workflows/pr-checks.yml) that
+runs automatically on every PR — it syntax-checks the JS files and validates
+`content.js` (via [`scripts/check-content.js`](scripts/check-content.js)) for
+missing translations or broken photo paths. It currently runs for visibility
+only and does **not** block merging yet — that's a deliberate choice while
+the site is still under active/raw development, so a fix can go out quickly
+even if the check is red. It's worth revisiting once things stabilise (see
+Roadmap below).
+
+Configured via: Settings → Branches → Branch protection rules → `main`.
 
 ---
 
@@ -128,3 +150,5 @@ under Settings → Pages.
 - [ ] Add real people to the `RESEARCHERS` list (Chileans in Sweden).
 - [ ] Add real resources to the `RESOURCES` list.
 - [ ] Expand the About Us content as needed.
+- [ ] Once things stabilise, make the PR checks workflow a **required** status
+      check on `main` so a red check actually blocks merging.

@@ -1,0 +1,27 @@
+# Runs on every pull request into main. No build step — this is a static
+# site — so these are cheap sanity checks that catch the mistakes that
+# actually break the page: a JS typo, a missing translation, a renamed or
+# missing photo.
+name: PR checks
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Syntax-check JS files
+        run: |
+          node -c assets/js/content.js
+          node -c assets/js/main.js
+
+      - name: Validate content.js (translations + photo paths)
+        run: node scripts/check-content.js
