@@ -57,6 +57,13 @@
     }).join("");
   }
 
+  /* --- small inline icons used on member cards --------------------------- */
+  const ICONS = {
+    email: `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13zm2.2.5 7.8 6.15L19.8 6H4.2zM20 8.1l-7.4 5.84a1 1 0 0 1-1.24 0L4 8.1v10.4c0 .28.22.5.5.5h15a.5.5 0 0 0 .5-.5V8.1z"/></svg>`,
+    linkedin: `<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>`,
+    webpage: `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.9 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.9-3.8-9s1.3-6.3 3.8-9z"/></svg>`,
+  };
+
   /* --- shared helpers for PROFILES-based sections ----------------------- */
   function initialsOf(name) {
     return name
@@ -73,6 +80,32 @@
       : p.name;
   }
 
+  // Board cards show a person's current Members-profile info (position +
+  // institution) alongside their board role, when they have one on file.
+  function currentMemberInfoOf(name) {
+    const p = PROFILES.find((p) => p.name === name && p.member);
+    return p ? p.member : null;
+  }
+
+  function boardCardHTML({ name, roleText, photo, link, member }, lang, extraClass = "") {
+    const avatar = photo
+      ? `<img class="board-photo" src="${photo}" alt="${name}" />`
+      : `<div class="board-avatar" aria-hidden="true">${initialsOf(name)}</div>`;
+    const nameHTML = link
+      ? `<a href="${link}" target="_blank" rel="noopener">${name}</a>`
+      : name;
+    const field = member && (typeof member.field === "object" ? member.field[lang] : member.field);
+    const institution = member && member.institution;
+    return `
+      <article class="board-card${extraClass ? " " + extraClass : ""}">
+        ${avatar}
+        <h4 class="board-name">${nameHTML}</h4>
+        <p class="board-role">${roleText || ""}</p>
+        <p class="board-field">${field || ""}</p>
+        <p class="board-inst">${institution || ""}</p>
+      </article>`;
+  }
+
   /* --- render the Board grid --------------------------------------------- */
   function renderBoard(lang) {
     const el = document.getElementById("board-grid");
@@ -83,16 +116,11 @@
       return;
     }
     el.innerHTML = board.map((p) => {
-      const role = typeof p.board.role === "object" ? p.board.role[lang] : p.board.role;
-      const avatar = p.photo
-        ? `<img class="board-photo" src="${p.photo}" alt="${p.name}" />`
-        : `<div class="board-avatar" aria-hidden="true">${initialsOf(p.name)}</div>`;
-      return `
-        <article class="board-card">
-          ${avatar}
-          <h3 class="board-name">${linkedName(p)}</h3>
-          <p class="board-role">${role || ""}</p>
-        </article>`;
+      const roleText = typeof p.board.role === "object" ? p.board.role[lang] : p.board.role;
+      return boardCardHTML(
+        { name: p.name, roleText, photo: p.photo, link: p.link, member: p.member },
+        lang
+      );
     }).join("");
   }
 
@@ -103,16 +131,12 @@
     el.innerHTML = BOARD_HISTORY.map((entry) => {
       const body = entry.members.length
         ? `<div class="board-history-grid">${entry.members.map((m) => {
-            const role = typeof m.role === "object" ? m.role[lang] : m.role;
-            const avatar = m.photo
-              ? `<img class="board-photo" src="${m.photo}" alt="${m.name}" />`
-              : `<div class="board-avatar" aria-hidden="true">${initialsOf(m.name)}</div>`;
-            return `
-              <article class="board-card board-history-card">
-                ${avatar}
-                <h4 class="board-name">${m.name}</h4>
-                <p class="board-role">${role || ""}</p>
-              </article>`;
+            const roleText = typeof m.role === "object" ? m.role[lang] : m.role;
+            return boardCardHTML(
+              { name: m.name, roleText, photo: m.photo, link: "", member: currentMemberInfoOf(m.name) },
+              lang,
+              "board-history-card"
+            );
           }).join("")}</div>`
         : `<p class="empty-note">—</p>`;
       return `
@@ -133,11 +157,22 @@
       return;
     }
     el.innerHTML = members.map((p) => {
-      const role = typeof p.member.role === "object" ? p.member.role[lang] : p.member.role;
-      const field = typeof p.member.field === "object" ? p.member.field[lang] : p.member.field;
+      const m = p.member;
+      const role = typeof m.role === "object" ? m.role[lang] : m.role;
+      const field = typeof m.field === "object" ? m.field[lang] : m.field;
       const avatar = p.photo
         ? `<img class="member-photo" src="${p.photo}" alt="${p.name}" />`
         : `<div class="member-avatar" aria-hidden="true">${initialsOf(p.name)}</div>`;
+
+      const contact = (m.email || m.linkedin || m.webpage)
+        ? `
+          <p class="member-contact">
+            ${m.email ? `<a href="mailto:${m.email}" class="member-contact-icon" aria-label="Email">${ICONS.email}</a>` : ""}
+            ${m.linkedin ? `<a href="${m.linkedin}" target="_blank" rel="noopener" class="member-contact-icon" aria-label="LinkedIn">${ICONS.linkedin}</a>` : ""}
+            ${m.webpage ? `<a href="${m.webpage}" target="_blank" rel="noopener" class="member-contact-icon" aria-label="Website">${ICONS.webpage}</a>` : ""}
+          </p>`
+        : "";
+
       return `
         <article class="member-card">
           <div class="member-head">
@@ -148,7 +183,8 @@
             </div>
           </div>
           <p class="member-field">${field || ""}</p>
-          <p class="member-inst">${p.member.institution || ""}</p>
+          <p class="member-inst">${m.institution || ""}</p>
+          ${contact}
         </article>`;
     }).join("");
   }

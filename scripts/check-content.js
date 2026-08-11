@@ -74,7 +74,10 @@ function checkTranslationLeaves(obj, pathStr) {
   const looksLikeTranslation = keys.length > 0 && keys.every((k) => LANGS.includes(k));
   if (looksLikeTranslation) {
     for (const lang of LANGS) {
-      if (typeof obj[lang] !== "string" || !obj[lang].trim()) {
+      const val = obj[lang];
+      const validString = typeof val === "string" && val.trim();
+      const validList = Array.isArray(val) && val.length > 0 && val.every((s) => typeof s === "string" && s.trim());
+      if (!validString && !validList) {
         errors.push(`${pathStr} is missing/empty "${lang}"`);
       }
     }
