@@ -279,12 +279,18 @@ const EXPLORA_EDITIONS = [
    keys they have:
 
    - `board`  { role }                       -> shows in the Board section.
-   - `member` { role, field, institution }   -> shows in the Members section.
+   - `member` { role, field, institution,    -> shows in the Members section.
+                email, linkedin, webpage }
 
    A person can have one, the other, or both (e.g. a board member who is
    also a paying member). Omit whichever doesn't apply — don't set it to {}.
    `role`/`field` are translated per language; reuse `ROLES.xxx` for board
    roles and `TBD` for member details that aren't confirmed yet.
+
+   Inside `member`, only `role`, `field` and `institution` are required —
+   `email`, `linkedin` and `webpage` are optional and shown as icons on the
+   member's card. Leave any of these out entirely if unknown — don't set
+   them to "".
 
    To add someone, copy one { ... } block below and edit the values.
    ========================================================================= */
@@ -309,14 +315,14 @@ const TBD = { es: "Por confirmar", en: "To be confirmed", sv: "Att bekräftas" }
 const PROFILES = [
   {
     name: "Carolina Oses",
-    photo: "assets/img/aichis_profiles_board/carolina-oses.jpeg",
+    photo: "assets/img/profiles/carolina-oses.jpeg",
     link: "",
     board: { role: ROLES.president },
     member: { role: TBD, field: TBD, institution: "" },
   },
   {
     name: "Rodrigo Morales",
-    photo: "assets/img/aichis_profiles_board/rodrigo-morales.jpeg",
+    photo: "assets/img/profiles/rodrigo-morales.jpeg",
     link: "",
     board: { role: ROLES.treasurer },
     member: { role: TBD, field: TBD, institution: "" },
@@ -330,37 +336,62 @@ const PROFILES = [
   },
   {
     name: "Giorgio Giusti",
-    photo: "assets/img/aichis_profiles_board/giorgio-giusti.jpeg",
+    photo: "assets/img/profiles/giorgio-giusti.jpeg",
     link: "",
     board: { role: ROLES.boardMember },
     member: { role: TBD, field: TBD, institution: "" },
   },
   {
     name: "Sofía Bobadilla",
-    photo: "assets/img/aichis_profiles_board/sofia-bobadilla.jpg",
+    photo: "assets/img/profiles/sofia-bobadilla.jpg",
     link: "",
     board: { role: ROLES.boardMember },
     member: {
       role: { es: "Estudiante de doctorado", en: "PhD Student", sv: "Doktorand" },
       field: { es: "Investigación en Ingeniería de Software", en: "Software Engineering Research", sv: "Forskning inom mjukvaruteknik" },
       institution: "KTH Royal Institute of Technology",
+      email: "sofbob@kth.se",
+      linkedin: "https://www.linkedin.com/in/sofia-bobadilla-44462a21a",
+      webpage: "https://sofiabobadilla.github.io/",
     },
   },
   {
     name: "Gustavo Monasterio",
-    photo: "assets/img/aichis_profiles_board/gustavo-monasterio.jpeg",
+    photo: "assets/img/profiles/gustavo-monasterio.jpeg",
     link: "",
     board: { role: ROLES.deputy },
-    member: { role: TBD, field: TBD, institution: "" },
+    member: {
+      role: {
+        es: "Profesor Asistente/Investigador Principal",
+        en: "Assistant Professor/Principal Investigator",
+        sv: "Biträdande professor/Huvudforskare",
+      },
+      field: {
+        es: "Inmunología mucosal y biología de glándulas exocrinas",
+        en: "Mucosal Immunology and Exocrine Gland Biology",
+        sv: "Mukosal immunologi och exokrin körtelbiologi",
+      },
+      institution: "Department of Medicine, Solna, Karolinska Institutet",
+    },
   },
   {
     name: "Ignacio Verdugo",
-    photo: "assets/img/aichis_profiles_board/ignacio-verdugo.jpeg",
+    photo: "assets/img/profiles/ignacio-verdugo.jpeg",
     link: "",
     board: { role: ROLES.deputy },
     member: {
       role: { es: "Estudiante de doctorado", en: "PhD Student", sv: "Doktorand" },
       field: { es: "Física Médica", en: "Medical Physics", sv: "Medicinsk fysik" },
+      institution: "Stockholm University",
+    },
+  },
+  {
+    name: "Eduardo A. Sagredo",
+    photo: "assets/img/profiles/eduardo-sagredo.jpeg",
+    link: "",
+    member: {
+      role: { es: "Líder de Grupo (PhD)", en: "Group Leader (PhD)", sv: "Gruppledare (PhD)" },
+      field: { es: "Biología del ARN", en: "RNA Biology", sv: "RNA-biologi" },
       institution: "Stockholm University",
     },
   },
@@ -382,19 +413,19 @@ const BOARD_HISTORY = [
   {
     year: 2025,
     members: [
-      { name: "Eduardo Sagredo",    role: ROLES.presidentM,     photo: "" },
-      { name: "Gustavo Monasterio", role: ROLES.vicePresident,  photo: "assets/img/aichis_profiles_board/gustavo-monasterio.jpeg" },
-      { name: "Rodrigo Morales",    role: ROLES.treasurer,      photo: "assets/img/aichis_profiles_board/rodrigo-morales.jpeg" },
+      { name: "Eduardo A. Sagredo",    role: ROLES.presidentM,     photo: "assets/img/profiles/eduardo-sagredo.jpeg" },
+      { name: "Gustavo Monasterio", role: ROLES.vicePresident,  photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
+      { name: "Rodrigo Morales",    role: ROLES.treasurer,      photo: "assets/img/profiles/rodrigo-morales.jpeg" },
       { name: "Markos Saravia",     role: ROLES.secretary,      photo: "" },
-      { name: "Ignacio Verdugo",    role: ROLES.communications, photo: "assets/img/aichis_profiles_board/ignacio-verdugo.jpeg" },
+      { name: "Ignacio Verdugo",    role: ROLES.communications, photo: "assets/img/profiles/ignacio-verdugo.jpeg" },
     ],
   },
   {
     year: 2024,
     members: [
-      { name: "Eduardo Sagredo",       role: ROLES.presidentM,               photo: "" },
-      { name: "Gustavo Monasterio",    role: ROLES.vicePresident,            photo: "assets/img/aichis_profiles_board/gustavo-monasterio.jpeg" },
-      { name: "Rodrigo Morales",       role: ROLES.treasurer,                photo: "assets/img/aichis_profiles_board/rodrigo-morales.jpeg" },
+      { name: "Eduardo A. Sagredo",       role: ROLES.presidentM,               photo: "assets/img/profiles/eduardo-sagredo.jpeg" },
+      { name: "Gustavo Monasterio",    role: ROLES.vicePresident,            photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
+      { name: "Rodrigo Morales",       role: ROLES.treasurer,                photo: "assets/img/profiles/rodrigo-morales.jpeg" },
       { name: "Aristides Progulakis",  role: ROLES.communicationsDirectorM,  photo: "" },
       { name: "Maria Jose Pino",       role: ROLES.secretaryF,               photo: "" },
     ],
@@ -402,11 +433,11 @@ const BOARD_HISTORY = [
   {
     year: 2023,
     members: [
-      { name: "Gustavo Monasterio",  role: ROLES.presidentM,               photo: "assets/img/aichis_profiles_board/gustavo-monasterio.jpeg" },
-      { name: "Eduardo Sagredo",     role: ROLES.vicePresident,            photo: "" },
+      { name: "Gustavo Monasterio",  role: ROLES.presidentM,               photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
+      { name: "Eduardo A. Sagredo",     role: ROLES.vicePresident,            photo: "assets/img/profiles/eduardo-sagredo.jpeg" },
       { name: "Macarena Carrasco",   role: ROLES.treasurerF,               photo: "" },
       { name: "Carolina Mendez",     role: ROLES.communicationsDirectorF,  photo: "" },
-      { name: "Rodrigo Morales",     role: ROLES.secretary,                photo: "assets/img/aichis_profiles_board/rodrigo-morales.jpeg" },
+      { name: "Rodrigo Morales",     role: ROLES.secretary,                photo: "assets/img/profiles/rodrigo-morales.jpeg" },
     ],
   },
 ];

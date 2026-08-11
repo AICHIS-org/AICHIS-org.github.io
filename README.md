@@ -38,23 +38,34 @@ of these two keys their entry has:
 - `board: { role }` — shows the person in the **Board** section (`role` is the
   board position, e.g. President, Treasurer — reuse one of the existing
   `ROLES.xxx` constants or add a new one).
-- `member: { role, field, institution }` — shows the person in the **Members**
-  section (`role` is their position/puesto, `field` their area of research,
-  `institution` their affiliation). Use the `TBD` constant for `role`/`field`
-  until the real details are confirmed.
+- `member: { role, field, institution, ... }` — shows the person in the
+  **Members** section (`role` is their position/puesto, `field` their area of
+  research, `institution` their affiliation). Use the `TBD` constant for
+  `role`/`field` until the real details are confirmed.
 
 A person can have `board`, `member`, or both — just omit whichever doesn't
 apply (don't set it to `{}`).
+
+`member` also accepts a few optional contact fields, shown as small icons on
+their card — leave any of these out entirely if unknown (don't set them to
+`""`):
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `email` | plain string | e.g. `"jane@example.com"`. |
+| `linkedin` | plain string URL | e.g. `"https://www.linkedin.com/in/jane-doe"`. |
+| `webpage` | plain string URL | e.g. `"https://jane.example.com"`. |
 
 ### Changing the Explora Nobel documentary
 The embedded video is in [`index.html`](index.html) — search for `youtube-nocookie`.
 Replace the video id (`5yug9GZ8PjY`) with the new one from its YouTube URL.
 
 ### Adding a profile photo
-Put the image in `assets/img/aichis_profiles_board/`, named
-`firstname-lastname.ext`, and point to it, e.g.
-`photo: "assets/img/aichis_profiles_board/jane-doe.jpg"`. Leave `photo: ""` to
-show the person's initials instead.
+Put the image in `assets/img/profiles/` — shared by everyone referenced
+anywhere in `PROFILES` or `BOARD_HISTORY`, current or past, board or member —
+named `firstname-lastname.ext`, and point to it, e.g.
+`photo: "assets/img/profiles/jane-doe.jpg"`. Leave `photo: ""` to show the
+person's initials instead.
 
 ---
 
@@ -88,7 +99,7 @@ assets/
   img/logo-white.png             Logo (white — footer, dark background)
   img/favicon.svg                Browser-tab icon
   img/aichis_members_embassy_2023.jpg   Members group photo (Members section banner)
-  img/aichis_profiles_board/     Individual profile photos, named firstname-lastname.ext
+  img/profiles/                  Individual profile photos, named firstname-lastname.ext
 .nojekyll                        Tells GitHub Pages to serve files as-is
 ```
 
