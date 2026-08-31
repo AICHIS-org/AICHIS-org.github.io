@@ -398,6 +398,27 @@ const PROFILES = [
       institution: "Stockholm University",
     },
   },
+  {
+    name: "Carolina Oses Sepulveda",
+    photo: "",
+    link: "",
+    member: {
+      role: {
+        es: "Investigadora, Gerente de Laboratorio, Coordinadora de Proyectos",
+        en: "Researcher, Lab Manager, Project Coordinator",
+        sv: "Forskare, Laboratoriechef, Projektsamordnare",
+      },
+      field: {
+        es: "Proteómica Espacial y Multiómica",
+        en: "Spatial Proteomics, and Multiomics",
+        sv: "Spatial proteomik och multiomik",
+      },
+      institution: "KTH Royal Institute of Technology",
+      email: "cdoses@gmail.com",
+      linkedin: "https://www.linkedin.com/in/oses-carolina/",
+      webpage: "https://www.linkedin.com/in/oses-carolina/",
+    },
+  },
   // --- copy a block above to add another profile ---
 ];
 
