@@ -382,7 +382,10 @@ const PROFILES = [
     member: {
       role: { es: "Estudiante de doctorado", en: "PhD Student", sv: "Doktorand" },
       field: { es: "Física Médica", en: "Medical Physics", sv: "Medicinsk fysik" },
-      institution: "Stockholm University",
+      institution: "Stockholm University - Karolinska Institutet",
+      email: "ignacio.verdugo@fysik.su.se",
+      linkedin: "https://www.linkedin.com/in/ignacio-verdugo-naranjo/",
+      webpage: "https://www.su.se/profiles/i/igve9547",
     },
   },
   {
