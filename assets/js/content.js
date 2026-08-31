@@ -318,7 +318,22 @@ const PROFILES = [
     photo: "assets/img/profiles/carolina-oses.jpeg",
     link: "",
     board: { role: ROLES.president },
-    member: { role: TBD, field: TBD, institution: "" },
+    member: {
+      role: {
+        es: "Investigadora, Gerente de Laboratorio, Coordinadora de Proyectos",
+        en: "Researcher, Lab Manager, Project Coordinator",
+        sv: "Forskare, Laboratoriechef, Projektsamordnare",
+      },
+      field: {
+        es: "Proteómica Espacial y Multiómica",
+        en: "Spatial Proteomics, and Multiomics",
+        sv: "Spatial proteomik och multiomik",
+      },
+      institution: "KTH Royal Institute of Technology",
+      email: "cdoses@gmail.com",
+      linkedin: "https://www.linkedin.com/in/oses-carolina/",
+      webpage: "https://www.linkedin.com/in/oses-carolina/",
+    },
   },
   {
     name: "Rodrigo Morales",
@@ -396,27 +411,6 @@ const PROFILES = [
       role: { es: "Líder de Grupo (PhD)", en: "Group Leader (PhD)", sv: "Gruppledare (PhD)" },
       field: { es: "Biología del ARN", en: "RNA Biology", sv: "RNA-biologi" },
       institution: "Stockholm University",
-    },
-  },
-  {
-    name: "Carolina Oses Sepulveda",
-    photo: "",
-    link: "",
-    member: {
-      role: {
-        es: "Investigadora, Gerente de Laboratorio, Coordinadora de Proyectos",
-        en: "Researcher, Lab Manager, Project Coordinator",
-        sv: "Forskare, Laboratoriechef, Projektsamordnare",
-      },
-      field: {
-        es: "Proteómica Espacial y Multiómica",
-        en: "Spatial Proteomics, and Multiomics",
-        sv: "Spatial proteomik och multiomik",
-      },
-      institution: "KTH Royal Institute of Technology",
-      email: "cdoses@gmail.com",
-      linkedin: "https://www.linkedin.com/in/oses-carolina/",
-      webpage: "https://www.linkedin.com/in/oses-carolina/",
     },
   },
   // --- copy a block above to add another profile ---
