@@ -336,11 +336,20 @@ const PROFILES = [
     },
   },
   {
-    name: "Rodrigo Morales",
+    name: "Rodrigo Morales Castro",
     photo: "assets/img/profiles/rodrigo-morales.jpeg",
     link: "",
     board: { role: ROLES.treasurer },
-    member: { role: TBD, field: TBD, institution: "" },
+    member: {
+      role: { es: "Investigador", en: "Researcher", sv: "Forskare" },
+      field: {
+        es: "Inmunología, Biología Celular",
+        en: "Immunology, Cell Biology",
+        sv: "Immunologi, Cellbiologi",
+      },
+      institution: "Karolinska Institutet",
+      email: "rodrigo.morales@ki.se",
+    },
   },
   {
     name: "Markos Saravia",
