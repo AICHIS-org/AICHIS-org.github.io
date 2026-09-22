@@ -422,6 +422,34 @@ const PROFILES = [
       institution: "Stockholm University",
     },
   },
+  {
+    name: "María José Pino",
+    photo: "assets/img/profiles/maria-jose-pino.jpeg",
+    link: "",
+    member: {
+      role: { es: "Estudiante de doctorado", en: "PhD Student", sv: "Doktorand" },
+      field: { es: "Biología Espacial", en: "Spatial Biology", sv: "Spatial biologi" },
+      institution: "Karolinska Institutet",
+      email: "m.pinovsz@gmail.com",
+      linkedin: "https://www.linkedin.com/in/mariajose-pino/",
+    },
+  },
+  {
+    name: "Alejandro Fonseca Cárdenas",
+    photo: "assets/img/profiles/alejandro-fonseca.jpeg",
+    link: "",
+    member: {
+      role: { es: "Investigador", en: "Researcher", sv: "Forskare" },
+      field: {
+        es: "Biología Celular Vegetal",
+        en: "Plant Cell Biology",
+        sv: "Växtcellbiologi",
+      },
+      institution: "Swedish University of Agricultural Sciences (SLU)",
+      email: "alfonc91@gmail.com",
+      linkedin: "https://www.linkedin.com/in/alejandro-fonseca-cardenas/",
+    },
+  },
   // --- copy a block above to add another profile ---
 ];
 
@@ -454,7 +482,7 @@ const BOARD_HISTORY = [
       { name: "Gustavo Monasterio",    role: ROLES.vicePresident,            photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
       { name: "Rodrigo Morales",       role: ROLES.treasurer,                photo: "assets/img/profiles/rodrigo-morales.jpeg" },
       { name: "Aristides Progulakis",  role: ROLES.communicationsDirectorM,  photo: "" },
-      { name: "Maria Jose Pino",       role: ROLES.secretaryF,               photo: "" },
+      { name: "María José Pino",       role: ROLES.secretaryF,               photo: "assets/img/profiles/maria-jose-pino.jpeg" },
     ],
   },
   {
