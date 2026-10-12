@@ -1,0 +1,11 @@
+# Keeps the GitHub Actions used by our workflows up to date. They are pinned
+# to a commit hash for safety, so Dependabot opens a pull request whenever a
+# new version is released instead of us tracking it by hand.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci"

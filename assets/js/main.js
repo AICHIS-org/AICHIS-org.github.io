@@ -26,6 +26,23 @@
     return path.split(".").reduce((acc, key) => (acc ? acc[key] : undefined), obj);
   }
 
+  /* --- make text from content.js safe to place inside HTML --------------
+     Everything in content.js is shown as plain text, never as markup, so a
+     stray "<" (or a malicious edit) can't inject tags or scripts. */
+  const ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  function esc(value) {
+    return value == null ? "" : String(value).replace(/[&<>"']/g, (ch) => ESCAPES[ch]);
+  }
+
+  // Links may only be web or email addresses (or a local path, for photos).
+  // Anything else — e.g. "javascript:..." — is replaced by a harmless "#".
+  function safeUrl(url) {
+    const value = String(url == null ? "" : url).trim();
+    const hasScheme = /^[a-z][a-z0-9+.-]*:/i.test(value);
+    if (hasScheme && !/^(https?:|mailto:)/i.test(value)) return "#";
+    return esc(value);
+  }
+
   /* --- render the About cards ------------------------------------------ */
   function renderAbout(lang) {
     const el = document.getElementById("about-cards");
@@ -34,8 +51,8 @@
       .map(
         (c) => `
         <article class="card">
-          <h3>${c.title}</h3>
-          <p>${c.text}</p>
+          <h3>${esc(c.title)}</h3>
+          <p>${esc(c.text)}</p>
         </article>`
       )
       .join("");
@@ -48,12 +65,12 @@
     el.innerHTML = EXPLORA_EDITIONS.map((e) => {
       const label = typeof e.label === "object" ? e.label[lang] : e.label;
       const inner = `
-        <span class="edition-year">${e.year}</span>
-        <span class="edition-label">${label || ""}</span>`;
+        <span class="edition-year">${esc(e.year)}</span>
+        <span class="edition-label">${esc(label)}</span>`;
       const body = e.link
-        ? `<a class="edition-body" href="${e.link}" target="_blank" rel="noopener">${inner}</a>`
+        ? `<a class="edition-body" href="${safeUrl(e.link)}" target="_blank" rel="noopener">${inner}</a>`
         : `<span class="edition-body">${inner}</span>`;
-      return `<li class="edition edition-${e.state}">${body}</li>`;
+      return `<li class="edition edition-${esc(e.state)}">${body}</li>`;
     }).join("");
   }
 
@@ -76,8 +93,8 @@
 
   function linkedName(p) {
     return p.link
-      ? `<a href="${p.link}" target="_blank" rel="noopener">${p.name}</a>`
-      : p.name;
+      ? `<a href="${safeUrl(p.link)}" target="_blank" rel="noopener">${esc(p.name)}</a>`
+      : esc(p.name);
   }
 
   // Board cards show a person's current Members-profile info (position +
@@ -89,20 +106,20 @@
 
   function boardCardHTML({ name, roleText, photo, link, member }, lang, extraClass = "") {
     const avatar = photo
-      ? `<img class="board-photo" src="${photo}" alt="${name}" />`
-      : `<div class="board-avatar" aria-hidden="true">${initialsOf(name)}</div>`;
+      ? `<img class="board-photo" src="${safeUrl(photo)}" alt="${esc(name)}" />`
+      : `<div class="board-avatar" aria-hidden="true">${esc(initialsOf(name))}</div>`;
     const nameHTML = link
-      ? `<a href="${link}" target="_blank" rel="noopener">${name}</a>`
-      : name;
+      ? `<a href="${safeUrl(link)}" target="_blank" rel="noopener">${esc(name)}</a>`
+      : esc(name);
     const field = member && (typeof member.field === "object" ? member.field[lang] : member.field);
     const institution = member && member.institution;
     return `
-      <article class="board-card${extraClass ? " " + extraClass : ""}">
+      <article class="board-card${extraClass ? " " + esc(extraClass) : ""}">
         ${avatar}
         <h4 class="board-name">${nameHTML}</h4>
-        <p class="board-role">${roleText || ""}</p>
-        <p class="board-field">${field || ""}</p>
-        <p class="board-inst">${institution || ""}</p>
+        <p class="board-role">${esc(roleText)}</p>
+        <p class="board-field">${esc(field)}</p>
+        <p class="board-inst">${esc(institution)}</p>
       </article>`;
   }
 
@@ -141,7 +158,7 @@
         : `<p class="empty-note">—</p>`;
       return `
         <div class="board-history-group">
-          <h4 class="board-history-year">${entry.year}</h4>
+          <h4 class="board-history-year">${esc(entry.year)}</h4>
           ${body}
         </div>`;
     }).join("");
@@ -161,15 +178,15 @@
       const role = typeof m.role === "object" ? m.role[lang] : m.role;
       const field = typeof m.field === "object" ? m.field[lang] : m.field;
       const avatar = p.photo
-        ? `<img class="member-photo" src="${p.photo}" alt="${p.name}" />`
-        : `<div class="member-avatar" aria-hidden="true">${initialsOf(p.name)}</div>`;
+        ? `<img class="member-photo" src="${safeUrl(p.photo)}" alt="${esc(p.name)}" />`
+        : `<div class="member-avatar" aria-hidden="true">${esc(initialsOf(p.name))}</div>`;
 
       const contact = (m.email || m.linkedin || m.webpage)
         ? `
           <p class="member-contact">
-            ${m.email ? `<a href="mailto:${m.email}" class="member-contact-icon" aria-label="Email">${ICONS.email}</a>` : ""}
-            ${m.linkedin ? `<a href="${m.linkedin}" target="_blank" rel="noopener" class="member-contact-icon" aria-label="LinkedIn">${ICONS.linkedin}</a>` : ""}
-            ${m.webpage ? `<a href="${m.webpage}" target="_blank" rel="noopener" class="member-contact-icon" aria-label="Website">${ICONS.webpage}</a>` : ""}
+            ${m.email ? `<a href="mailto:${esc(m.email)}" class="member-contact-icon" aria-label="Email">${ICONS.email}</a>` : ""}
+            ${m.linkedin ? `<a href="${safeUrl(m.linkedin)}" target="_blank" rel="noopener" class="member-contact-icon" aria-label="LinkedIn">${ICONS.linkedin}</a>` : ""}
+            ${m.webpage ? `<a href="${safeUrl(m.webpage)}" target="_blank" rel="noopener" class="member-contact-icon" aria-label="Website">${ICONS.webpage}</a>` : ""}
           </p>`
         : "";
 
@@ -179,11 +196,11 @@
             ${avatar}
             <div>
               <h3 class="member-name">${linkedName(p)}</h3>
-              <p class="member-role">${role || ""}</p>
+              <p class="member-role">${esc(role)}</p>
             </div>
           </div>
-          <p class="member-field">${field || ""}</p>
-          <p class="member-inst">${m.institution || ""}</p>
+          <p class="member-field">${esc(field)}</p>
+          <p class="member-inst">${esc(m.institution)}</p>
           ${contact}
         </article>`;
     }).join("");
@@ -200,13 +217,13 @@
     el.innerHTML = RESEARCHERS.map((r) => {
       const field = typeof r.field === "object" ? r.field[lang] : r.field;
       const name = r.link
-        ? `<a href="${r.link}" target="_blank" rel="noopener">${r.name}</a>`
-        : r.name;
+        ? `<a href="${safeUrl(r.link)}" target="_blank" rel="noopener">${esc(r.name)}</a>`
+        : esc(r.name);
       return `
         <article class="researcher-card">
           <h3 class="researcher-name">${name}</h3>
-          <p class="researcher-field">${field || ""}</p>
-          <p class="researcher-aff">${r.affiliation || ""}</p>
+          <p class="researcher-field">${esc(field)}</p>
+          <p class="researcher-aff">${esc(r.affiliation)}</p>
         </article>`;
     }).join("");
   }
@@ -225,9 +242,9 @@
       // mailto: links open the mail app, so they shouldn't spawn a blank tab
       const target = /^mailto:/.test(r.link) ? "" : ` target="_blank" rel="noopener"`;
       return `
-        <a class="resource-card" href="${r.link}"${target}>
-          <h3>${title}</h3>
-          <p>${desc || ""}</p>
+        <a class="resource-card" href="${safeUrl(r.link)}"${target}>
+          <h3>${esc(title)}</h3>
+          <p>${esc(desc)}</p>
           <span class="resource-arrow" aria-hidden="true">&rarr;</span>
         </a>`;
     }).join("");

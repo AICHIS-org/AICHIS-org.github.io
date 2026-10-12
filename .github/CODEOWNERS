@@ -1,0 +1,12 @@
+# Who is asked to review a pull request, based on the files it touches.
+# The last matching line wins. Add a second maintainer here when there is one.
+
+# Everything by default
+*                       @sofiabobadilla
+
+# Sensitive areas — changes here can affect what runs on visitors' browsers
+# or how the site is deployed, so they always need a maintainer's eyes.
+/.github/               @sofiabobadilla
+/scripts/               @sofiabobadilla
+/assets/js/main.js      @sofiabobadilla
+/index.html             @sofiabobadilla
