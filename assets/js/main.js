@@ -222,8 +222,10 @@
       const title = typeof r.title === "object" ? r.title[lang] : r.title;
       const desc =
         typeof r.description === "object" ? r.description[lang] : r.description;
+      // mailto: links open the mail app, so they shouldn't spawn a blank tab
+      const target = /^mailto:/.test(r.link) ? "" : ` target="_blank" rel="noopener"`;
       return `
-        <a class="resource-card" href="${r.link}" target="_blank" rel="noopener">
+        <a class="resource-card" href="${r.link}"${target}>
           <h3>${title}</h3>
           <p>${desc || ""}</p>
           <span class="resource-arrow" aria-hidden="true">&rarr;</span>

@@ -514,6 +514,17 @@ a.edition-body:hover {
 .researcher-aff { color: var(--muted); font-size: .88rem; margin: 0; }
 
 .section-cta { text-align: center; margin-top: 40px; }
+/* quieter text link shown under a section's main button */
+.cta-secondary {
+  display: block;
+  width: fit-content;
+  margin: 16px auto 0;
+  color: var(--muted);
+  font-size: .92rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cta-secondary:hover { color: var(--blue); }
 .btn-outline {
   background: transparent;
   color: var(--blue);

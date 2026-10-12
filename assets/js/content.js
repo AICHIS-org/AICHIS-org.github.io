@@ -64,6 +64,7 @@ const CONTENT = {
       title: "Miembros",
       lead: "AICHIS está abierta a investigadoras e investigadores chilenos que viven y trabajan en Suecia. ¿Quieres sumarte? Postula a través de nuestro formulario.",
       cta: "Postula a socio/a",
+      updateCta: "¿Ya eres socio/a? Actualiza o agrega tu perfil",
       photoCaption: "Miembros de AICHIS junto al embajador de Chile en Suecia, Tucapel Jiménez, en la Embajada de Chile en Estocolmo, Suecia, 2023",
     },
     board: {
@@ -136,6 +137,7 @@ const CONTENT = {
       title: "Members",
       lead: "AICHIS is open to Chilean researchers living and working in Sweden. Want to join? Apply through our form.",
       cta: "Apply to become a member",
+      updateCta: "Already a member? Update or add your profile",
       photoCaption: "AICHIS members with the Chilean Ambassador to Sweden, Tucapel Jiménez, at the Chilean Embassy in Stockholm, Sweden, 2023",
     },
     board: {
@@ -208,6 +210,7 @@ const CONTENT = {
       title: "Medlemmar",
       lead: "AICHIS är öppen för chilenska forskare som bor och arbetar i Sverige. Vill du gå med? Ansök via vårt formulär.",
       cta: "Ansök om medlemskap",
+      updateCta: "Redan medlem? Uppdatera eller lägg till din profil",
       photoCaption: "AICHIS-medlemmar med Chiles ambassadör i Sverige, Tucapel Jiménez, på Chiles ambassad i Stockholm, Sverige, 2023",
     },
     board: {
@@ -536,6 +539,71 @@ const RESOURCES = [
       sv: "Fyll i formuläret för att gå med i AICHIS.",
     },
     link: "https://docs.google.com/forms/d/e/1FAIpQLScxO0kY5NXIgE2tnDj89NMqDgbERNBkMglJiaVMCAWDYrog8w/viewform",
+  },
+  {
+    title: {
+      es: "Actualiza o agrega tu perfil",
+      en: "Update or add your profile",
+      sv: "Uppdatera eller lägg till din profil",
+    },
+    description: {
+      es: "¿Eres socio/a? Usa este formulario para actualizar tu información en el sitio o para aparecer en él.",
+      en: "Already a member? Use this form to update your information on the website or to be added to it.",
+      sv: "Är du medlem? Använd formuläret för att uppdatera dina uppgifter på webbplatsen eller för att läggas till.",
+    },
+    link: "https://docs.google.com/forms/d/e/1FAIpQLSf0AZ-invFdtJfyYzxzDIgFdfRaXbPk1jW9IO00SFH0ATjZsw/viewform",
+  },
+  {
+    title: {
+      es: "Documental Explora Nobel 2024",
+      en: "Explora Nobel documentary 2024",
+      sv: "Dokumentären Explora Nobel 2024",
+    },
+    description: {
+      es: "Mira el documental de la primera edición de Explora Nobel.",
+      en: "Watch the documentary about the first edition of Explora Nobel.",
+      sv: "Se dokumentären om den första upplagan av Explora Nobel.",
+    },
+    link: "https://www.youtube.com/watch?v=5yug9GZ8PjY",
+  },
+  {
+    title: {
+      es: "Escríbenos",
+      en: "Email us",
+      sv: "Mejla oss",
+    },
+    description: {
+      es: "Contáctanos en aichis2022@gmail.com.",
+      en: "Contact us at aichis2022@gmail.com.",
+      sv: "Kontakta oss på aichis2022@gmail.com.",
+    },
+    link: "mailto:aichis2022@gmail.com",
+  },
+  {
+    title: {
+      es: "Sugerir contenido o reportar un problema",
+      en: "Suggest content or report a problem",
+      sv: "Föreslå innehåll eller rapportera ett problem",
+    },
+    description: {
+      es: "Propón un/a investigador/a para el directorio o avísanos de un error en el sitio.",
+      en: "Suggest a researcher for the directory or tell us about an error on the site.",
+      sv: "Föreslå en forskare till katalogen eller berätta om ett fel på webbplatsen.",
+    },
+    link: "https://github.com/AICHIS-org/AICHIS-org.github.io/issues/new/choose",
+  },
+  {
+    title: {
+      es: "Código del sitio en GitHub",
+      en: "Website source on GitHub",
+      sv: "Webbplatsens källkod på GitHub",
+    },
+    description: {
+      es: "Este sitio es de código abierto: propón cambios con un Pull Request.",
+      en: "This site is open source: propose changes with a Pull Request.",
+      sv: "Den här webbplatsen är öppen källkod: föreslå ändringar med en Pull Request.",
+    },
+    link: "https://github.com/AICHIS-org/AICHIS-org.github.io",
   },
   // --- copy the block above to add another resource ---
 ];
