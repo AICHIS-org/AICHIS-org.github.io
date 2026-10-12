@@ -660,9 +660,17 @@ const RESEARCHERS = [
 /* =========================================================================
    PARTNERS  (Collaborations section)
    -------------------------------------------------------------------------
-   Trusted institutions AICHIS works with. Each one has a `name`, a short
-   `description` (both translated per language) and a `link` to its
-   official website.
+   Trusted institutions AICHIS works with, shown as cards like the members.
+   Each one has:
+
+   - `name`         translated per language.
+   - `place`        city and country, shown under the name.
+   - `description`  one short line, translated per language.
+   - `link`         its official website.
+   - `logo`         optional; a square image saved in assets/img/partners/
+                    (about 256x256, white background). Leave it out to show
+                    the partner's initials instead.
+
    To add a partner, copy one { ... } block and edit the values.
    ========================================================================= */
 
@@ -673,12 +681,14 @@ const PARTNERS = [
       en: "Embassy of Chile in Sweden",
       sv: "Chiles ambassad i Sverige",
     },
+    place: { es: "Estocolmo, Suecia", en: "Stockholm, Sweden", sv: "Stockholm, Sverige" },
     description: {
-      es: "Representación diplomática de Chile ante el Reino de Suecia, en Estocolmo.",
-      en: "Chile's diplomatic mission to the Kingdom of Sweden, in Stockholm.",
-      sv: "Chiles diplomatiska beskickning i Konungariket Sverige, i Stockholm.",
+      es: "Representación diplomática de Chile ante el Reino de Suecia.",
+      en: "Chile's diplomatic mission to the Kingdom of Sweden.",
+      sv: "Chiles diplomatiska beskickning i Konungariket Sverige.",
     },
     link: "https://www.chile.gob.cl/suecia/",
+    logo: "assets/img/partners/embajada-chile-suecia.png",
   },
   {
     name: {
@@ -686,12 +696,14 @@ const PARTNERS = [
       en: "Embassy of Sweden in Chile",
       sv: "Sveriges ambassad i Chile",
     },
+    place: { es: "Santiago, Chile", en: "Santiago, Chile", sv: "Santiago, Chile" },
     description: {
-      es: "Representación diplomática de Suecia en Chile, en Santiago.",
-      en: "Sweden's diplomatic mission in Chile, in Santiago.",
-      sv: "Sveriges diplomatiska beskickning i Chile, i Santiago.",
+      es: "Representación diplomática de Suecia en Chile.",
+      en: "Sweden's diplomatic mission in Chile.",
+      sv: "Sveriges diplomatiska beskickning i Chile.",
     },
     link: "https://www.swedenabroad.se/es/embajada/chile-santiago-de-chile/",
+    logo: "assets/img/partners/embajada-suecia-chile.png",
   },
   {
     name: {
@@ -699,12 +711,14 @@ const PARTNERS = [
       en: "Universidad de La Frontera",
       sv: "Universidad de La Frontera",
     },
+    place: { es: "Temuco, Chile", en: "Temuco, Chile", sv: "Temuco, Chile" },
     description: {
-      es: "Universidad pública chilena con sede en Temuco, Región de La Araucanía.",
-      en: "Chilean public university based in Temuco, in the Araucanía Region.",
-      sv: "Chilenskt offentligt universitet i Temuco, i regionen Araucanía.",
+      es: "Universidad pública chilena de la Región de La Araucanía.",
+      en: "Chilean public university in the Araucanía Region.",
+      sv: "Chilenskt offentligt universitet i regionen Araucanía.",
     },
     link: "https://www.ufro.cl/",
+    logo: "assets/img/partners/universidad-de-la-frontera.png",
   },
   {
     name: {
@@ -712,12 +726,14 @@ const PARTNERS = [
       en: "Chilean Academy of Sciences",
       sv: "Chiles vetenskapsakademi",
     },
+    place: { es: "Santiago, Chile", en: "Santiago, Chile", sv: "Santiago, Chile" },
     description: {
       es: "Academia del Instituto de Chile dedicada a promover la investigación científica en el país.",
       en: "The academy of the Instituto de Chile dedicated to promoting scientific research in the country.",
       sv: "Akademin inom Instituto de Chile som främjar vetenskaplig forskning i landet.",
     },
     link: "https://www.academiadeciencias.cl/",
+    logo: "assets/img/partners/academia-chilena-de-ciencias.png",
   },
   // --- copy the block above to add another partner ---
 ];

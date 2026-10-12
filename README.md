@@ -24,7 +24,7 @@ It is organised in plain language and contains everything you'll normally change
 | Change any text on the page   | Find the text and edit it — for **all three** languages (`es`, `en`, `sv`). |
 | Add / edit a **person** (board and/or member) | Copy a `{ ... }` block in the `PROFILES` list and change the values — see below. |
 | Add a **Chilean researcher in Sweden** | Copy a `{ ... }` block in the `RESEARCHERS` list and change the values. |
-| Add a **partner** (Collaborations) | Copy a `{ ... }` block in the `PARTNERS` list and change the values. |
+| Add a **partner** (Collaborations) | Copy a `{ ... }` block in the `PARTNERS` list and change the values. The logo goes in `assets/img/partners/`. |
 | Add an **Explora Nobel edition** | Copy a `{ ... }` block in the `EXPLORA_EDITIONS` list (`state: "done"` or `"upcoming"`). Each year becomes a tab. |
 | Add a **link to an Explora Nobel year** | Copy a `{ date, title, description, link, image }` block inside that year's `resources` list. The preview picture goes in `assets/img/explora/`. |
 | Add / edit a **resource**     | Copy a `{ ... }` block in the `RESOURCES` list and change the values. |

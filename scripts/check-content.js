@@ -107,6 +107,11 @@ function checkPhotoPaths(list, label) {
 }
 
 checkPhotoPaths(sandbox.PROFILES, "PROFILES");
+for (const partner of sandbox.PARTNERS || []) {
+  if (partner.logo && !/^https?:\/\//.test(partner.logo) && !fs.existsSync(path.join(repoRoot, partner.logo))) {
+    errors.push(`PARTNERS "${partner.name && partner.name.en}": logo not found at ${partner.logo}`);
+  }
+}
 for (const edition of sandbox.EXPLORA_EDITIONS || []) {
   for (const r of edition.resources || []) {
     if (r.image && !/^https?:\/\//.test(r.image) && !fs.existsSync(path.join(repoRoot, r.image))) {

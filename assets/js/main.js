@@ -317,7 +317,8 @@
     }).join("");
   }
 
-  /* --- render the Collaborations (partners) list ------------------------ */
+  /* --- render the Collaborations (partner cards) ------------------------ */
+  // Same card as the Members roster, with the partner's logo instead of a photo.
   function renderPartners(lang) {
     const el = document.getElementById("partners-list");
     if (!el) return;
@@ -325,8 +326,34 @@
       el.innerHTML = `<p class="empty-note">—</p>`;
       return;
     }
-    // a partner card is a resource card: name as title, plus description + link
-    el.innerHTML = PARTNERS.map((p) => resourceCardHTML({ ...p, title: p.name }, lang)).join("");
+    const pick = (v) => (v && typeof v === "object" ? v[lang] : v);
+    el.innerHTML = PARTNERS.map((p) => {
+      const name = pick(p.name);
+      const logo = p.logo
+        ? `<img class="partner-logo" src="${safeUrl(p.logo)}" alt="" loading="lazy" />`
+        : `<div class="member-avatar" aria-hidden="true">${esc(initialsOf(name))}</div>`;
+      const nameHTML = p.link
+        ? `<a href="${safeUrl(p.link)}" target="_blank" rel="noopener">${esc(name)}</a>`
+        : esc(name);
+      const contact = p.link
+        ? `
+          <p class="member-contact">
+            <a href="${safeUrl(p.link)}" target="_blank" rel="noopener" class="member-contact-icon" aria-label="Website">${ICONS.webpage}</a>
+          </p>`
+        : "";
+      return `
+        <article class="member-card partner-card">
+          <div class="member-head">
+            ${logo}
+            <div>
+              <h3 class="member-name">${nameHTML}</h3>
+              <p class="member-role">${esc(pick(p.place))}</p>
+            </div>
+          </div>
+          <p class="member-field">${esc(pick(p.description))}</p>
+          ${contact}
+        </article>`;
+    }).join("");
   }
 
   /* --- render the Resources list --------------------------------------- */

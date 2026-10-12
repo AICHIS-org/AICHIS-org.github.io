@@ -697,10 +697,22 @@ img { max-width: 100%; display: block; }
 }
 .resource-card:hover .resource-arrow { transform: translateY(-50%) translateX(4px); }
 
-/* collaborations — partner cards share the resource-card look, blue accent */
-.partners-list { grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr)); }
-.partners-list .resource-card { border-left-color: var(--blue); }
-.partners-list .resource-card:hover { border-left-color: var(--yellow); }
+/* collaborations — partner cards reuse the member card, with a logo tile */
+.partners-grid { margin-bottom: 0; }
+.partner-card { display: flex; flex-direction: column; }
+.partner-card .member-head { align-items: flex-start; }
+.partner-card .member-field { color: var(--muted); }
+.partner-card .member-contact { margin-top: auto; }
+.partner-card .member-field { margin-bottom: 12px; }
+.partner-logo {
+  flex: none;
+  width: 60px; height: 60px;
+  object-fit: contain;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+}
 
 .empty-note { text-align: center; color: var(--muted); }
 
