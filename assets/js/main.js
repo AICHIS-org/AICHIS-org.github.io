@@ -58,20 +58,109 @@
       .join("");
   }
 
-  /* --- render the Explora Nobel editions timeline ---------------------- */
+  /* --- one resource card (Resources section + Explora Nobel tabs) ------ */
+  function resourceCardHTML(r, lang) {
+    const title = typeof r.title === "object" ? r.title[lang] : r.title;
+    const desc =
+      typeof r.description === "object" ? r.description[lang] : r.description;
+    // mailto: links open the mail app, so they shouldn't spawn a blank tab
+    const target = /^mailto:/.test(r.link) ? "" : ` target="_blank" rel="noopener"`;
+    return `
+        <a class="resource-card" href="${safeUrl(r.link)}"${target}>
+          <h3>${esc(title)}</h3>
+          <p>${esc(desc)}</p>
+          <span class="resource-arrow" aria-hidden="true">&rarr;</span>
+        </a>`;
+  }
+
+  /* --- one entry of an Explora Nobel year's timeline --------------------- */
+  function timelineItemHTML(r, lang) {
+    const title = typeof r.title === "object" ? r.title[lang] : r.title;
+    const desc =
+      typeof r.description === "object" ? r.description[lang] : r.description;
+    return `
+        <li class="timeline-item">
+          <a class="timeline-card" href="${safeUrl(r.link)}" target="_blank" rel="noopener">
+            ${r.image ? `<img class="timeline-thumb" src="${safeUrl(r.image)}" alt="" loading="lazy" />` : ""}
+            <span class="timeline-text">
+              <span class="timeline-title">${esc(title)}</span>
+              <span class="timeline-desc">${esc(desc)}</span>
+            </span>
+            <span class="resource-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>`;
+  }
+
+  /* --- render the Explora Nobel year tabs + the open year's resources -- */
+  // Which year's tab is open. Starts on the most recent edition that has
+  // resources, and is remembered when the language changes.
+  let exploraYear = null;
+
   function renderExplora(lang) {
-    const el = document.getElementById("explora-editions");
-    if (!el) return;
-    el.innerHTML = EXPLORA_EDITIONS.map((e) => {
+    const tabs = document.getElementById("explora-editions");
+    const panel = document.getElementById("explora-panel");
+    if (!tabs || !panel || !EXPLORA_EDITIONS.length) return;
+
+    let current = EXPLORA_EDITIONS.find((e) => e.year === exploraYear);
+    if (!current) {
+      const withResources = EXPLORA_EDITIONS.filter((e) => (e.resources || []).length);
+      current = withResources.length
+        ? withResources[withResources.length - 1]
+        : EXPLORA_EDITIONS[EXPLORA_EDITIONS.length - 1];
+      exploraYear = current.year;
+    }
+
+    tabs.setAttribute("aria-label", CONTENT[lang].explora.editionsLabel);
+    tabs.innerHTML = EXPLORA_EDITIONS.map((e) => {
       const label = typeof e.label === "object" ? e.label[lang] : e.label;
-      const inner = `
-        <span class="edition-year">${esc(e.year)}</span>
-        <span class="edition-label">${esc(label)}</span>`;
-      const body = e.link
-        ? `<a class="edition-body" href="${safeUrl(e.link)}" target="_blank" rel="noopener">${inner}</a>`
-        : `<span class="edition-body">${inner}</span>`;
-      return `<li class="edition edition-${esc(e.state)}">${body}</li>`;
+      const selected = e === current;
+      return `
+        <button type="button" role="tab" class="edition edition-${esc(e.state)}"
+          id="explora-tab-${esc(e.year)}" data-year="${esc(e.year)}"
+          aria-controls="explora-panel" aria-selected="${selected}" tabindex="${selected ? 0 : -1}">
+          <span class="edition-body">
+            <span class="edition-year">${esc(e.year)}</span>
+            <span class="edition-label">${esc(label)}</span>
+          </span>
+        </button>`;
     }).join("");
+
+    // newest first; the date only sets the order, it isn't shown
+    const resources = (current.resources || [])
+      .slice()
+      .sort((x, y) => String(y.date || "").localeCompare(String(x.date || "")));
+    panel.setAttribute("aria-labelledby", `explora-tab-${current.year}`);
+    panel.innerHTML = resources.length
+      ? `<ol class="timeline">${resources.map((r) => timelineItemHTML(r, lang)).join("")}</ol>`
+      : `<p class="empty-note">${esc(CONTENT[lang].explora.noResources)}</p>`;
+  }
+
+  // Open a year's tab on click, or move between tabs with the arrow keys.
+  function initExploraTabs() {
+    const tabs = document.getElementById("explora-editions");
+    if (!tabs) return;
+    const open = (year, focus) => {
+      exploraYear = year;
+      renderExplora(document.documentElement.lang);
+      if (focus) {
+        const tab = Array.from(tabs.querySelectorAll("[role=tab]")).find((t) => t.dataset.year === year);
+        if (tab) tab.focus();
+      }
+    };
+    tabs.addEventListener("click", (event) => {
+      const tab = event.target.closest("[role=tab]");
+      // detail is 0 when the "click" came from the keyboard (Enter/Space):
+      // only then put focus back on the tab, so mouse users see no outline.
+      if (tab) open(tab.dataset.year, event.detail === 0);
+    });
+    tabs.addEventListener("keydown", (event) => {
+      const years = EXPLORA_EDITIONS.map((e) => e.year);
+      const at = years.indexOf(exploraYear);
+      const next = { ArrowRight: at + 1, ArrowLeft: at - 1, Home: 0, End: years.length - 1 }[event.key];
+      if (next === undefined) return;
+      event.preventDefault();
+      open(years[(next + years.length) % years.length], true);
+    });
   }
 
   /* --- small inline icons used on member cards --------------------------- */
@@ -235,19 +324,7 @@
       el.innerHTML = `<p class="empty-note">—</p>`;
       return;
     }
-    el.innerHTML = RESOURCES.map((r) => {
-      const title = typeof r.title === "object" ? r.title[lang] : r.title;
-      const desc =
-        typeof r.description === "object" ? r.description[lang] : r.description;
-      // mailto: links open the mail app, so they shouldn't spawn a blank tab
-      const target = /^mailto:/.test(r.link) ? "" : ` target="_blank" rel="noopener"`;
-      return `
-        <a class="resource-card" href="${safeUrl(r.link)}"${target}>
-          <h3>${esc(title)}</h3>
-          <p>${esc(desc)}</p>
-          <span class="resource-arrow" aria-hidden="true">&rarr;</span>
-        </a>`;
-    }).join("");
+    el.innerHTML = RESOURCES.map((r) => resourceCardHTML(r, lang)).join("");
   }
 
   /* --- apply a language across the whole page -------------------------- */
@@ -301,6 +378,7 @@
     const yearEl = document.getElementById("year");
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+    initExploraTabs();
     setLanguage(initialLang());
   }
 

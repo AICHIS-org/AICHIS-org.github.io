@@ -57,8 +57,13 @@ const CONTENT = {
     },
     explora: {
       title: "Explora Nobel",
-      lead: "Nuestro proyecto insignia. Cada año llevamos a estudiantes de enseñanza media desde Chile a Suecia para vivir la Semana del Premio Nobel, acercándolos a la ciencia de primer nivel y a las personas que la hacen posible.",
-      videoCaption: "Documental · Edición 2024",
+      lead: "Nuestro proyecto insignia. Desde 2024, cada año llevamos a estudiantes de enseñanza media desde Chile a Suecia para vivir la Semana del Premio Nobel, acercándolos a la ciencia de primer nivel y a las personas que la hacen posible.",
+      // Estado de la edición en curso — actualizar cuando haya novedades.
+      statusLabel: "Edición 2026 · Ganadoras anunciadas",
+      status: "Catalina Álvarez Chiguay, de la Región de Aysén, y Millaray Orrego Muñoz, de la Región de Atacama, son las ganadoras de Explora Nobel 2026. Viajarán a Suecia la semana del 7 de diciembre de 2026 para vivir la Semana Nobel, visitar laboratorios y universidades, y reunirse con la comunidad científica chilena en Suecia.",
+      videoCaption: "Anuncio de las ganadoras · Edición 2026",
+      editionsLabel: "Recursos por edición",
+      noResources: "Aún no hay recursos para esta edición.",
     },
     members: {
       title: "Miembros",
@@ -130,8 +135,13 @@ const CONTENT = {
     },
     explora: {
       title: "Explora Nobel",
-      lead: "Our flagship project. Every year we bring high-school students from Chile to Sweden to experience Nobel Prize Week, bringing them closer to world-class science and the people who make it happen.",
-      videoCaption: "Documentary · 2024 edition",
+      lead: "Our flagship project. Every year since 2024 we have brought high-school students from Chile to Sweden to experience Nobel Prize Week, bringing them closer to world-class science and the people who make it happen.",
+      videoCaption: "Winners announcement · 2026 edition (in Spanish)",
+      // Status of the edition under way — update when there is news.
+      statusLabel: "2026 edition · Winners announced",
+      status: "Catalina Álvarez Chiguay, from the Aysén Region, and Millaray Orrego Muñoz, from the Atacama Region, are the winners of Explora Nobel 2026. They will travel to Sweden in the week of 7 December 2026 to experience Nobel Week, visit laboratories and universities, and meet the Chilean scientific community in Sweden.",
+      editionsLabel: "Resources by edition",
+      noResources: "No resources for this edition yet.",
     },
     members: {
       title: "Members",
@@ -203,8 +213,13 @@ const CONTENT = {
     },
     explora: {
       title: "Explora Nobel",
-      lead: "Vårt flaggskeppsprojekt. Varje år tar vi med gymnasieelever från Chile till Sverige för att uppleva Nobelveckan och komma närmare vetenskap i världsklass och de människor som gör den möjlig.",
-      videoCaption: "Dokumentär · 2024 års upplaga",
+      lead: "Vårt flaggskeppsprojekt. Varje år sedan 2024 tar vi med gymnasieelever från Chile till Sverige för att uppleva Nobelveckan och komma närmare vetenskap i världsklass och de människor som gör den möjlig.",
+      videoCaption: "Vinnarna presenteras · 2026 års upplaga (på spanska)",
+      // Status för den pågående upplagan — uppdatera när det finns nyheter.
+      statusLabel: "2026 års upplaga · Vinnarna utsedda",
+      status: "Catalina Álvarez Chiguay, från regionen Aysén, och Millaray Orrego Muñoz, från regionen Atacama, är vinnarna av Explora Nobel 2026. De reser till Sverige veckan som börjar den 7 december 2026 för att uppleva Nobelveckan, besöka laboratorier och universitet och träffa det chilenska forskarsamhället i Sverige.",
+      editionsLabel: "Resurser per upplaga",
+      noResources: "Inga resurser för den här upplagan ännu.",
     },
     members: {
       title: "Medlemmar",
@@ -245,29 +260,138 @@ const CONTENT = {
 /* =========================================================================
    EXPLORA NOBEL — EDITIONS
    -------------------------------------------------------------------------
-   One entry per year. `state` is either "done" (already happened) or
-   "upcoming" (in preparation) — it only changes the colour of the marker.
-   `label` is shown under the year and can be translated. `link` is optional.
+   One entry per year; each year is shown as a tab in the Explora Nobel
+   section. `state` is either "done" (already happened) or "upcoming" (in
+   preparation) — it only changes the colour of the marker. `label` is shown
+   under the year and can be translated.
+
+   `resources` is that year's timeline: the videos, press articles, photo
+   albums... shown when its tab is open, newest first.
+   Leave it as [] if there is nothing yet. Each resource has:
+
+   - `date`         when it was published, written "YYYY-MM-DD". It is not
+                    shown on the page; it only decides the order.
+   - `title`        translated per language.
+   - `description`  one short line, translated per language.
+   - `link`         where it leads.
+   - `image`        optional preview picture, saved in assets/img/explora/
+                    (landscape, about 480x360). Leave it out to show none.
+
+   To add a resource, copy one { date, title, ... } block inside the year it
+   belongs to. To add a year, copy a whole edition block.
    ========================================================================= */
 
 const EXPLORA_EDITIONS = [
   {
     year: "2024",
-    label: { es: "Primera edición · ver documental", en: "First edition · watch the documentary", sv: "Första upplagan · se dokumentären" },
+    label: { es: "Primera edición", en: "First edition", sv: "Första upplagan" },
     state: "done",
-    link: "https://www.youtube.com/watch?v=5yug9GZ8PjY",
+    resources: [
+      {
+        date: "2025-09-10",
+        title: {
+          es: "Documental Explora Nobel 2024 — De Chile a Suecia",
+          en: "Explora Nobel 2024 documentary — From Chile to Sweden",
+          sv: "Dokumentären Explora Nobel 2024 — Från Chile till Sverige",
+        },
+        description: {
+          es: "Documental · El viaje de la primera edición, en YouTube.",
+          en: "Documentary · The journey of the first edition, on YouTube (in Spanish).",
+          sv: "Dokumentär · Den första upplagans resa, på YouTube (på spanska).",
+        },
+        link: "https://www.youtube.com/watch?v=5yug9GZ8PjY",
+        image: "assets/img/explora/2024-documentary.jpg",
+      },
+    ],
   },
   {
     year: "2025",
     label: { es: "Segunda edición realizada", en: "Second edition completed", sv: "Andra upplagan genomförd" },
     state: "done",
-    link: "",
+    resources: [
+      {
+        date: "2025-10-26",
+        title: {
+          es: "Entrevista en Radio Cooperativa · Parte 1",
+          en: "Radio Cooperativa interview · Part 1",
+          sv: "Intervju i Radio Cooperativa · Del 1",
+        },
+        description: {
+          es: "Video corto · Presentación del proyecto Explora Nobel 2025 con Gustavo Monasterio.",
+          en: "Short video · Introducing Explora Nobel 2025 with Gustavo Monasterio (in Spanish).",
+          sv: "Kort video · Presentation av Explora Nobel 2025 med Gustavo Monasterio (på spanska).",
+        },
+        link: "https://www.youtube.com/shorts/sDMc_3L6ScU",
+        image: "assets/img/explora/2025-radio-cooperativa-1.jpg",
+      },
+      {
+        date: "2025-10-28",
+        title: {
+          es: "Entrevista en Radio Cooperativa · Parte 2",
+          en: "Radio Cooperativa interview · Part 2",
+          sv: "Intervju i Radio Cooperativa · Del 2",
+        },
+        description: {
+          es: "Video corto · Cómo nació la idea de Explora Nobel.",
+          en: "Short video · How the idea for Explora Nobel was born (in Spanish).",
+          sv: "Kort video · Hur idén till Explora Nobel föddes (på spanska).",
+        },
+        link: "https://www.youtube.com/shorts/cLHX5zCPcTc",
+        image: "assets/img/explora/2025-radio-cooperativa-2.jpg",
+      },
+      {
+        date: "2026-01-06",
+        title: {
+          es: "Explora Nobel 2025 | Ciencia chilena en la Semana Nobel",
+          en: "Explora Nobel 2025 | Chilean science at Nobel Week",
+          sv: "Explora Nobel 2025 | Chilensk vetenskap under Nobelveckan",
+        },
+        description: {
+          es: "Video corto · Millaray y Alejandro en la Semana Nobel en Estocolmo.",
+          en: "Short video · Millaray and Alejandro at Nobel Week in Stockholm.",
+          sv: "Kort video · Millaray och Alejandro under Nobelveckan i Stockholm.",
+        },
+        link: "https://www.youtube.com/shorts/i1ya6VBoLyE",
+        image: "assets/img/explora/2025-nobel-week-short.jpg",
+      },
+    ],
   },
   {
     year: "2026",
-    label: { es: "En preparación", en: "In preparation", sv: "Under förberedelse" },
+    label: { es: "Ganadoras anunciadas", en: "Winners announced", sv: "Vinnarna utsedda" },
     state: "upcoming",
-    link: "",
+    resources: [
+      {
+        date: "2026-10-09",
+        title: {
+          es: "Estudiantes de Aysén y Atacama viajarán a Suecia a vivir la Semana Nobel junto a científicos chilenos",
+          en: "Students from Aysén and Atacama will travel to Sweden for Nobel Week alongside Chilean scientists",
+          sv: "Elever från Aysén och Atacama reser till Sverige för att uppleva Nobelveckan med chilenska forskare",
+        },
+        description: {
+          es: "Prensa · Cooperativa Ciencia.",
+          en: "Press · Cooperativa Ciencia (article in Spanish).",
+          sv: "Press · Cooperativa Ciencia (artikel på spanska).",
+        },
+        link: "https://www.cooperativaciencia.cl/tendencias/2026/10/09/estudiantes-de-aysen-y-atacama-viajaran-a-suecia-a-vivir-la-semana-nobel-junto-a-cientificos-chilenos/",
+        image: "assets/img/explora/2026-cooperativa-ciencia.jpg",
+      },
+      {
+        date: "2026-10-12",
+        title: {
+          es: "Anunciamos a las ganadoras de Explora Nobel 2026 desde Estocolmo",
+          en: "Announcing the Explora Nobel 2026 winners from Stockholm",
+          sv: "Vi presenterar vinnarna av Explora Nobel 2026 från Stockholm",
+        },
+        description: {
+          es: "Video corto · Anuncio en la Embajada de Chile en Suecia.",
+          en: "Short video · Announcement at the Chilean Embassy in Sweden (in Spanish).",
+          sv: "Kort video · Tillkännagivande på Chiles ambassad i Sverige (på spanska).",
+        },
+        link: "https://www.youtube.com/shorts/xxMEhad29S4",
+        image: "assets/img/explora/2026-winners-announcement.jpg",
+      },
+    ],
   },
 ];
 
