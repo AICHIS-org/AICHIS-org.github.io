@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Content-Security-Policy: the browser only loads scripts from this site,
+       styles/fonts from Google Fonts, and embeds from YouTube. If you add a new
+       external service, list it here too or the browser will block it. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https: data:; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>AICHIS</title>
   <meta name="description" content="AICHIS — Asociación de Investigadores Chilenos en Suecia / Association of Chilean Researchers in Sweden" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -1,7 +1,12 @@
 # Runs on every pull request into main. No build step — this is a static
 # site — so these are cheap sanity checks that catch the mistakes that
 # actually break the page: a JS typo, a missing translation, a renamed or
-# missing photo.
+# missing photo — plus a security check on what the change adds.
+#
+# Security notes for maintainers:
+# - Keep the trigger as `pull_request` (never `pull_request_target`): this way
+#   a PR from a fork runs with a read-only token and no access to secrets.
+# - Actions are pinned to a full commit hash; Dependabot proposes updates.
 name: PR checks
 
 on:
@@ -16,7 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Syntax-check JS files
         run: |
@@ -25,3 +32,6 @@ jobs:
 
       - name: Validate content.js (translations + photo paths)
         run: node scripts/check-content.js
+
+      - name: Security check (links, embeds, scripts, workflows)
+        run: node scripts/check-security.js

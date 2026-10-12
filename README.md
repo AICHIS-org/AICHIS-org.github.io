@@ -100,6 +100,10 @@ assets/
   img/favicon.svg                Browser-tab icon
   img/aichis_members_embassy_2023.jpg   Members group photo (Members section banner)
   img/profiles/                  Individual profile photos, named firstname-lastname.ext
+scripts/
+  check-content.js               PR check: translations complete, photos exist
+  check-security.js              PR check: no unsafe links, embeds or scripts
+SECURITY.md                      How to report a security or privacy problem
 .nojekyll                        Tells GitHub Pages to serve files as-is
 ```
 
