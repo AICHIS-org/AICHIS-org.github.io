@@ -61,7 +61,7 @@ const CONTENT = {
       // Estado de la edición en curso — actualizar cuando haya novedades.
       statusLabel: "Edición 2026 · Ganadoras anunciadas",
       status: "Catalina Álvarez Chiguay, de la Región de Aysén, y Millaray Orrego Muñoz, de la Región de Atacama, son las ganadoras de Explora Nobel 2026. Viajarán a Suecia la semana del 7 de diciembre de 2026 para vivir la Semana Nobel, visitar laboratorios y universidades, y reunirse con la comunidad científica chilena en Suecia.",
-      videoCaption: "Documental · Edición 2024",
+      videoCaption: "Anuncio de las ganadoras · Edición 2026",
       editionsLabel: "Recursos por edición",
       noResources: "Aún no hay recursos para esta edición.",
     },
@@ -136,7 +136,7 @@ const CONTENT = {
     explora: {
       title: "Explora Nobel",
       lead: "Our flagship project. Every year since 2024 we have brought high-school students from Chile to Sweden to experience Nobel Prize Week, bringing them closer to world-class science and the people who make it happen.",
-      videoCaption: "Documentary · 2024 edition",
+      videoCaption: "Winners announcement · 2026 edition (in Spanish)",
       // Status of the edition under way — update when there is news.
       statusLabel: "2026 edition · Winners announced",
       status: "Catalina Álvarez Chiguay, from the Aysén Region, and Millaray Orrego Muñoz, from the Atacama Region, are the winners of Explora Nobel 2026. They will travel to Sweden in the week of 7 December 2026 to experience Nobel Week, visit laboratories and universities, and meet the Chilean scientific community in Sweden.",
@@ -214,7 +214,7 @@ const CONTENT = {
     explora: {
       title: "Explora Nobel",
       lead: "Vårt flaggskeppsprojekt. Varje år sedan 2024 tar vi med gymnasieelever från Chile till Sverige för att uppleva Nobelveckan och komma närmare vetenskap i världsklass och de människor som gör den möjlig.",
-      videoCaption: "Dokumentär · 2024 års upplaga",
+      videoCaption: "Vinnarna presenteras · 2026 års upplaga (på spanska)",
       // Status för den pågående upplagan — uppdatera när det finns nyheter.
       statusLabel: "2026 års upplaga · Vinnarna utsedda",
       status: "Catalina Álvarez Chiguay, från regionen Aysén, och Millaray Orrego Muñoz, från regionen Atacama, är vinnarna av Explora Nobel 2026. De reser till Sverige veckan som börjar den 7 december 2026 för att uppleva Nobelveckan, besöka laboratorier och universitet och träffa det chilenska forskarsamhället i Sverige.",
@@ -358,7 +358,7 @@ const EXPLORA_EDITIONS = [
   },
   {
     year: "2026",
-    label: { es: "En preparación", en: "In preparation", sv: "Under förberedelse" },
+    label: { es: "Ganadoras anunciadas", en: "Winners announced", sv: "Vinnarna utsedda" },
     state: "upcoming",
     resources: [
       {

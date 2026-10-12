@@ -76,24 +76,27 @@
         <h2 class="section-title" data-i18n="explora.title"></h2>
         <p class="section-lead" data-i18n="explora.lead"></p>
 
-        <!-- where the current edition stands; text lives in content.js (explora.status) -->
-        <div class="explora-status">
-          <p class="explora-status-label" data-i18n="explora.statusLabel"></p>
-          <p class="explora-status-text" data-i18n="explora.status"></p>
-        </div>
-
-        <figure class="explora-video">
-          <div class="video-frame">
-            <iframe
-              src="https://www.youtube-nocookie.com/embed/5yug9GZ8PjY"
-              title="Explora Nobel — documentary (2024)"
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen></iframe>
+        <!-- the edition under way: where it stands (text in content.js, explora.status)
+             next to a short clip. The clip is a vertical YouTube Short. -->
+        <div class="explora-now">
+          <div class="explora-status">
+            <p class="explora-status-label" data-i18n="explora.statusLabel"></p>
+            <p class="explora-status-text" data-i18n="explora.status"></p>
           </div>
-          <figcaption class="video-caption" data-i18n="explora.videoCaption"></figcaption>
-        </figure>
+
+          <figure class="explora-video">
+            <div class="video-frame video-frame-vertical">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/xxMEhad29S4"
+                title="Explora Nobel 2026 — winners announcement"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen></iframe>
+            </div>
+            <figcaption class="video-caption" data-i18n="explora.videoCaption"></figcaption>
+          </figure>
+        </div>
 
         <!-- one tab per year; the panel below shows that year's resources -->
         <div class="editions" id="explora-editions" role="tablist"><!-- populated from content.js --></div>
