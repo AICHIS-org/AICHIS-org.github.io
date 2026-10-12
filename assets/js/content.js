@@ -257,10 +257,11 @@ const CONTENT = {
    under the year and can be translated.
 
    `resources` is that year's timeline: the videos, press articles, photo
-   albums... shown when its tab is open, ordered by date (oldest first).
+   albums... shown when its tab is open, newest first.
    Leave it as [] if there is nothing yet. Each resource has:
 
-   - `date`         when it was published, written "YYYY-MM-DD".
+   - `date`         when it was published, written "YYYY-MM-DD". It is not
+                    shown on the page; it only decides the order.
    - `title`        translated per language.
    - `description`  one short line, translated per language.
    - `link`         where it leads.

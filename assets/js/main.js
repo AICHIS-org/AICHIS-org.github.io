@@ -74,24 +74,12 @@
   }
 
   /* --- one entry of an Explora Nobel year's timeline --------------------- */
-  // "2026-10-09" -> "9 oct 2026" / "9 Oct 2026" / "9 okt. 2026"
-  function formatDate(iso, lang) {
-    const date = new Date(`${iso}T00:00:00Z`);
-    if (!iso || isNaN(date)) return "";
-    // British English puts the day first, like Spanish and Swedish do
-    return new Intl.DateTimeFormat(lang === "en" ? "en-GB" : lang, {
-      day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
-    }).format(date);
-  }
-
   function timelineItemHTML(r, lang) {
     const title = typeof r.title === "object" ? r.title[lang] : r.title;
     const desc =
       typeof r.description === "object" ? r.description[lang] : r.description;
-    const date = formatDate(r.date, lang);
     return `
         <li class="timeline-item">
-          ${date ? `<time class="timeline-date" datetime="${esc(r.date)}">${esc(date)}</time>` : ""}
           <a class="timeline-card" href="${safeUrl(r.link)}" target="_blank" rel="noopener">
             ${r.image ? `<img class="timeline-thumb" src="${safeUrl(r.image)}" alt="" loading="lazy" />` : ""}
             <span class="timeline-text">
@@ -137,10 +125,10 @@
         </button>`;
     }).join("");
 
-    // oldest first, so the timeline reads top to bottom
+    // newest first; the date only sets the order, it isn't shown
     const resources = (current.resources || [])
       .slice()
-      .sort((x, y) => String(x.date || "").localeCompare(String(y.date || "")));
+      .sort((x, y) => String(y.date || "").localeCompare(String(x.date || "")));
     panel.setAttribute("aria-labelledby", `explora-tab-${current.year}`);
     panel.innerHTML = resources.length
       ? `<ol class="timeline">${resources.map((r) => timelineItemHTML(r, lang)).join("")}</ol>`

@@ -497,7 +497,7 @@ img { max-width: 100%; display: block; }
   margin: 32px auto 0;
 }
 
-/* a year's resources, as a dated timeline with preview pictures */
+/* a year's resources, as a timeline (newest first) with preview pictures */
 .timeline {
   list-style: none;
   margin: 0;
@@ -507,30 +507,21 @@ img { max-width: 100%; display: block; }
 .timeline::before { /* the vertical line */
   content: "";
   position: absolute;
-  left: 6px; top: 8px; bottom: 0;
+  left: 6px; top: 24px; bottom: 24px;
   width: 2px;
   background: var(--border);
 }
-.timeline-item { position: relative; padding-bottom: 26px; }
-.timeline-item:last-child { padding-bottom: 0; }
+.timeline-item { position: relative; margin-bottom: 22px; }
+.timeline-item:last-child { margin-bottom: 0; }
 .timeline-item::before { /* the dot on the line */
   content: "";
   position: absolute;
-  left: -30px; top: 3px;
+  left: -30px; top: 50%;
+  transform: translateY(-50%);
   width: 14px; height: 14px;
   border-radius: 50%;
   background: var(--white);
   border: 3px solid var(--blue);
-}
-.timeline-date {
-  display: block;
-  margin-bottom: 10px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: .82rem;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  color: var(--blue);
 }
 .timeline-card {
   position: relative;
