@@ -89,7 +89,9 @@
           <figcaption class="video-caption" data-i18n="explora.videoCaption"></figcaption>
         </figure>
 
-        <ol class="editions" id="explora-editions"><!-- populated from content.js --></ol>
+        <!-- one tab per year; the panel below shows that year's resources -->
+        <div class="editions" id="explora-editions" role="tablist"><!-- populated from content.js --></div>
+        <div class="edition-panel" id="explora-panel" role="tabpanel" tabindex="0"><!-- populated from content.js --></div>
       </div>
     </section>
 

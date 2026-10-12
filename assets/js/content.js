@@ -59,6 +59,8 @@ const CONTENT = {
       title: "Explora Nobel",
       lead: "Nuestro proyecto insignia. Cada año llevamos a estudiantes de enseñanza media desde Chile a Suecia para vivir la Semana del Premio Nobel, acercándolos a la ciencia de primer nivel y a las personas que la hacen posible.",
       videoCaption: "Documental · Edición 2024",
+      editionsLabel: "Recursos por edición",
+      noResources: "Aún no hay recursos para esta edición.",
     },
     members: {
       title: "Miembros",
@@ -132,6 +134,8 @@ const CONTENT = {
       title: "Explora Nobel",
       lead: "Our flagship project. Every year we bring high-school students from Chile to Sweden to experience Nobel Prize Week, bringing them closer to world-class science and the people who make it happen.",
       videoCaption: "Documentary · 2024 edition",
+      editionsLabel: "Resources by edition",
+      noResources: "No resources for this edition yet.",
     },
     members: {
       title: "Members",
@@ -205,6 +209,8 @@ const CONTENT = {
       title: "Explora Nobel",
       lead: "Vårt flaggskeppsprojekt. Varje år tar vi med gymnasieelever från Chile till Sverige för att uppleva Nobelveckan och komma närmare vetenskap i världsklass och de människor som gör den möjlig.",
       videoCaption: "Dokumentär · 2024 års upplaga",
+      editionsLabel: "Resurser per upplaga",
+      noResources: "Inga resurser för den här upplagan ännu.",
     },
     members: {
       title: "Medlemmar",
@@ -245,29 +251,65 @@ const CONTENT = {
 /* =========================================================================
    EXPLORA NOBEL — EDITIONS
    -------------------------------------------------------------------------
-   One entry per year. `state` is either "done" (already happened) or
-   "upcoming" (in preparation) — it only changes the colour of the marker.
-   `label` is shown under the year and can be translated. `link` is optional.
+   One entry per year; each year is shown as a tab in the Explora Nobel
+   section. `state` is either "done" (already happened) or "upcoming" (in
+   preparation) — it only changes the colour of the marker. `label` is shown
+   under the year and can be translated.
+
+   `resources` is the list of links shown when that year's tab is open
+   (videos, press articles, photo albums...). Each one has a `title`, a short
+   `description` and a `link`. Leave it as [] if there is nothing yet.
+
+   To add a resource, copy one { title, description, link } block inside the
+   year it belongs to. To add a year, copy a whole edition block.
    ========================================================================= */
 
 const EXPLORA_EDITIONS = [
   {
     year: "2024",
-    label: { es: "Primera edición · ver documental", en: "First edition · watch the documentary", sv: "Första upplagan · se dokumentären" },
+    label: { es: "Primera edición", en: "First edition", sv: "Första upplagan" },
     state: "done",
-    link: "https://www.youtube.com/watch?v=5yug9GZ8PjY",
+    resources: [
+      {
+        title: {
+          es: "Documental Explora Nobel 2024",
+          en: "Explora Nobel documentary 2024",
+          sv: "Dokumentären Explora Nobel 2024",
+        },
+        description: {
+          es: "Mira el documental de la primera edición en YouTube.",
+          en: "Watch the documentary about the first edition on YouTube.",
+          sv: "Se dokumentären om den första upplagan på YouTube.",
+        },
+        link: "https://www.youtube.com/watch?v=5yug9GZ8PjY",
+      },
+    ],
   },
   {
     year: "2025",
     label: { es: "Segunda edición realizada", en: "Second edition completed", sv: "Andra upplagan genomförd" },
     state: "done",
-    link: "",
+    resources: [],
   },
   {
     year: "2026",
     label: { es: "En preparación", en: "In preparation", sv: "Under förberedelse" },
     state: "upcoming",
-    link: "",
+    resources: [
+      {
+        title: {
+          es: "Estudiantes de Aysén y Atacama viajarán a Suecia a vivir la Semana Nobel junto a científicos chilenos",
+          en: "Students from Aysén and Atacama will travel to Sweden for Nobel Week alongside Chilean scientists",
+          sv: "Elever från Aysén och Atacama reser till Sverige för att uppleva Nobelveckan med chilenska forskare",
+        },
+        description: {
+          es: "Cooperativa Ciencia · 9 de octubre de 2026",
+          en: "Cooperativa Ciencia · 9 October 2026 · article in Spanish",
+          sv: "Cooperativa Ciencia · 9 oktober 2026 · artikel på spanska",
+        },
+        link: "https://www.cooperativaciencia.cl/tendencias/2026/10/09/estudiantes-de-aysen-y-atacama-viajaran-a-suecia-a-vivir-la-semana-nobel-junto-a-cientificos-chilenos/",
+      },
+    ],
   },
 ];
 

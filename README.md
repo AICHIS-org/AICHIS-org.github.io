@@ -24,7 +24,8 @@ It is organised in plain language and contains everything you'll normally change
 | Change any text on the page   | Find the text and edit it — for **all three** languages (`es`, `en`, `sv`). |
 | Add / edit a **person** (board and/or member) | Copy a `{ ... }` block in the `PROFILES` list and change the values — see below. |
 | Add a **Chilean researcher in Sweden** | Copy a `{ ... }` block in the `RESEARCHERS` list and change the values. |
-| Add an **Explora Nobel edition** | Copy a `{ ... }` block in the `EXPLORA_EDITIONS` list (`state: "done"` or `"upcoming"`). |
+| Add an **Explora Nobel edition** | Copy a `{ ... }` block in the `EXPLORA_EDITIONS` list (`state: "done"` or `"upcoming"`). Each year becomes a tab. |
+| Add a **link to an Explora Nobel year** | Copy a `{ title, description, link }` block inside that year's `resources` list. |
 | Add / edit a **resource**     | Copy a `{ ... }` block in the `RESOURCES` list and change the values. |
 
 Keep the quotes `" "` and commas `,` exactly as shown. That's it.
