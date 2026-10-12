@@ -73,6 +73,36 @@
         </a>`;
   }
 
+  /* --- one entry of an Explora Nobel year's timeline --------------------- */
+  // "2026-10-09" -> "9 oct 2026" / "9 Oct 2026" / "9 okt. 2026"
+  function formatDate(iso, lang) {
+    const date = new Date(`${iso}T00:00:00Z`);
+    if (!iso || isNaN(date)) return "";
+    // British English puts the day first, like Spanish and Swedish do
+    return new Intl.DateTimeFormat(lang === "en" ? "en-GB" : lang, {
+      day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
+    }).format(date);
+  }
+
+  function timelineItemHTML(r, lang) {
+    const title = typeof r.title === "object" ? r.title[lang] : r.title;
+    const desc =
+      typeof r.description === "object" ? r.description[lang] : r.description;
+    const date = formatDate(r.date, lang);
+    return `
+        <li class="timeline-item">
+          ${date ? `<time class="timeline-date" datetime="${esc(r.date)}">${esc(date)}</time>` : ""}
+          <a class="timeline-card" href="${safeUrl(r.link)}" target="_blank" rel="noopener">
+            ${r.image ? `<img class="timeline-thumb" src="${safeUrl(r.image)}" alt="" loading="lazy" />` : ""}
+            <span class="timeline-text">
+              <span class="timeline-title">${esc(title)}</span>
+              <span class="timeline-desc">${esc(desc)}</span>
+            </span>
+            <span class="resource-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>`;
+  }
+
   /* --- render the Explora Nobel year tabs + the open year's resources -- */
   // Which year's tab is open. Starts on the most recent edition that has
   // resources, and is remembered when the language changes.
@@ -107,10 +137,13 @@
         </button>`;
     }).join("");
 
-    const resources = current.resources || [];
+    // oldest first, so the timeline reads top to bottom
+    const resources = (current.resources || [])
+      .slice()
+      .sort((x, y) => String(x.date || "").localeCompare(String(y.date || "")));
     panel.setAttribute("aria-labelledby", `explora-tab-${current.year}`);
     panel.innerHTML = resources.length
-      ? `<div class="resources-list">${resources.map((r) => resourceCardHTML(r, lang)).join("")}</div>`
+      ? `<ol class="timeline">${resources.map((r) => timelineItemHTML(r, lang)).join("")}</ol>`
       : `<p class="empty-note">${esc(CONTENT[lang].explora.noResources)}</p>`;
   }
 
@@ -128,7 +161,9 @@
     };
     tabs.addEventListener("click", (event) => {
       const tab = event.target.closest("[role=tab]");
-      if (tab) open(tab.dataset.year, true);
+      // detail is 0 when the "click" came from the keyboard (Enter/Space):
+      // only then put focus back on the tab, so mouse users see no outline.
+      if (tab) open(tab.dataset.year, event.detail === 0);
     });
     tabs.addEventListener("keydown", (event) => {
       const years = EXPLORA_EDITIONS.map((e) => e.year);

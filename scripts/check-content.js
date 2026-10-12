@@ -107,6 +107,16 @@ function checkPhotoPaths(list, label) {
 }
 
 checkPhotoPaths(sandbox.PROFILES, "PROFILES");
+for (const edition of sandbox.EXPLORA_EDITIONS || []) {
+  for (const r of edition.resources || []) {
+    if (r.image && !/^https?:\/\//.test(r.image) && !fs.existsSync(path.join(repoRoot, r.image))) {
+      errors.push(`EXPLORA_EDITIONS ${edition.year}: image not found at ${r.image}`);
+    }
+    if (r.date && !/^\d{4}-\d{2}-\d{2}$/.test(r.date)) {
+      errors.push(`EXPLORA_EDITIONS ${edition.year}: date "${r.date}" must be written YYYY-MM-DD`);
+    }
+  }
+}
 for (const entry of sandbox.BOARD_HISTORY || []) {
   checkPhotoPaths(entry.members, `BOARD_HISTORY ${entry.year}`);
 }

@@ -256,12 +256,19 @@ const CONTENT = {
    preparation) — it only changes the colour of the marker. `label` is shown
    under the year and can be translated.
 
-   `resources` is the list of links shown when that year's tab is open
-   (videos, press articles, photo albums...). Each one has a `title`, a short
-   `description` and a `link`. Leave it as [] if there is nothing yet.
+   `resources` is that year's timeline: the videos, press articles, photo
+   albums... shown when its tab is open, ordered by date (oldest first).
+   Leave it as [] if there is nothing yet. Each resource has:
 
-   To add a resource, copy one { title, description, link } block inside the
-   year it belongs to. To add a year, copy a whole edition block.
+   - `date`         when it was published, written "YYYY-MM-DD".
+   - `title`        translated per language.
+   - `description`  one short line, translated per language.
+   - `link`         where it leads.
+   - `image`        optional preview picture, saved in assets/img/explora/
+                    (landscape, about 480x360). Leave it out to show none.
+
+   To add a resource, copy one { date, title, ... } block inside the year it
+   belongs to. To add a year, copy a whole edition block.
    ========================================================================= */
 
 const EXPLORA_EDITIONS = [
@@ -271,17 +278,19 @@ const EXPLORA_EDITIONS = [
     state: "done",
     resources: [
       {
+        date: "2025-09-10",
         title: {
-          es: "Documental Explora Nobel 2024",
-          en: "Explora Nobel documentary 2024",
-          sv: "Dokumentären Explora Nobel 2024",
+          es: "Documental Explora Nobel 2024 — De Chile a Suecia",
+          en: "Explora Nobel 2024 documentary — From Chile to Sweden",
+          sv: "Dokumentären Explora Nobel 2024 — Från Chile till Sverige",
         },
         description: {
-          es: "Mira el documental de la primera edición en YouTube.",
-          en: "Watch the documentary about the first edition on YouTube.",
-          sv: "Se dokumentären om den första upplagan på YouTube.",
+          es: "Documental · El viaje de la primera edición, en YouTube.",
+          en: "Documentary · The journey of the first edition, on YouTube (in Spanish).",
+          sv: "Dokumentär · Den första upplagans resa, på YouTube (på spanska).",
         },
         link: "https://www.youtube.com/watch?v=5yug9GZ8PjY",
+        image: "assets/img/explora/2024-documentary.jpg",
       },
     ],
   },
@@ -291,6 +300,37 @@ const EXPLORA_EDITIONS = [
     state: "done",
     resources: [
       {
+        date: "2025-10-26",
+        title: {
+          es: "Entrevista en Radio Cooperativa · Parte 1",
+          en: "Radio Cooperativa interview · Part 1",
+          sv: "Intervju i Radio Cooperativa · Del 1",
+        },
+        description: {
+          es: "Video corto · Presentación del proyecto Explora Nobel 2025 con Gustavo Monasterio.",
+          en: "Short video · Introducing Explora Nobel 2025 with Gustavo Monasterio (in Spanish).",
+          sv: "Kort video · Presentation av Explora Nobel 2025 med Gustavo Monasterio (på spanska).",
+        },
+        link: "https://www.youtube.com/shorts/sDMc_3L6ScU",
+        image: "assets/img/explora/2025-radio-cooperativa-1.jpg",
+      },
+      {
+        date: "2025-10-28",
+        title: {
+          es: "Entrevista en Radio Cooperativa · Parte 2",
+          en: "Radio Cooperativa interview · Part 2",
+          sv: "Intervju i Radio Cooperativa · Del 2",
+        },
+        description: {
+          es: "Video corto · Cómo nació la idea de Explora Nobel.",
+          en: "Short video · How the idea for Explora Nobel was born (in Spanish).",
+          sv: "Kort video · Hur idén till Explora Nobel föddes (på spanska).",
+        },
+        link: "https://www.youtube.com/shorts/cLHX5zCPcTc",
+        image: "assets/img/explora/2025-radio-cooperativa-2.jpg",
+      },
+      {
+        date: "2026-01-06",
         title: {
           es: "Explora Nobel 2025 | Ciencia chilena en la Semana Nobel",
           en: "Explora Nobel 2025 | Chilean science at Nobel Week",
@@ -302,32 +342,7 @@ const EXPLORA_EDITIONS = [
           sv: "Kort video · Millaray och Alejandro under Nobelveckan i Stockholm.",
         },
         link: "https://www.youtube.com/shorts/i1ya6VBoLyE",
-      },
-      {
-        title: {
-          es: "Entrevista en Radio Cooperativa · Parte 1",
-          en: "Radio Cooperativa interview · Part 1",
-          sv: "Intervju i Radio Cooperativa · Del 1",
-        },
-        description: {
-          es: "Video corto · Presentación del proyecto Explora Nobel 2025 con Gustavo Monasterio (octubre de 2025).",
-          en: "Short video · Introducing Explora Nobel 2025 with Gustavo Monasterio (October 2025, in Spanish).",
-          sv: "Kort video · Presentation av Explora Nobel 2025 med Gustavo Monasterio (oktober 2025, på spanska).",
-        },
-        link: "https://www.youtube.com/shorts/sDMc_3L6ScU",
-      },
-      {
-        title: {
-          es: "Entrevista en Radio Cooperativa · Parte 2",
-          en: "Radio Cooperativa interview · Part 2",
-          sv: "Intervju i Radio Cooperativa · Del 2",
-        },
-        description: {
-          es: "Video corto · Cómo nació la idea de Explora Nobel (octubre de 2025).",
-          en: "Short video · How the idea for Explora Nobel was born (October 2025, in Spanish).",
-          sv: "Kort video · Hur idén till Explora Nobel föddes (oktober 2025, på spanska).",
-        },
-        link: "https://www.youtube.com/shorts/cLHX5zCPcTc",
+        image: "assets/img/explora/2025-nobel-week-short.jpg",
       },
     ],
   },
@@ -337,30 +352,34 @@ const EXPLORA_EDITIONS = [
     state: "upcoming",
     resources: [
       {
+        date: "2026-10-09",
         title: {
           es: "Estudiantes de Aysén y Atacama viajarán a Suecia a vivir la Semana Nobel junto a científicos chilenos",
           en: "Students from Aysén and Atacama will travel to Sweden for Nobel Week alongside Chilean scientists",
           sv: "Elever från Aysén och Atacama reser till Sverige för att uppleva Nobelveckan med chilenska forskare",
         },
         description: {
-          es: "Cooperativa Ciencia · 9 de octubre de 2026",
-          en: "Cooperativa Ciencia · 9 October 2026 · article in Spanish",
-          sv: "Cooperativa Ciencia · 9 oktober 2026 · artikel på spanska",
+          es: "Prensa · Cooperativa Ciencia.",
+          en: "Press · Cooperativa Ciencia (article in Spanish).",
+          sv: "Press · Cooperativa Ciencia (artikel på spanska).",
         },
         link: "https://www.cooperativaciencia.cl/tendencias/2026/10/09/estudiantes-de-aysen-y-atacama-viajaran-a-suecia-a-vivir-la-semana-nobel-junto-a-cientificos-chilenos/",
+        image: "assets/img/explora/2026-cooperativa-ciencia.jpg",
       },
       {
+        date: "2026-10-12",
         title: {
           es: "Anunciamos a las ganadoras de Explora Nobel 2026 desde Estocolmo",
           en: "Announcing the Explora Nobel 2026 winners from Stockholm",
           sv: "Vi presenterar vinnarna av Explora Nobel 2026 från Stockholm",
         },
         description: {
-          es: "Video corto · Anuncio en la Embajada de Chile en Suecia (octubre de 2026).",
-          en: "Short video · Announcement at the Chilean Embassy in Sweden (October 2026, in Spanish).",
-          sv: "Kort video · Tillkännagivande på Chiles ambassad i Sverige (oktober 2026, på spanska).",
+          es: "Video corto · Anuncio en la Embajada de Chile en Suecia.",
+          en: "Short video · Announcement at the Chilean Embassy in Sweden (in Spanish).",
+          sv: "Kort video · Tillkännagivande på Chiles ambassad i Sverige (på spanska).",
         },
         link: "https://www.youtube.com/shorts/xxMEhad29S4",
+        image: "assets/img/explora/2026-winners-announcement.jpg",
       },
     ],
   },
