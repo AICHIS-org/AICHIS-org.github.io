@@ -45,7 +45,7 @@ function checkContentValue(value, where, key) {
   if (key === "email" && !/^[^\s@"'<>]+@[^\s@"'<>]+\.[^\s@"'<>]+$/.test(value)) {
     errors.push(`${where}: "${value}" is not a plain email address`);
   }
-  if ((key === "photo" || key === "image") && value !== "") {
+  if ((key === "photo" || key === "image" || key === "logo") && value !== "") {
     const local = /^assets\/img\/[\w./-]+$/.test(value) && !value.includes("..");
     if (!local && !/^https:\/\/[^\s"'<>]+$/.test(value)) {
       errors.push(`${where}: "${value}" must be a file under assets/img/ or an https:// address`);
@@ -69,7 +69,7 @@ try {
   vm.createContext(context);
   vm.runInContext(read("assets/js/content.js"), context, { filename: "content.js" });
   const data = vm.runInContext(
-    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, RESEARCHERS, RESOURCES })",
+    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, RESEARCHERS, PARTNERS, RESOURCES })",
     context
   );
   for (const name of Object.keys(data)) walk(data[name], name, name);

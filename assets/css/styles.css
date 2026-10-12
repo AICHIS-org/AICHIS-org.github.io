@@ -78,6 +78,7 @@ img { max-width: 100%; display: block; }
   align-items: center;
   gap: 20px;
   min-height: 68px;
+  max-width: 1240px; /* wider than the page content: 8 nav links need the room */
 }
 
 .brand {
@@ -97,7 +98,7 @@ img { max-width: 100%; display: block; }
 .main-nav { margin-left: auto; }
 .nav-links {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -696,6 +697,23 @@ img { max-width: 100%; display: block; }
 }
 .resource-card:hover .resource-arrow { transform: translateY(-50%) translateX(4px); }
 
+/* collaborations — partner cards reuse the member card, with a logo tile */
+.partners-grid { margin-bottom: 0; }
+.partner-card { display: flex; flex-direction: column; }
+.partner-card .member-head { align-items: flex-start; }
+.partner-card .member-field { color: var(--muted); }
+.partner-card .member-contact { margin-top: auto; }
+.partner-card .member-field { margin-bottom: 12px; }
+.partner-logo {
+  flex: none;
+  width: 60px; height: 60px;
+  object-fit: contain;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+}
+
 .empty-note { text-align: center; color: var(--muted); }
 
 /* contact */
@@ -809,9 +827,9 @@ img { max-width: 100%; display: block; }
 .footer-link.secondary:hover { background: #eef2fa; }
 
 /* ------------------------------ responsive ------------------------------ */
-/* nav collapses earlier than the general mobile breakpoint below: with 7
+/* nav collapses earlier than the general mobile breakpoint below: with 8
    links + the language switch, it gets crowded well before 760px. */
-@media (max-width: 980px) {
+@media (max-width: 1180px) {
   .nav-toggle { display: flex; order: 3; }
   .lang-switch { order: 2; }
   .main-nav { margin-left: auto; }
@@ -828,7 +846,7 @@ img { max-width: 100%; display: block; }
     overflow: hidden;
     transition: max-height .25s ease;
   }
-  .nav-links.open { max-height: 440px; }
+  .nav-links.open { max-height: 520px; }
   .nav-links li { width: 100%; border-top: 1px solid var(--border); }
   .nav-links a { display: block; padding: 16px 24px; border: none; }
 }

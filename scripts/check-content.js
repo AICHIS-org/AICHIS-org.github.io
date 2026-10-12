@@ -26,7 +26,7 @@ try {
   // top-level `const`/`let` don't attach to the context object itself, so
   // pull the values out via a second eval in the same lexical scope.
   sandbox = vm.runInContext(
-    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, RESEARCHERS, RESOURCES })",
+    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, RESEARCHERS, PARTNERS, RESOURCES })",
     context
   );
 } catch (err) {
@@ -88,7 +88,7 @@ function checkTranslationLeaves(obj, pathStr) {
   }
 }
 
-for (const name of ["EXPLORA_EDITIONS", "PROFILES", "BOARD_HISTORY", "RESEARCHERS", "RESOURCES"]) {
+for (const name of ["EXPLORA_EDITIONS", "PROFILES", "BOARD_HISTORY", "RESEARCHERS", "PARTNERS", "RESOURCES"]) {
   if (sandbox[name] !== undefined) checkTranslationLeaves(sandbox[name], name);
 }
 
@@ -107,6 +107,11 @@ function checkPhotoPaths(list, label) {
 }
 
 checkPhotoPaths(sandbox.PROFILES, "PROFILES");
+for (const partner of sandbox.PARTNERS || []) {
+  if (partner.logo && !/^https?:\/\//.test(partner.logo) && !fs.existsSync(path.join(repoRoot, partner.logo))) {
+    errors.push(`PARTNERS "${partner.name && partner.name.en}": logo not found at ${partner.logo}`);
+  }
+}
 for (const edition of sandbox.EXPLORA_EDITIONS || []) {
   for (const r of edition.resources || []) {
     if (r.image && !/^https?:\/\//.test(r.image) && !fs.existsSync(path.join(repoRoot, r.image))) {

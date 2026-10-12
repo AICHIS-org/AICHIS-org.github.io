@@ -29,6 +29,7 @@ const CONTENT = {
       members: "Miembros",
       board: "Directiva",
       researchers: "Chilenos en Suecia",
+      collaborations: "Colaboraciones",
       resources: "Recursos",
       contact: "Contacto",
     },
@@ -82,6 +83,10 @@ const CONTENT = {
       lead: "Un directorio abierto de investigadoras e investigadores chilenos que trabajan en Suecia, más allá de nuestros miembros. ¿Conoces a alguien, o eres tú? Ayúdanos a ampliar esta lista.",
       cta: "Sugerir un/a investigador/a",
     },
+    collaborations: {
+      title: "Colaboraciones",
+      lead: "Instituciones de confianza con las que trabajamos para acercar la ciencia de Chile y Suecia.",
+    },
     resources: {
       title: "Recursos",
       lead: "Enlaces y materiales útiles para investigadores chilenos en Suecia. Iremos ampliando esta sección.",
@@ -107,6 +112,7 @@ const CONTENT = {
       members: "Members",
       board: "Board",
       researchers: "Chileans in Sweden",
+      collaborations: "Collaborations",
       resources: "Resources",
       contact: "Contact",
     },
@@ -160,6 +166,10 @@ const CONTENT = {
       lead: "An open directory of Chilean researchers working in Sweden, beyond our members. Know someone, or is it you? Help us grow this list.",
       cta: "Suggest a researcher",
     },
+    collaborations: {
+      title: "Collaborations",
+      lead: "Trusted institutions we work with to bring science in Chile and Sweden closer together.",
+    },
     resources: {
       title: "Resources",
       lead: "Useful links and materials for Chilean researchers in Sweden. We will keep expanding this section.",
@@ -185,6 +195,7 @@ const CONTENT = {
       members: "Medlemmar",
       board: "Styrelse",
       researchers: "Chilenare i Sverige",
+      collaborations: "Samarbeten",
       resources: "Resurser",
       contact: "Kontakt",
     },
@@ -237,6 +248,10 @@ const CONTENT = {
       title: "Chilenare i Sverige",
       lead: "En öppen katalog över chilenska forskare som arbetar i Sverige, utöver våra medlemmar. Känner du någon, eller är det du? Hjälp oss att utöka listan.",
       cta: "Föreslå en forskare",
+    },
+    collaborations: {
+      title: "Samarbeten",
+      lead: "Betrodda institutioner som vi samarbetar med för att föra vetenskapen i Chile och Sverige närmare varandra.",
     },
     resources: {
       title: "Resurser",
@@ -640,6 +655,103 @@ const RESEARCHERS = [
     link: "", // e.g. "https://..." (personal or institutional profile)
   },
   // --- copy the block above to add another researcher ---
+];
+
+/* =========================================================================
+   PARTNERS  (Collaborations section)
+   -------------------------------------------------------------------------
+   Trusted institutions AICHIS works with, shown as cards like the members.
+   Each one has:
+
+   - `name`         translated per language.
+   - `place`        city and country, shown under the name.
+   - `description`  one short line, translated per language.
+   - `link`         its official website.
+   - `logo`         optional; a square image saved in assets/img/partners/
+                    (about 256x256, white background). Leave it out to show
+                    the partner's initials instead.
+
+   To add a partner, copy one { ... } block and edit the values.
+   ========================================================================= */
+
+const PARTNERS = [
+  {
+    name: {
+      es: "Embajada de Chile en Suecia",
+      en: "Embassy of Chile in Sweden",
+      sv: "Chiles ambassad i Sverige",
+    },
+    place: { es: "Estocolmo, Suecia", en: "Stockholm, Sweden", sv: "Stockholm, Sverige" },
+    description: {
+      es: "Representación diplomática de Chile ante el Reino de Suecia.",
+      en: "Chile's diplomatic mission to the Kingdom of Sweden.",
+      sv: "Chiles diplomatiska beskickning i Konungariket Sverige.",
+    },
+    link: "https://www.chile.gob.cl/suecia/",
+    logo: "assets/img/partners/ministerio-relaciones-exteriores-chile.png",
+  },
+  {
+    name: {
+      es: "Consulado de Chile en Estocolmo",
+      en: "Consulate of Chile in Stockholm",
+      sv: "Chiles konsulat i Stockholm",
+    },
+    place: { es: "Estocolmo, Suecia", en: "Stockholm, Sweden", sv: "Stockholm, Sverige" },
+    description: {
+      es: "Servicios consulares para la comunidad chilena en Suecia.",
+      en: "Consular services for the Chilean community in Sweden.",
+      sv: "Konsulära tjänster för den chilenska gemenskapen i Sverige.",
+    },
+    link: "https://www.chile.gob.cl/estocolmo/",
+    // same Ministerio de Relaciones Exteriores mark as the embassy
+    logo: "assets/img/partners/ministerio-relaciones-exteriores-chile.png",
+  },
+  {
+    name: {
+      es: "Embajada de Suecia en Chile",
+      en: "Embassy of Sweden in Chile",
+      sv: "Sveriges ambassad i Chile",
+    },
+    place: { es: "Santiago, Chile", en: "Santiago, Chile", sv: "Santiago, Chile" },
+    description: {
+      es: "Representación diplomática de Suecia en Chile.",
+      en: "Sweden's diplomatic mission in Chile.",
+      sv: "Sveriges diplomatiska beskickning i Chile.",
+    },
+    link: "https://www.swedenabroad.se/es/embajada/chile-santiago-de-chile/",
+    logo: "assets/img/partners/embajada-suecia-chile.png",
+  },
+  {
+    name: {
+      es: "Universidad de La Frontera",
+      en: "Universidad de La Frontera",
+      sv: "Universidad de La Frontera",
+    },
+    place: { es: "Temuco, Chile", en: "Temuco, Chile", sv: "Temuco, Chile" },
+    description: {
+      es: "Universidad pública chilena de la Región de La Araucanía.",
+      en: "Chilean public university in the Araucanía Region.",
+      sv: "Chilenskt offentligt universitet i regionen Araucanía.",
+    },
+    link: "https://www.ufro.cl/",
+    logo: "assets/img/partners/universidad-de-la-frontera.png",
+  },
+  {
+    name: {
+      es: "Academia Chilena de Ciencias",
+      en: "Chilean Academy of Sciences",
+      sv: "Chiles vetenskapsakademi",
+    },
+    place: { es: "Santiago, Chile", en: "Santiago, Chile", sv: "Santiago, Chile" },
+    description: {
+      es: "Academia del Instituto de Chile dedicada a promover la investigación científica en el país.",
+      en: "The academy of the Instituto de Chile dedicated to promoting scientific research in the country.",
+      sv: "Akademin inom Instituto de Chile som främjar vetenskaplig forskning i landet.",
+    },
+    link: "https://www.academiadeciencias.cl/",
+    logo: "assets/img/partners/academia-chilena-de-ciencias.png",
+  },
+  // --- copy the block above to add another partner ---
 ];
 
 /* =========================================================================
