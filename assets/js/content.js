@@ -289,7 +289,47 @@ const EXPLORA_EDITIONS = [
     year: "2025",
     label: { es: "Segunda edición realizada", en: "Second edition completed", sv: "Andra upplagan genomförd" },
     state: "done",
-    resources: [],
+    resources: [
+      {
+        title: {
+          es: "Explora Nobel 2025 | Ciencia chilena en la Semana Nobel",
+          en: "Explora Nobel 2025 | Chilean science at Nobel Week",
+          sv: "Explora Nobel 2025 | Chilensk vetenskap under Nobelveckan",
+        },
+        description: {
+          es: "Video corto · Millaray y Alejandro en la Semana Nobel en Estocolmo.",
+          en: "Short video · Millaray and Alejandro at Nobel Week in Stockholm.",
+          sv: "Kort video · Millaray och Alejandro under Nobelveckan i Stockholm.",
+        },
+        link: "https://www.youtube.com/shorts/i1ya6VBoLyE",
+      },
+      {
+        title: {
+          es: "Entrevista en Radio Cooperativa · Parte 1",
+          en: "Radio Cooperativa interview · Part 1",
+          sv: "Intervju i Radio Cooperativa · Del 1",
+        },
+        description: {
+          es: "Video corto · Presentación del proyecto Explora Nobel 2025 con Gustavo Monasterio (octubre de 2025).",
+          en: "Short video · Introducing Explora Nobel 2025 with Gustavo Monasterio (October 2025, in Spanish).",
+          sv: "Kort video · Presentation av Explora Nobel 2025 med Gustavo Monasterio (oktober 2025, på spanska).",
+        },
+        link: "https://www.youtube.com/shorts/sDMc_3L6ScU",
+      },
+      {
+        title: {
+          es: "Entrevista en Radio Cooperativa · Parte 2",
+          en: "Radio Cooperativa interview · Part 2",
+          sv: "Intervju i Radio Cooperativa · Del 2",
+        },
+        description: {
+          es: "Video corto · Cómo nació la idea de Explora Nobel (octubre de 2025).",
+          en: "Short video · How the idea for Explora Nobel was born (October 2025, in Spanish).",
+          sv: "Kort video · Hur idén till Explora Nobel föddes (oktober 2025, på spanska).",
+        },
+        link: "https://www.youtube.com/shorts/cLHX5zCPcTc",
+      },
+    ],
   },
   {
     year: "2026",
