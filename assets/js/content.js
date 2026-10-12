@@ -349,6 +349,19 @@ const EXPLORA_EDITIONS = [
         },
         link: "https://www.cooperativaciencia.cl/tendencias/2026/10/09/estudiantes-de-aysen-y-atacama-viajaran-a-suecia-a-vivir-la-semana-nobel-junto-a-cientificos-chilenos/",
       },
+      {
+        title: {
+          es: "Anunciamos a las ganadoras de Explora Nobel 2026 desde Estocolmo",
+          en: "Announcing the Explora Nobel 2026 winners from Stockholm",
+          sv: "Vi presenterar vinnarna av Explora Nobel 2026 från Stockholm",
+        },
+        description: {
+          es: "Video corto · Anuncio en la Embajada de Chile en Suecia (octubre de 2026).",
+          en: "Short video · Announcement at the Chilean Embassy in Sweden (October 2026, in Spanish).",
+          sv: "Kort video · Tillkännagivande på Chiles ambassad i Sverige (oktober 2026, på spanska).",
+        },
+        link: "https://www.youtube.com/shorts/xxMEhad29S4",
+      },
     ],
   },
 ];
