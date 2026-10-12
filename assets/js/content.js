@@ -688,7 +688,23 @@ const PARTNERS = [
       sv: "Chiles diplomatiska beskickning i Konungariket Sverige.",
     },
     link: "https://www.chile.gob.cl/suecia/",
-    logo: "assets/img/partners/embajada-chile-suecia.png",
+    logo: "assets/img/partners/ministerio-relaciones-exteriores-chile.png",
+  },
+  {
+    name: {
+      es: "Consulado de Chile en Estocolmo",
+      en: "Consulate of Chile in Stockholm",
+      sv: "Chiles konsulat i Stockholm",
+    },
+    place: { es: "Estocolmo, Suecia", en: "Stockholm, Sweden", sv: "Stockholm, Sverige" },
+    description: {
+      es: "Servicios consulares para la comunidad chilena en Suecia.",
+      en: "Consular services for the Chilean community in Sweden.",
+      sv: "Konsulära tjänster för den chilenska gemenskapen i Sverige.",
+    },
+    link: "https://www.chile.gob.cl/estocolmo/",
+    // same Ministerio de Relaciones Exteriores mark as the embassy
+    logo: "assets/img/partners/ministerio-relaciones-exteriores-chile.png",
   },
   {
     name: {
