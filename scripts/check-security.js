@@ -69,7 +69,7 @@ try {
   vm.createContext(context);
   vm.runInContext(read("assets/js/content.js"), context, { filename: "content.js" });
   const data = vm.runInContext(
-    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, RESEARCHERS, RESOURCES })",
+    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, RESEARCHERS, PARTNERS, RESOURCES })",
     context
   );
   for (const name of Object.keys(data)) walk(data[name], name, name);

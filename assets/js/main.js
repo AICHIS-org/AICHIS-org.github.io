@@ -317,6 +317,18 @@
     }).join("");
   }
 
+  /* --- render the Collaborations (partners) list ------------------------ */
+  function renderPartners(lang) {
+    const el = document.getElementById("partners-list");
+    if (!el) return;
+    if (!PARTNERS.length) {
+      el.innerHTML = `<p class="empty-note">—</p>`;
+      return;
+    }
+    // a partner card is a resource card: name as title, plus description + link
+    el.innerHTML = PARTNERS.map((p) => resourceCardHTML({ ...p, title: p.name }, lang)).join("");
+  }
+
   /* --- render the Resources list --------------------------------------- */
   function renderResources(lang) {
     const el = document.getElementById("resources-list");
@@ -344,6 +356,7 @@
     renderBoard(lang);
     renderBoardHistory(lang);
     renderResearchers(lang);
+    renderPartners(lang);
     renderResources(lang);
 
     // reflect state
