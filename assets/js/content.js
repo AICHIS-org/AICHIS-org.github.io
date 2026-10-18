@@ -592,6 +592,36 @@ const PROFILES = [
       linkedin: "https://www.linkedin.com/in/alejandro-fonseca-cardenas/",
     },
   },
+  {
+    name: "Macarena Tejos Bravo",
+    photo: "assets/img/profiles/macarena-tejos.jpeg",
+    link: "",
+    member: {
+      role: { es: "Investigadora Postdoctoral", en: "Postdoc", sv: "Postdoktor" },
+      field: {
+        es: "Neuroinmunología del Dolor",
+        en: "Pain Neuroimmunology",
+        sv: "Smärtneuroimmunologi",
+      },
+      institution: "Karolinska Institutet",
+      email: "macarena.tejos.bravo@ki.se",
+    },
+  },
+  {
+    name: "Alejandra San Juan",
+    photo: "",
+    link: "",
+    member: {
+      role: {
+        es: "Psicóloga Escolar",
+        en: "School Psychologist",
+        sv: "Skolpsykolog",
+      },
+      field: { es: "Psicología", en: "Psychology", sv: "Psykologi" },
+      institution: "Utbildningskontoret, Central barn- och elevhälsa",
+      email: "alejandra.sanjuan@hotmail.com",
+    },
+  },
   // --- copy a block above to add another profile ---
 ];
 
