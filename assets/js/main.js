@@ -218,6 +218,19 @@
     return !!(p.member && p.member.institution);
   }
 
+  // Last name, for sorting. Takes the final word of `name`, plus a leading
+  // particle (e.g. "San Juan", "de la Cruz") so compound surnames sort
+  // together rather than by their last word alone.
+  const SURNAME_PARTICLES = new Set([
+    "de", "del", "la", "las", "los", "san", "santa", "von", "van", "da", "do", "dos",
+  ]);
+  function lastNameOf(name) {
+    const parts = name.trim().split(/\s+/);
+    let start = parts.length - 1;
+    while (start > 0 && SURNAME_PARTICLES.has(parts[start - 1].toLowerCase())) start--;
+    return parts.slice(start).join(" ");
+  }
+
   // Board order: President, then Treasurer, then everyone else with
   // confirmed info (alphabetically), then anyone still "to be confirmed".
   function boardSortRank(p) {
@@ -230,7 +243,7 @@
   function sortedBoard() {
     return PROFILES.filter((p) => p.board)
       .slice()
-      .sort((a, b) => boardSortRank(a) - boardSortRank(b) || a.name.localeCompare(b.name, "es"));
+      .sort((a, b) => boardSortRank(a) - boardSortRank(b) || lastNameOf(a.name).localeCompare(lastNameOf(b.name), "es"));
   }
 
   /* --- render the Board grid --------------------------------------------- */
@@ -280,7 +293,7 @@
     if (!el) return;
     const members = PROFILES.filter((p) => p.member)
       .slice()
-      .sort((a, b) => (hasConfirmedInfo(b) - hasConfirmedInfo(a)) || a.name.localeCompare(b.name, "es"));
+      .sort((a, b) => (hasConfirmedInfo(b) - hasConfirmedInfo(a)) || lastNameOf(a.name).localeCompare(lastNameOf(b.name), "es"));
     if (!members.length) {
       el.innerHTML = `<p class="empty-note">—</p>`;
       return;
