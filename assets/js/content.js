@@ -417,6 +417,12 @@ const EXPLORA_EDITIONS = [
    language and shown wherever that person appears. `photo` is optional —
    leave "" to show initials instead.
 
+   Members and Board are both sorted by last name. That's guessed from
+   `name` (last word, e.g. "Castro" in "Rodrigo Morales Castro") — which is
+   wrong whenever someone's first (paternal) surname should be used instead,
+   as is customary in Chile. Add `lastName: "Morales"` to fix it for that
+   person; leave it out otherwise.
+
    What sections a person shows up in depends on which of these two extra
    keys they have:
 
@@ -479,6 +485,7 @@ const PROFILES = [
   },
   {
     name: "Rodrigo Morales Castro",
+    lastName: "Morales",
     photo: "assets/img/profiles/rodrigo-morales.jpeg",
     link: "",
     board: { role: ROLES.treasurer },
@@ -578,6 +585,7 @@ const PROFILES = [
   },
   {
     name: "Alejandro Fonseca Cárdenas",
+    lastName: "Fonseca",
     photo: "assets/img/profiles/alejandro-fonseca.jpeg",
     link: "",
     member: {
@@ -594,6 +602,7 @@ const PROFILES = [
   },
   {
     name: "Macarena Tejos Bravo",
+    lastName: "Tejos",
     photo: "assets/img/profiles/macarena-tejos.jpeg",
     link: "",
     member: {
