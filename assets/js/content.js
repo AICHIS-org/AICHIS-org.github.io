@@ -765,6 +765,19 @@ const PARTNERS = [
 const RESOURCES = [
   {
     title: {
+      es: "Guía: instalarte en Suecia como científico/a chileno/a",
+      en: "Guide: settling in Sweden as a Chilean scientist",
+      sv: "Guide: att etablera sig i Sverige som chilensk forskare",
+    },
+    description: {
+      es: "Permisos de residencia, personnummer, salud, impuestos, banco y vida cotidiana. Hecha por y para la comunidad de AICHIS.",
+      en: "Residence permits, personnummer, healthcare, taxes, banking and daily life. Made by and for the AICHIS community.",
+      sv: "Uppehållstillstånd, personnummer, sjukvård, skatt, bank och vardagsliv. Skapad av och för AICHIS-gemenskapen.",
+    },
+    link: "https://aichis-org.github.io/guia-cientifico-chileno-en-suecia/",
+  },
+  {
+    title: {
       es: "Postula a socio/a",
       en: "Apply to become a member",
       sv: "Ansök om medlemskap",
