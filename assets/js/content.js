@@ -651,7 +651,7 @@ const BOARD_HISTORY = [
     members: [
       { name: "Eduardo A. Sagredo",    role: ROLES.presidentM,     photo: "assets/img/profiles/eduardo-sagredo.jpeg" },
       { name: "Gustavo Monasterio", role: ROLES.vicePresident,  photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
-      { name: "Rodrigo Morales",    role: ROLES.treasurer,      photo: "assets/img/profiles/rodrigo-morales.jpeg" },
+      { name: "Rodrigo Morales Castro", role: ROLES.treasurer,  photo: "assets/img/profiles/rodrigo-morales.jpeg" },
       { name: "Markos Saravia",     role: ROLES.secretary,      photo: "" },
       { name: "Ignacio Verdugo",    role: ROLES.communications, photo: "assets/img/profiles/ignacio-verdugo.jpeg" },
     ],
@@ -661,7 +661,7 @@ const BOARD_HISTORY = [
     members: [
       { name: "Eduardo A. Sagredo",       role: ROLES.presidentM,               photo: "assets/img/profiles/eduardo-sagredo.jpeg" },
       { name: "Gustavo Monasterio",    role: ROLES.vicePresident,            photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
-      { name: "Rodrigo Morales",       role: ROLES.treasurer,                photo: "assets/img/profiles/rodrigo-morales.jpeg" },
+      { name: "Rodrigo Morales Castro", role: ROLES.treasurer,               photo: "assets/img/profiles/rodrigo-morales.jpeg" },
       { name: "Aristides Progulakis",  role: ROLES.communicationsDirectorM,  photo: "" },
       { name: "María José Pino",       role: ROLES.secretaryF,               photo: "assets/img/profiles/maria-jose-pino.jpeg" },
     ],
@@ -673,7 +673,7 @@ const BOARD_HISTORY = [
       { name: "Eduardo A. Sagredo",     role: ROLES.vicePresident,            photo: "assets/img/profiles/eduardo-sagredo.jpeg" },
       { name: "Macarena Carrasco",   role: ROLES.treasurerF,               photo: "" },
       { name: "Carolina Mendez",     role: ROLES.communicationsDirectorF,  photo: "" },
-      { name: "Rodrigo Morales",     role: ROLES.secretary,                photo: "assets/img/profiles/rodrigo-morales.jpeg" },
+      { name: "Rodrigo Morales Castro", role: ROLES.secretary,             photo: "assets/img/profiles/rodrigo-morales.jpeg" },
     ],
   },
 ];
