@@ -212,11 +212,32 @@
       </article>`;
   }
 
+  // A person's info counts as "confirmed" once their member institution is
+  // filled in (TBD profiles are seeded with institution: "").
+  function hasConfirmedInfo(p) {
+    return !!(p.member && p.member.institution);
+  }
+
+  // Board order: President, then Treasurer, then everyone else with
+  // confirmed info (alphabetically), then anyone still "to be confirmed".
+  function boardSortRank(p) {
+    const role = p.board.role;
+    if (role === ROLES.president || role === ROLES.presidentM) return 0;
+    if (role === ROLES.treasurer || role === ROLES.treasurerF) return 1;
+    return hasConfirmedInfo(p) ? 2 : 3;
+  }
+
+  function sortedBoard() {
+    return PROFILES.filter((p) => p.board)
+      .slice()
+      .sort((a, b) => boardSortRank(a) - boardSortRank(b) || a.name.localeCompare(b.name, "es"));
+  }
+
   /* --- render the Board grid --------------------------------------------- */
   function renderBoard(lang) {
     const el = document.getElementById("board-grid");
     if (!el) return;
-    const board = PROFILES.filter((p) => p.board);
+    const board = sortedBoard();
     if (!board.length) {
       el.innerHTML = `<p class="empty-note">—</p>`;
       return;
@@ -257,7 +278,9 @@
   function renderMembers(lang) {
     const el = document.getElementById("members-grid");
     if (!el) return;
-    const members = PROFILES.filter((p) => p.member);
+    const members = PROFILES.filter((p) => p.member)
+      .slice()
+      .sort((a, b) => (hasConfirmedInfo(b) - hasConfirmedInfo(a)) || a.name.localeCompare(b.name, "es"));
     if (!members.length) {
       el.innerHTML = `<p class="empty-note">—</p>`;
       return;
