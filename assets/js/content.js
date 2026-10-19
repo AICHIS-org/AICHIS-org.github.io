@@ -618,7 +618,7 @@ const PROFILES = [
   },
   {
     name: "Alejandra San Juan",
-    photo: "",
+    photo: "assets/img/profiles/alejandra-sanjuan.jpeg",
     link: "",
     member: {
       role: {
@@ -626,9 +626,32 @@ const PROFILES = [
         en: "School Psychologist",
         sv: "Skolpsykolog",
       },
-      field: { es: "Psicología", en: "Psychology", sv: "Psykologi" },
-      institution: "Utbildningskontoret, Central barn- och elevhälsa",
+      field: {
+        es: "Psicología Organizacional",
+        en: "Organizational Psychology",
+        sv: "Organisationspsykologi",
+      },
+      institution: "Central barn- och elevhälsa, UBK Upplands Väsby",
       email: "alejandra.sanjuan@hotmail.com",
+      linkedin: "https://www.linkedin.com/in/alejandra-san-juan-a5186ba6",
+    },
+  },
+  {
+    name: "Albano Cáceres-Verschae",
+    lastName: "Cáceres-Verschae",
+    photo: "assets/img/profiles/albano-caceres.png",
+    link: "",
+    member: {
+      role: { es: "Investigador Postdoctoral", en: "Postdoc", sv: "Postdoktor" },
+      field: {
+        es: "Vesículas Extracelulares, Biomarcadores",
+        en: "Extracellular Vesicles, Biomarkers",
+        sv: "Extracellulära vesiklar, biomarkörer",
+      },
+      institution: "Dept. Oncology/Pathology, Karolinska Institutet",
+      email: "albano.caceres.v@gmail.com",
+      linkedin: "https://www.linkedin.com/in/albanocv",
+      webpage: "https://orcid.org/0000-0002-4057-6827",
     },
   },
   // --- copy a block above to add another profile ---
