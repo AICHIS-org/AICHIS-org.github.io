@@ -654,6 +654,22 @@ const PROFILES = [
       webpage: "https://orcid.org/0000-0002-4057-6827",
     },
   },
+  {
+    name: "Marion Muñoz García",
+    lastName: "Muñoz",
+    photo: "",
+    link: "",
+    member: {
+      role: { es: "Psicóloga", en: "Psychologist", sv: "Psykolog" },
+      field: {
+        es: "Psicología Infanto-Juvenil",
+        en: "Child and Adolescent Psychology",
+        sv: "Barn- och ungdomspsykologi",
+      },
+      institution: "Health center, Region Stockholm",
+      email: "Psmarionmmg@gmail.com",
+    },
+  },
   // --- copy a block above to add another profile ---
 ];
 
