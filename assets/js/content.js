@@ -759,6 +759,44 @@ const PROFILES = [
       email: "Psmarionmmg@gmail.com",
     },
   },
+  {
+    name: "Patricia Munoz Salvatierra",
+    lastName: "Munoz",
+    photo: "",
+    link: "",
+    member: {
+      role: { es: "Investigadora", en: "Researcher", sv: "Forskare" },
+      field: {
+        es: "Aprendizaje Automático, Organoides y Biosensores",
+        en: "Machine Learning, Organoids and Biosensing",
+        sv: "Maskininlärning, organoider och biosensorer",
+      },
+      institution: "KTH Royal Institute of Technology - Stockholm University",
+      email: "pams@kth.se",
+      linkedin: "https://www.linkedin.com/in/patricia-munoz-7820962a3/",
+    },
+  },
+  {
+    name: "Paola Olguin Muñoz",
+    lastName: "Olguin",
+    photo: "assets/img/profiles/paola-olguin.jpeg",
+    link: "",
+    member: {
+      role: {
+        es: "Estudiante de magíster, Arquitectura del Paisaje para un Urbanismo Sostenible",
+        en: "Master's Student, Landscape Architecture for Sustainable Urbanism",
+        sv: "Masterstudent, Landskapsarkitektur för hållbar urbanism",
+      },
+      field: {
+        es: "Arquitectura y Entorno Construido",
+        en: "Architecture and Built Environment",
+        sv: "Arkitektur och byggd miljö",
+      },
+      institution: "Swedish University of Agricultural Sciences (SLU)",
+      email: "pola.olguin@gmail.com",
+      linkedin: "https://www.linkedin.com/in/p-olguin-munoz/",
+    },
+  },
   // --- copy a block above to add another profile ---
 ];
 
@@ -874,6 +912,7 @@ const CITIES = {
 
 const MEMBER_MAP = [
   { name: "Markos Saravia Ramirez",   stage: "student", city: "Stockholm", current: true },
+  { name: "Paola Olguin Muñoz",      stage: "student", city: "Alnarp",    current: true },
   { name: "Sofía Bobadilla",         stage: "phd",     city: "Stockholm", current: true },
   { name: "Ignacio Verdugo",         stage: "phd",     city: "Stockholm", current: true },
   { name: "María José Pino",         stage: "phd",     city: "Stockholm", current: true },
