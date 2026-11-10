@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Content-Security-Policy: the browser only loads scripts from this site,
-       styles/fonts from Google Fonts, and embeds from YouTube. If you add a new
+       styles/fonts from Google Fonts, and embeds from YouTube and Luma (events). If you add a new
        external service, list it here too or the browser will block it. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https: data:; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https: data:; frame-src https://www.youtube-nocookie.com https://luma.com; object-src 'none'; base-uri 'self'; form-action 'none'" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>AICHIS</title>
   <meta name="description" content="AICHIS — Asociación de Investigadores Chilenos en Suecia / Association of Chilean Researchers in Sweden" />
@@ -32,6 +32,7 @@
         </button>
         <ul class="nav-links">
           <li><a href="#about" data-i18n="nav.about"></a></li>
+          <li><a href="#events" data-i18n="nav.events"></a></li>
           <li><a href="#explora" data-i18n="nav.explora"></a></li>
           <li><a href="#members" data-i18n="nav.members"></a></li>
           <li><a href="#board" data-i18n="nav.board"></a></li>
@@ -71,8 +72,29 @@
       </div>
     </section>
 
+    <!-- ===================== EVENTS ===================== -->
+    <!-- The calendar is embedded from Luma (luma.com/AICHIS): events are
+         created and edited there, not here. -->
+    <section id="events" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title" data-i18n="events.title"></h2>
+        <p class="section-lead" data-i18n="events.lead"></p>
+        <div class="events-frame">
+          <iframe
+            src="https://luma.com/embed/calendar/cal-GFHdIZvCa56DNTk/events?lt=light"
+            title="AICHIS events calendar (Luma)"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+        </div>
+        <div class="section-cta">
+          <a class="btn btn-outline" href="https://luma.com/AICHIS" target="_blank" rel="noopener" data-i18n="events.cta"></a>
+        </div>
+      </div>
+    </section>
+
     <!-- ===================== EXPLORA NOBEL ===================== -->
-    <section id="explora" class="section section-alt">
+    <section id="explora" class="section">
       <div class="container">
         <h2 class="section-title" data-i18n="explora.title"></h2>
         <p class="section-lead" data-i18n="explora.lead"></p>
@@ -143,9 +165,18 @@
       <div class="container">
         <h2 class="section-title" data-i18n="researchers.title"></h2>
         <p class="section-lead" data-i18n="researchers.lead"></p>
-        <div class="researchers-grid" id="researchers-grid"><!-- populated from content.js --></div>
+
+        <!-- map of current and past members (MEMBER_MAP in content.js) -->
+        <div class="member-map">
+          <div class="member-map-canvas" id="member-map"><!-- populated from content.js --></div>
+          <aside class="member-map-side">
+            <div class="map-filters" id="map-filters" role="group"><!-- populated from content.js --></div>
+            <div class="map-detail" id="map-detail" aria-live="polite"><!-- populated on hover / tap --></div>
+          </aside>
+        </div>
+
         <div class="section-cta">
-          <a class="btn btn-outline" href="https://github.com/AICHIS-org/AICHIS-org.github.io/issues/new/choose" target="_blank" rel="noopener" data-i18n="researchers.cta"></a>
+          <a class="btn btn-outline" href="https://docs.google.com/forms/d/e/1FAIpQLSf0AZ-invFdtJfyYzxzDIgFdfRaXbPk1jW9IO00SFH0ATjZsw/viewform" target="_blank" rel="noopener" data-i18n="researchers.cta"></a>
         </div>
       </div>
     </section>

@@ -616,31 +616,176 @@ img { max-width: 100%; display: block; }
   .timeline-card .resource-arrow { display: none; }
 }
 
-/* chileans in sweden — directory */
-.researchers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 18px;
+/* events — Luma calendar embed */
+.events-frame {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
-.researcher-card {
+.events-frame iframe {
+  display: block;
+  width: 100%;
+  height: 520px;
+  border: 0;
+}
+
+/* chileans in sweden — map of current and past members */
+.member-map {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.member-map-canvas {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.member-map-canvas svg {
+  display: block;
+  width: 100%;
+  max-height: 680px;
+  overflow: visible;
+}
+.map-pin { cursor: pointer; outline: none; }
+.map-pin .pin-body { transform: scale(.42); transition: transform .15s; }
+.map-pin:hover .pin-body,
+.map-pin:focus-visible .pin-body,
+.map-pin.is-active .pin-body { transform: scale(.6); }
+.pin-bg { fill: var(--white); stroke: var(--blue); stroke-width: 1.6; }
+.map-pin.is-active .pin-bg,
+.map-pin:focus-visible .pin-bg { stroke: var(--red); stroke-width: 2.4; }
+.map-pin.is-past .pin-bg { stroke: var(--muted); stroke-dasharray: 3 2; }
+.map-pin.is-past .pin-body > g { filter: grayscale(.7); opacity: .7; }
+.map-pin.is-hidden { display: none; }
+
+.member-map-side { position: sticky; top: 92px; display: grid; gap: 20px; }
+.map-filters { display: grid; gap: 10px; }
+.map-filter-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.map-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 8px;
+  font: inherit;
+  font-size: .88rem;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color .15s, opacity .15s;
+}
+.map-filter:hover { border-color: var(--blue); }
+.map-filter[aria-pressed="false"] { opacity: .45; }
+.map-filter[aria-pressed="false"] span:not(.map-count) { text-decoration: line-through; }
+.map-count {
+  min-width: 22px;
+  padding: 0 6px;
+  font-size: .78rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--blue);
+  background: var(--bg-alt);
+  border-radius: 999px;
+}
+.map-dot {
+  width: 12px; height: 12px;
+  border: 2px solid var(--blue);
+  border-radius: 50%;
+}
+.map-dot.is-past { border: 2px dashed var(--muted); }
+
+.map-detail { min-height: 160px; }
+.map-hint {
+  margin: 0;
+  padding: 28px 24px;
+  color: var(--muted);
+  text-align: center;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+}
+.map-card {
   background: var(--white);
   border: 1px solid var(--border);
   border-left: 4px solid var(--blue);
   border-radius: var(--radius);
   padding: 20px 22px;
   box-shadow: var(--shadow);
-  transition: transform .15s, box-shadow .15s, border-color .15s;
 }
-.researcher-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-left-color: var(--red);
+.map-card.is-past { border-left-color: var(--muted); }
+.map-card .member-head { position: relative; }
+.map-stage {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--muted);
+  font-size: .88rem;
 }
-.researcher-name { font-size: 1.08rem; margin-bottom: 4px; }
-.researcher-name a { color: var(--ink); }
-.researcher-name a:hover { color: var(--blue); }
-.researcher-field { color: var(--red); font-weight: 600; font-size: .9rem; margin: 0 0 2px; }
-.researcher-aff { color: var(--muted); font-size: .88rem; margin: 0; }
+.map-badge {
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 2px 10px;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--blue);
+  background: var(--bg-alt);
+  border-radius: 999px;
+}
+.map-card.is-past .map-badge { color: var(--muted); }
+.map-close {
+  position: absolute;
+  top: -8px; right: -10px;
+  width: 32px; height: 32px;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.map-close:hover { color: var(--red); background: var(--bg-alt); }
+.map-subtitle {
+  margin: 16px 0 6px;
+  font-size: .8rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--blue-dark);
+}
+.map-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 14px;
+  border-left: 2px solid var(--border);
+  font-size: .9rem;
+}
+.map-timeline li { position: relative; display: flex; gap: 10px; padding: 3px 0; }
+.map-timeline li::before {
+  content: "";
+  position: absolute;
+  left: -20px; top: 10px;
+  width: 10px; height: 10px;
+  background: var(--yellow);
+  border-radius: 50%;
+}
+.map-when { flex: none; min-width: 74px; font-weight: 600; color: var(--ink); }
+.map-empty { margin: 0; color: var(--muted); font-size: .9rem; font-style: italic; }
+
+@media (max-width: 760px) {
+  .member-map { grid-template-columns: 1fr; gap: 20px; }
+  .member-map-canvas { padding: 12px; }
+  .member-map-canvas svg { max-height: 560px; }
+  .member-map-side { position: static; }
+  .events-frame iframe { height: 600px; }
+}
 
 .section-cta { text-align: center; margin-top: 40px; }
 /* quieter text link shown under a section's main button */
@@ -827,7 +972,7 @@ img { max-width: 100%; display: block; }
 .footer-link.secondary:hover { background: #eef2fa; }
 
 /* ------------------------------ responsive ------------------------------ */
-/* nav collapses earlier than the general mobile breakpoint below: with 8
+/* nav collapses earlier than the general mobile breakpoint below: with 9
    links + the language switch, it gets crowded well before 760px. */
 @media (max-width: 1180px) {
   .nav-toggle { display: flex; order: 3; }
@@ -846,7 +991,7 @@ img { max-width: 100%; display: block; }
     overflow: hidden;
     transition: max-height .25s ease;
   }
-  .nav-links.open { max-height: 520px; }
+  .nav-links.open { max-height: 600px; }
   .nav-links li { width: 100%; border-top: 1px solid var(--border); }
   .nav-links a { display: block; padding: 16px 24px; border: none; }
 }

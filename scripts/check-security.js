@@ -20,7 +20,7 @@ const read = (rel) => fs.readFileSync(path.join(repoRoot, rel), "utf8");
 /* --- the external services this site is allowed to load from -----------
    Adding a new one is a deliberate decision: list it here AND in the
    Content-Security-Policy <meta> tag in index.html. */
-const ALLOWED_IFRAME_PREFIXES = ["https://www.youtube-nocookie.com/embed/"];
+const ALLOWED_IFRAME_PREFIXES = ["https://www.youtube-nocookie.com/embed/", "https://luma.com/embed/"];
 const ALLOWED_STYLESHEET_PREFIXES = ["https://fonts.googleapis.com/"];
 
 const errors = [];
@@ -69,7 +69,7 @@ try {
   vm.createContext(context);
   vm.runInContext(read("assets/js/content.js"), context, { filename: "content.js" });
   const data = vm.runInContext(
-    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, RESEARCHERS, PARTNERS, RESOURCES })",
+    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, CITIES, MEMBER_MAP, PARTNERS, RESOURCES })",
     context
   );
   for (const name of Object.keys(data)) walk(data[name], name, name);

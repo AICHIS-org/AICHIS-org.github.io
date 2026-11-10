@@ -25,6 +25,7 @@ const CONTENT = {
   es: {
     nav: {
       about: "Sobre nosotros",
+      events: "Eventos",
       explora: "Explora Nobel",
       members: "Miembros",
       board: "Directiva",
@@ -56,6 +57,11 @@ const CONTENT = {
         },
       ],
     },
+    events: {
+      title: "Eventos",
+      lead: "Encuentros, charlas y actividades de la comunidad. Inscríbete directamente en el calendario.",
+      cta: "Ver todos los eventos en Luma",
+    },
     explora: {
       title: "Explora Nobel",
       lead: "Nuestro proyecto insignia. Desde 2024, cada año llevamos a estudiantes de enseñanza media desde Chile a Suecia para vivir la Semana del Premio Nobel, acercándolos a la ciencia de primer nivel y a las personas que la hacen posible.",
@@ -80,8 +86,25 @@ const CONTENT = {
     },
     researchers: {
       title: "Chilenos en Suecia",
-      lead: "Un directorio abierto de investigadoras e investigadores chilenos que trabajan en Suecia, más allá de nuestros miembros. ¿Conoces a alguien, o eres tú? Ayúdanos a ampliar esta lista.",
-      cta: "Sugerir un/a investigador/a",
+      lead: "Dónde están, y dónde han estado, los miembros de AICHIS a lo largo de Suecia. Cada planta es una etapa de la carrera: pasa el cursor o toca una para ver la trayectoria de esa persona.",
+      cta: "¿Eres o fuiste miembro? Agrega tu trayectoria",
+      mapLabel: "Mapa de Suecia con los miembros de AICHIS",
+      hint: "Pasa el cursor o toca una planta para ver su trayectoria.",
+      filterLabel: "Filtrar el mapa",
+      current: "Actuales",
+      past: "Anteriores",
+      currentBadge: "Miembro actual",
+      pastBadge: "Ex miembro",
+      aichisTitle: "En AICHIS",
+      historyTitle: "Trayectoria",
+      noHistory: "Pronto agregaremos su trayectoria.",
+      close: "Cerrar",
+      stages: {
+        student: "Licenciatura o magíster",
+        phd: "Doctorado",
+        postdoc: "Postdoctorado",
+        pi: "Profesor/a o investigador/a principal",
+      },
     },
     collaborations: {
       title: "Colaboraciones",
@@ -108,6 +131,7 @@ const CONTENT = {
   en: {
     nav: {
       about: "About us",
+      events: "Events",
       explora: "Explora Nobel",
       members: "Members",
       board: "Board",
@@ -139,6 +163,11 @@ const CONTENT = {
         },
       ],
     },
+    events: {
+      title: "Events",
+      lead: "Meetups, talks and community activities. Sign up directly from the calendar.",
+      cta: "See all events on Luma",
+    },
     explora: {
       title: "Explora Nobel",
       lead: "Our flagship project. Every year since 2024 we have brought high-school students from Chile to Sweden to experience Nobel Prize Week, bringing them closer to world-class science and the people who make it happen.",
@@ -163,8 +192,25 @@ const CONTENT = {
     },
     researchers: {
       title: "Chileans in Sweden",
-      lead: "An open directory of Chilean researchers working in Sweden, beyond our members. Know someone, or is it you? Help us grow this list.",
-      cta: "Suggest a researcher",
+      lead: "Where AICHIS members are, and have been, across Sweden. Each plant is a career stage: hover over or tap one to see that person's path.",
+      cta: "Current or former member? Add your path",
+      mapLabel: "Map of Sweden showing AICHIS members",
+      hint: "Hover over or tap a plant to see their path.",
+      filterLabel: "Filter the map",
+      current: "Current",
+      past: "Former",
+      currentBadge: "Current member",
+      pastBadge: "Former member",
+      aichisTitle: "At AICHIS",
+      historyTitle: "Path",
+      noHistory: "Their path will be added soon.",
+      close: "Close",
+      stages: {
+        student: "Bachelor's or master's",
+        phd: "PhD",
+        postdoc: "Postdoc",
+        pi: "Professor or principal investigator",
+      },
     },
     collaborations: {
       title: "Collaborations",
@@ -191,6 +237,7 @@ const CONTENT = {
   sv: {
     nav: {
       about: "Om oss",
+      events: "Evenemang",
       explora: "Explora Nobel",
       members: "Medlemmar",
       board: "Styrelse",
@@ -222,6 +269,11 @@ const CONTENT = {
         },
       ],
     },
+    events: {
+      title: "Evenemang",
+      lead: "Träffar, föredrag och aktiviteter för gemenskapen. Anmäl dig direkt i kalendern.",
+      cta: "Se alla evenemang på Luma",
+    },
     explora: {
       title: "Explora Nobel",
       lead: "Vårt flaggskeppsprojekt. Varje år sedan 2024 tar vi med gymnasieelever från Chile till Sverige för att uppleva Nobelveckan och komma närmare vetenskap i världsklass och de människor som gör den möjlig.",
@@ -246,8 +298,25 @@ const CONTENT = {
     },
     researchers: {
       title: "Chilenare i Sverige",
-      lead: "En öppen katalog över chilenska forskare som arbetar i Sverige, utöver våra medlemmar. Känner du någon, eller är det du? Hjälp oss att utöka listan.",
-      cta: "Föreslå en forskare",
+      lead: "Var AICHIS medlemmar finns, och har funnits, i Sverige. Varje växt är ett karriärsteg: håll muspekaren över eller tryck på en för att se personens väg.",
+      cta: "Nuvarande eller tidigare medlem? Lägg till din väg",
+      mapLabel: "Karta över Sverige med AICHIS medlemmar",
+      hint: "Håll muspekaren över eller tryck på en växt för att se personens väg.",
+      filterLabel: "Filtrera kartan",
+      current: "Nuvarande",
+      past: "Tidigare",
+      currentBadge: "Nuvarande medlem",
+      pastBadge: "Tidigare medlem",
+      aichisTitle: "I AICHIS",
+      historyTitle: "Väg",
+      noHistory: "Personens väg läggs till snart.",
+      close: "Stäng",
+      stages: {
+        student: "Kandidat eller master",
+        phd: "Doktorand",
+        postdoc: "Postdoktor",
+        pi: "Professor eller huvudforskare",
+      },
     },
     collaborations: {
       title: "Samarbeten",
@@ -718,21 +787,90 @@ const BOARD_HISTORY = [
 ];
 
 /* =========================================================================
-   CHILEANS IN SWEDEN  (broader directory, beyond AICHIS members)
+   CHILEANS IN SWEDEN  (map of current and past AICHIS members)
    -------------------------------------------------------------------------
-   Chilean researchers working in Sweden who are not necessarily AICHIS
-   members. `field` (research area) and can be translated per language.
-   To add someone, copy one { ... } block and edit the values.
+   Every entry is drawn as a plant on the map of Sweden, in its `city`. The
+   plant shows the person's career stage (`stage`):
+
+   - "student"  bachelor's or master's student  -> a seed
+   - "phd"      PhD student                     -> a seedling
+   - "postdoc"  postdoc                         -> a young tree
+   - "pi"       professor / principal investig. -> a tree
+
+   Each entry has:
+
+   - `name`       if it matches someone in PROFILES, their photo, position,
+                  field and institution are taken from there (and their board
+                  roles from BOARD_HISTORY) — no need to repeat them here.
+   - `stage`      one of the four above.
+   - `city`       one of the names in CITIES below (add a city there if it's
+                  missing).
+   - `current`    true for current members, false for former members.
+   - `history`    optional: their path, shown when someone hovers over or
+                  taps them. A list of { years, role, place } — `role` can be
+                  plain text or translated { es, en, sv }. Newest first.
+                  Leave it out until we have it.
+
+   Former members who aren't in PROFILES can also have `photo`, `field`
+   ({ es, en, sv }) and `institution`.
+
+   People living in the same city are spread out around it automatically.
    ========================================================================= */
 
-const RESEARCHERS = [
-  {
-    name: "Nombre Apellido",
-    field: { es: "Área de investigación", en: "Research area", sv: "Forskningsområde" },
-    affiliation: "Universidad / University",
-    link: "", // e.g. "https://..." (personal or institutional profile)
-  },
-  // --- copy the block above to add another researcher ---
+// [latitude, longitude] of each city a member can be placed in.
+const CITIES = {
+  "Stockholm":    [59.33, 18.07],
+  "Uppsala":      [59.86, 17.64],
+  "Göteborg":     [57.71, 11.97],
+  "Onsala":       [57.39, 11.92],
+  "Malmö":        [55.60, 13.00],
+  "Lund":         [55.70, 13.19],
+  "Alnarp":       [55.66, 13.08],
+  "Kristianstad": [56.03, 14.16],
+  "Halmstad":     [56.67, 12.86],
+  "Växjö":        [56.88, 14.81],
+  "Kalmar":       [56.66, 16.36],
+  "Karlskrona":   [56.16, 15.59],
+  "Jönköping":    [57.78, 14.16],
+  "Borås":        [57.72, 12.94],
+  "Skövde":       [58.39, 13.85],
+  "Trollhättan":  [58.28, 12.29],
+  "Linköping":    [58.41, 15.62],
+  "Norrköping":   [58.59, 16.19],
+  "Visby":        [57.64, 18.30],
+  "Örebro":       [59.27, 15.21],
+  "Västerås":     [59.61, 16.55],
+  "Eskilstuna":   [59.37, 16.51],
+  "Södertälje":   [59.20, 17.63],
+  "Karlstad":     [59.40, 13.50],
+  "Falun":        [60.61, 15.63],
+  "Gävle":        [60.67, 17.14],
+  "Sundsvall":    [62.39, 17.31],
+  "Östersund":    [63.18, 14.64],
+  "Umeå":         [63.83, 20.26],
+  "Luleå":        [65.58, 22.15],
+  "Kiruna":       [67.86, 20.23],
+};
+
+const MEMBER_MAP = [
+  { name: "Sofía Bobadilla",         stage: "phd",     city: "Stockholm", current: true },
+  { name: "Ignacio Verdugo",         stage: "phd",     city: "Stockholm", current: true },
+  { name: "María José Pino",         stage: "phd",     city: "Stockholm", current: true },
+  { name: "Macarena Tejos Bravo",    stage: "postdoc", city: "Stockholm", current: true },
+  { name: "Albano Cáceres-Verschae", stage: "postdoc", city: "Stockholm", current: true },
+  { name: "Gustavo Monasterio",      stage: "pi",      city: "Stockholm", current: true },
+  { name: "Eduardo A. Sagredo",      stage: "pi",      city: "Stockholm", current: true },
+  // Example with a path (copy and fill in; delete the // to use it):
+  // {
+  //   name: "Nombre Apellido",
+  //   stage: "postdoc",
+  //   city: "Lund",
+  //   current: false,
+  //   history: [
+  //     { years: "2021–2024", role: { es: "Postdoctorado", en: "Postdoc", sv: "Postdoktor" }, place: "Lund University" },
+  //     { years: "2016–2021", role: { es: "Doctorado", en: "PhD", sv: "Doktorand" }, place: "Universidad de Chile" },
+  //   ],
+  // },
 ];
 
 /* =========================================================================

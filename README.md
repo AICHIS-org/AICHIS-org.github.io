@@ -23,7 +23,7 @@ It is organised in plain language and contains everything you'll normally change
 | ----------------------------- | ------------------------------------------------------------------ |
 | Change any text on the page   | Find the text and edit it — for **all three** languages (`es`, `en`, `sv`). |
 | Add / edit a **person** (board and/or member) | Copy a `{ ... }` block in the `PROFILES` list and change the values — see below. |
-| Add a **Chilean researcher in Sweden** | Copy a `{ ... }` block in the `RESEARCHERS` list and change the values. |
+| Put a **member on the map** (Chileans in Sweden) | Copy a `{ ... }` line in the `MEMBER_MAP` list — see below. |
 | Add a **partner** (Collaborations) | Copy a `{ ... }` block in the `PARTNERS` list and change the values. The logo goes in `assets/img/partners/`. |
 | Add an **Explora Nobel edition** | Copy a `{ ... }` block in the `EXPLORA_EDITIONS` list (`state: "done"` or `"upcoming"`). Each year becomes a tab. |
 | Add a **link to an Explora Nobel year** | Copy a `{ date, title, description, link, image }` block inside that year's `resources` list. The preview picture goes in `assets/img/explora/`. |
@@ -57,6 +57,28 @@ their card — leave any of these out entirely if unknown (don't set them to
 | `email` | plain string | e.g. `"jane@example.com"`. |
 | `linkedin` | plain string URL | e.g. `"https://www.linkedin.com/in/jane-doe"`. |
 | `webpage` | plain string URL | e.g. `"https://jane.example.com"`. |
+
+### The map: `MEMBER_MAP`
+The **Chileans in Sweden** section is a map of current and past members. Each
+entry in `MEMBER_MAP` is drawn as a plant in its city, by career stage:
+
+| `stage` | Who | Plant |
+| --- | --- | --- |
+| `"student"` | bachelor's or master's student | seed |
+| `"phd"` | PhD student | seedling |
+| `"postdoc"` | postdoc | young tree |
+| `"pi"` | professor / principal investigator | tree |
+
+`city` must be one of the names in `CITIES` (add a city there with its
+latitude and longitude if it's missing). `current` is `true` or `false`.
+If `name` matches someone in `PROFILES`, their photo, position and board roles
+are filled in automatically. The optional `history` list
+(`{ years, role, place }`, newest first) is what visitors see when they hover
+over or tap the plant.
+
+### Events
+The **Events** section embeds the Luma calendar (https://luma.com/AICHIS).
+Events are created and edited on Luma, not in this repo.
 
 ### Changing the Explora Nobel documentary
 The embedded video is in [`index.html`](index.html) — search for `youtube-nocookie`.
@@ -102,6 +124,7 @@ assets/
   img/favicon.svg                Browser-tab icon
   img/aichis_members_embassy_2023.jpg   Members group photo (Members section banner)
   img/profiles/                  Individual profile photos, named firstname-lastname.ext
+  img/sweden-map.svg             Map of Sweden used by the Chileans in Sweden section
 scripts/
   check-content.js               PR check: translations complete, photos exist
   check-security.js              PR check: no unsafe links, embeds or scripts
@@ -164,7 +187,7 @@ Configured via: Settings → Branches → Branch protection rules → `main`.
 
 - [x] Add the board to the `PROFILES` list.
 - [ ] Confirm real `role`/`field`/`institution` details for members still marked `TBD` in `PROFILES`.
-- [ ] Add real people to the `RESEARCHERS` list (Chileans in Sweden).
+- [ ] Add every current and past member to `MEMBER_MAP`, with their `history`.
 - [ ] Add real resources to the `RESOURCES` list.
 - [ ] Expand the About Us content as needed.
 - [ ] Once things stabilise, make the PR checks workflow a **required** status
