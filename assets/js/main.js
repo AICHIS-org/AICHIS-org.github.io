@@ -334,26 +334,209 @@
     }).join("");
   }
 
-  /* --- render the Chileans-in-Sweden directory ------------------------- */
-  function renderResearchers(lang) {
-    const el = document.getElementById("researchers-grid");
-    if (!el) return;
-    if (!RESEARCHERS.length) {
-      el.innerHTML = `<p class="empty-note">—</p>`;
-      return;
-    }
-    el.innerHTML = RESEARCHERS.map((r) => {
-      const field = typeof r.field === "object" ? r.field[lang] : r.field;
-      const name = r.link
-        ? `<a href="${safeUrl(r.link)}" target="_blank" rel="noopener">${esc(r.name)}</a>`
-        : esc(r.name);
-      return `
-        <article class="researcher-card">
-          <h3 class="researcher-name">${name}</h3>
-          <p class="researcher-field">${esc(field)}</p>
-          <p class="researcher-aff">${esc(r.affiliation)}</p>
-        </article>`;
-    }).join("");
+  /* --- Chileans in Sweden: map of current and past members -------------- */
+  // Same projection that drew assets/img/sweden-map.svg — keep them in sync.
+  const SWEDEN_MAP = { width: 128, height: 284, lon0: 10.8, latTop: 69.3, k: 20, cosLat: Math.cos((62 * Math.PI) / 180) };
+
+  function projectCity([lat, lon]) {
+    return [(lon - SWEDEN_MAP.lon0) * SWEDEN_MAP.cosLat * SWEDEN_MAP.k, (SWEDEN_MAP.latTop - lat) * SWEDEN_MAP.k];
+  }
+
+  // One plant per career stage, drawn in a 24x24 box.
+  const STAGES = ["student", "phd", "postdoc", "pi"];
+  const PLANTS = {
+    student: `<ellipse cx="12" cy="13" rx="5" ry="6.5" fill="#a86b32" transform="rotate(-25 12 13)"/><path d="M10 9.5c1.5 1 2.5 3 2.6 6" stroke="#6e4219" stroke-width="1.2" fill="none" stroke-linecap="round"/>`,
+    phd: `<path d="M12 20.5V12" stroke="#3f7d3a" stroke-width="1.8" stroke-linecap="round"/><path d="M12 13C12 8.5 8.5 6.5 4.5 7c.2 4 3.3 6.5 7.5 6z" fill="#5aa64b"/><path d="M12 11c0-4 3-6 7-5.6-.3 3.7-3 6-7 5.6z" fill="#7cc35e"/><path d="M8 20.5h8" stroke="#8a5a2b" stroke-width="1.6" stroke-linecap="round"/>`,
+    postdoc: `<path d="M12 21v-8.5" stroke="#7a4e2d" stroke-width="2" stroke-linecap="round"/><path d="M12 15.5l-2.6-2.4" stroke="#7a4e2d" stroke-width="1.4" stroke-linecap="round"/><circle cx="12" cy="9" r="5.5" fill="#5aa64b"/>`,
+    pi: `<path d="M10.7 22h2.6l-.3-8.5h-2z" fill="#7a4e2d"/><circle cx="7.6" cy="11.5" r="4.8" fill="#3f8a3a"/><circle cx="16.4" cy="11.5" r="4.8" fill="#3f8a3a"/><circle cx="12" cy="7.5" r="5.8" fill="#4f9e45"/>`,
+  };
+  const plantIcon = (stage, size = 22) =>
+    `<svg class="plant-icon" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${PLANTS[stage] || ""}</svg>`;
+
+  const pickLang = (v, lang) => (v && typeof v === "object" && !Array.isArray(v) ? v[lang] : v);
+
+  // Map state survives language changes: who is pinned, which groups are hidden.
+  let mapPinned = null;
+  const mapHidden = new Set();
+
+  function mapPeople() {
+    return MEMBER_MAP.filter((m) => STAGES.includes(m.stage) && CITIES[m.city]).map((m, i) => {
+      const profile = PROFILES.find((p) => p.name === m.name);
+      return { ...m, i, profile, member: (profile && profile.member) || {}, photo: m.photo || (profile && profile.photo) || "" };
+    });
+  }
+
+  // Board roles a person has held: the current one (PROFILES) and past ones (BOARD_HISTORY).
+  function boardRolesOf(name, lang) {
+    const roles = [];
+    const current = PROFILES.find((p) => p.name === name && p.board);
+    if (current) roles.push({ when: CONTENT[lang].nav.board, role: pickLang(current.board.role, lang) });
+    BOARD_HISTORY.forEach((entry) => {
+      const m = entry.members.find((x) => x.name === name);
+      if (m) roles.push({ when: String(entry.year), role: pickLang(m.role, lang) });
+    });
+    return roles;
+  }
+
+  function mapDetailHTML(person, lang, pinned) {
+    const t = CONTENT[lang].researchers;
+    if (!person) return `<p class="map-hint">${esc(t.hint)}</p>`;
+    const m = person.member;
+    const avatar = person.photo
+      ? `<img class="member-photo" src="${safeUrl(person.photo)}" alt="" />`
+      : `<div class="member-avatar" aria-hidden="true">${esc(initialsOf(person.name))}</div>`;
+    const field = pickLang(person.field || m.field, lang);
+    const institution = person.institution || m.institution;
+    const place = [institution, person.city].filter(Boolean).join(" · ");
+    const board = boardRolesOf(person.name, lang);
+    const history = person.history || [];
+    const list = (items) =>
+      `<ol class="map-timeline">${items.map((h) => `
+          <li><span class="map-when">${esc(h.when)}</span><span>${esc(h.what)}</span></li>`).join("")}</ol>`;
+
+    return `
+      <article class="map-card${person.current ? "" : " is-past"}">
+        <div class="member-head">
+          ${avatar}
+          <div>
+            <h3 class="member-name">${esc(person.name)}</h3>
+            <p class="map-stage">${plantIcon(person.stage, 18)} ${esc(t.stages[person.stage])}</p>
+          </div>
+          ${pinned ? `<button type="button" class="map-close" aria-label="${esc(t.close)}">&times;</button>` : ""}
+        </div>
+        <p class="map-badge">${esc(person.current ? t.currentBadge : t.pastBadge)}</p>
+        ${m.role ? `<p class="member-role">${esc(pickLang(m.role, lang))}</p>` : ""}
+        ${field ? `<p class="member-field">${esc(field)}</p>` : ""}
+        <p class="member-inst">${esc(place)}</p>
+        ${board.length ? `<h4 class="map-subtitle">${esc(t.aichisTitle)}</h4>${list(board.map((b) => ({ when: b.when, what: b.role })))}` : ""}
+        <h4 class="map-subtitle">${esc(t.historyTitle)}</h4>
+        ${history.length
+          ? list(history.map((h) => ({ when: h.years, what: [pickLang(h.role, lang), h.place].filter(Boolean).join(" — ") })))
+          : `<p class="map-empty">${esc(t.noHistory)}</p>`}
+      </article>`;
+  }
+
+  function renderMemberMap(lang) {
+    const canvas = document.getElementById("member-map");
+    const filters = document.getElementById("map-filters");
+    if (!canvas || !filters) return;
+    const t = CONTENT[lang].researchers;
+    const people = mapPeople();
+
+    // Spread people who share a city in a sunflower pattern around it.
+    const perCity = {};
+    const pins = people.map((p) => {
+      const n = (perCity[p.city] = (perCity[p.city] || 0) + 1) - 1;
+      const [cx, cy] = projectCity(CITIES[p.city]);
+      const r = 6 * Math.sqrt(n);
+      const a = n * 2.39996; // golden angle
+      return { p, x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    });
+    pins.sort((a, b) => a.y - b.y); // lower pins drawn on top
+
+    canvas.innerHTML = `
+      <svg viewBox="0 0 ${SWEDEN_MAP.width} ${SWEDEN_MAP.height}" role="group" aria-label="${esc(t.mapLabel)}">
+        <image href="assets/img/sweden-map.svg" width="${SWEDEN_MAP.width}" height="${SWEDEN_MAP.height}" />
+        ${pins.map(({ p, x, y }) => {
+          const hidden = mapHidden.has(p.stage) || mapHidden.has(p.current ? "current" : "past");
+          return `
+        <g class="map-pin${p.current ? "" : " is-past"}${hidden ? " is-hidden" : ""}${p.i === mapPinned ? " is-active" : ""}"
+           transform="translate(${x.toFixed(2)} ${y.toFixed(2)})" data-i="${p.i}"
+           role="button" tabindex="${hidden ? -1 : 0}" aria-label="${esc(p.name)} — ${esc(t.stages[p.stage])}">
+          <g class="pin-body">
+            <circle class="pin-bg" r="12" />
+            <g transform="translate(-12 -12)">${PLANTS[p.stage]}</g>
+          </g>
+        </g>`;
+        }).join("")}
+      </svg>`;
+
+    const count = (pred) => people.filter(pred).length;
+    const filterBtn = (key, label, icon, n) => `
+      <button type="button" class="map-filter" data-key="${key}" aria-pressed="${!mapHidden.has(key)}">
+        ${icon}<span>${esc(label)}</span><span class="map-count">${n}</span>
+      </button>`;
+    filters.setAttribute("aria-label", t.filterLabel);
+    filters.innerHTML = `
+      <div class="map-filter-row">
+        ${STAGES.map((s) => filterBtn(s, t.stages[s], plantIcon(s), count((p) => p.stage === s))).join("")}
+      </div>
+      <div class="map-filter-row map-filter-status">
+        ${filterBtn("current", t.current, `<span class="map-dot"></span>`, count((p) => p.current))}
+        ${filterBtn("past", t.past, `<span class="map-dot is-past"></span>`, count((p) => !p.current))}
+      </div>`;
+
+    showOnMap(mapPinned, lang);
+  }
+
+  // Fill the side panel with a person (or the hint when `i` is null).
+  function showOnMap(i, lang = document.documentElement.lang) {
+    const detail = document.getElementById("map-detail");
+    if (!detail) return;
+    // mouseover fires for every part of a pin, so skip redrawing the same card
+    const key = `${i}|${lang}|${mapPinned}`;
+    if (detail.dataset.shown === key) return;
+    detail.dataset.shown = key;
+    const person = i == null ? null : mapPeople().find((p) => p.i === i);
+    detail.innerHTML = mapDetailHTML(person, lang, person && i === mapPinned);
+  }
+
+  function initMemberMap() {
+    const canvas = document.getElementById("member-map");
+    const filters = document.getElementById("map-filters");
+    const detail = document.getElementById("map-detail");
+    if (!canvas || !filters || !detail) return;
+    const pinOf = (event) => event.target.closest && event.target.closest(".map-pin");
+    const setActive = () =>
+      canvas.querySelectorAll(".map-pin").forEach((g) => g.classList.toggle("is-active", Number(g.dataset.i) === mapPinned));
+
+    const pin = (i) => {
+      mapPinned = mapPinned === i ? null : i;
+      setActive();
+      showOnMap(mapPinned);
+      // on narrow screens the panel sits below the map
+      if (mapPinned != null && window.matchMedia("(max-width: 760px)").matches) {
+        detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    };
+
+    canvas.addEventListener("mouseover", (event) => {
+      const g = pinOf(event);
+      if (g) showOnMap(Number(g.dataset.i));
+    });
+    canvas.addEventListener("mouseleave", () => showOnMap(mapPinned));
+    canvas.addEventListener("focusin", (event) => {
+      const g = pinOf(event);
+      if (g) showOnMap(Number(g.dataset.i));
+    });
+    canvas.addEventListener("click", (event) => {
+      const g = pinOf(event);
+      if (g) pin(Number(g.dataset.i));
+    });
+    canvas.addEventListener("keydown", (event) => {
+      const g = pinOf(event);
+      if (g && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        pin(Number(g.dataset.i));
+      }
+    });
+    detail.addEventListener("click", (event) => {
+      if (event.target.closest(".map-close")) pin(mapPinned);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && mapPinned != null) pin(mapPinned);
+    });
+
+    filters.addEventListener("click", (event) => {
+      const btn = event.target.closest(".map-filter");
+      if (!btn) return;
+      const key = btn.dataset.key;
+      if (mapHidden.has(key)) mapHidden.delete(key);
+      else mapHidden.add(key);
+      const person = mapPeople().find((p) => p.i === mapPinned);
+      if (person && (mapHidden.has(person.stage) || mapHidden.has(person.current ? "current" : "past"))) mapPinned = null;
+      renderMemberMap(document.documentElement.lang);
+    });
   }
 
   /* --- render the Collaborations (partner cards) ------------------------ */
@@ -421,7 +604,7 @@
     renderMembers(lang);
     renderBoard(lang);
     renderBoardHistory(lang);
-    renderResearchers(lang);
+    renderMemberMap(lang);
     renderPartners(lang);
     renderResources(lang);
 
@@ -458,6 +641,7 @@
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     initExploraTabs();
+    initMemberMap();
     setLanguage(initialLang());
   }
 

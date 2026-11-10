@@ -26,7 +26,7 @@ try {
   // top-level `const`/`let` don't attach to the context object itself, so
   // pull the values out via a second eval in the same lexical scope.
   sandbox = vm.runInContext(
-    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, RESEARCHERS, PARTNERS, RESOURCES })",
+    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, CITIES, MEMBER_MAP, PARTNERS, RESOURCES })",
     context
   );
 } catch (err) {
@@ -88,7 +88,7 @@ function checkTranslationLeaves(obj, pathStr) {
   }
 }
 
-for (const name of ["EXPLORA_EDITIONS", "PROFILES", "BOARD_HISTORY", "RESEARCHERS", "PARTNERS", "RESOURCES"]) {
+for (const name of ["EXPLORA_EDITIONS", "PROFILES", "BOARD_HISTORY", "MEMBER_MAP", "PARTNERS", "RESOURCES"]) {
   if (sandbox[name] !== undefined) checkTranslationLeaves(sandbox[name], name);
 }
 
@@ -126,6 +126,21 @@ for (const entry of sandbox.BOARD_HISTORY || []) {
   checkPhotoPaths(entry.members, `BOARD_HISTORY ${entry.year}`);
 }
 
+/* --- 4. MEMBER_MAP: a known stage and city for every person ------------ */
+const STAGES = ["student", "phd", "postdoc", "pi"];
+checkPhotoPaths(sandbox.MEMBER_MAP, "MEMBER_MAP");
+for (const m of sandbox.MEMBER_MAP || []) {
+  if (!STAGES.includes(m.stage)) {
+    errors.push(`MEMBER_MAP "${m.name}": stage "${m.stage}" must be one of ${STAGES.join(", ")}`);
+  }
+  if (!(sandbox.CITIES || {})[m.city]) {
+    errors.push(`MEMBER_MAP "${m.name}": city "${m.city}" is not in CITIES — add it there with its coordinates`);
+  }
+  if (typeof m.current !== "boolean") {
+    errors.push(`MEMBER_MAP "${m.name}": current must be true or false`);
+  }
+}
+
 /* --- report -------------------------------------------------------------- */
 if (errors.length) {
   console.error(`✗ ${errors.length} problem(s) found in content.js:\n`);
@@ -133,4 +148,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log("✓ content.js: translations complete, all photo paths exist.");
+console.log("✓ content.js: translations complete, all photo paths exist, map entries valid.");
