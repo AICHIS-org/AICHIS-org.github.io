@@ -570,18 +570,38 @@ const PROFILES = [
     },
   },
   {
-    name: "Markos Saravia",
+    name: "Markos Saravia Ramirez",
+    lastName: "Saravia",
     photo: "",
     link: "",
     board: { role: ROLES.boardMember },
-    member: { role: TBD, field: TBD, institution: "" },
+    member: {
+      role: { es: "Estudiante de magíster", en: "Master's Student", sv: "Masterstudent" },
+      field: {
+        es: "Educación Comparada e Internacional",
+        en: "Comparative and International Education",
+        sv: "Jämförande och internationell pedagogik",
+      },
+      institution: "Stockholm University",
+      email: "Ramirez.diego75@gmail.com",
+    },
   },
   {
     name: "Giorgio Giusti",
     photo: "assets/img/profiles/giorgio-giusti.jpeg",
     link: "",
     board: { role: ROLES.boardMember },
-    member: { role: TBD, field: TBD, institution: "" },
+    member: {
+      role: {
+        es: "Investigador independiente, artista y archivista",
+        en: "Independent Researcher, Artist and Archivist",
+        sv: "Oberoende forskare, konstnär och arkivarie",
+      },
+      field: { es: "Arte / Información", en: "Art / Information", sv: "Konst / Information" },
+      institution: "Independent",
+      email: "giorgio.giusti@gmail.com",
+      linkedin: "https://www.linkedin.com/in/giorgio-giusti-80278298",
+    },
   },
   {
     name: "Sofía Bobadilla",
@@ -760,7 +780,7 @@ const BOARD_HISTORY = [
       { name: "Eduardo A. Sagredo",    role: ROLES.presidentM,     photo: "assets/img/profiles/eduardo-sagredo.jpeg" },
       { name: "Gustavo Monasterio", role: ROLES.vicePresident,  photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
       { name: "Rodrigo Morales Castro", role: ROLES.treasurer,  photo: "assets/img/profiles/rodrigo-morales.jpeg" },
-      { name: "Markos Saravia",     role: ROLES.secretary,      photo: "" },
+      { name: "Markos Saravia Ramirez", role: ROLES.secretary,  photo: "" },
       { name: "Ignacio Verdugo",    role: ROLES.communications, photo: "assets/img/profiles/ignacio-verdugo.jpeg" },
     ],
   },
@@ -853,6 +873,7 @@ const CITIES = {
 };
 
 const MEMBER_MAP = [
+  { name: "Markos Saravia Ramirez",   stage: "student", city: "Stockholm", current: true },
   { name: "Sofía Bobadilla",         stage: "phd",     city: "Stockholm", current: true },
   { name: "Ignacio Verdugo",         stage: "phd",     city: "Stockholm", current: true },
   { name: "María José Pino",         stage: "phd",     city: "Stockholm", current: true },
