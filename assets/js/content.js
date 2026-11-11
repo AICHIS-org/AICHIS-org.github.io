@@ -842,6 +842,8 @@ const BOARD_HISTORY = [
       { name: "Eduardo A. Sagredo",    role: ROLES.presidentM,     photo: "assets/img/profiles/eduardo-sagredo.jpeg" },
       { name: "Gustavo Monasterio", role: ROLES.vicePresident,  photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
       { name: "Rodrigo Morales Castro", role: ROLES.treasurer,  photo: "assets/img/profiles/rodrigo-morales.jpeg" },
+  { name: "Alejandro Fonseca Cárdenas",  stage: "researcher", city: "Uppsala",   university: "SLU", current: true },
+  { name: "Giorgio Giusti",              stage: "researcher", city: "Stockholm", current: true },
       { name: "Markos Saravia Ramirez", role: ROLES.secretary,  photo: "" },
       { name: "Ignacio Verdugo",    role: ROLES.communications, photo: "assets/img/profiles/ignacio-verdugo.jpeg" },
     ],
