@@ -86,7 +86,7 @@ const CONTENT = {
     },
     researchers: {
       title: "Chilenos en Suecia",
-      lead: "Dónde están, y dónde han estado, los miembros de AICHIS a lo largo de Suecia. Cada planta es una etapa de la carrera: pasa el cursor o toca una para ver la trayectoria de esa persona.",
+      lead: "Dónde están, y dónde han estado, los miembros de AICHIS a lo largo de Suecia. Cada planta muestra la etapa o el rol de esa persona: pasa el cursor o toca una para ver su trayectoria.",
       cta: "¿Eres o fuiste miembro? Agrega tu trayectoria",
       mapLabel: "Mapa de Suecia con los miembros de AICHIS",
       hint: "Pasa el cursor o toca una planta para ver su trayectoria. Usa los filtros para ver solo a algunas personas.",
@@ -200,7 +200,7 @@ const CONTENT = {
     },
     researchers: {
       title: "Chileans in Sweden",
-      lead: "Where AICHIS members are, and have been, across Sweden. Each plant is a career stage: hover over or tap one to see that person's path.",
+      lead: "Where AICHIS members are, and have been, across Sweden. Each plant shows the person's career stage or role: hover over or tap one to see their path.",
       cta: "Current or former member? Add your path",
       mapLabel: "Map of Sweden showing AICHIS members",
       hint: "Hover over or tap a plant to see their path. Use the filters to show only some people.",
@@ -314,7 +314,7 @@ const CONTENT = {
     },
     researchers: {
       title: "Chilenare i Sverige",
-      lead: "Var AICHIS medlemmar finns, och har funnits, i Sverige. Varje växt är ett karriärsteg: håll muspekaren över eller tryck på en för att se personens väg.",
+      lead: "Var AICHIS medlemmar finns, och har funnits, i Sverige. Varje växt visar personens karriärsteg eller roll: håll muspekaren över eller tryck på en för att se personens väg.",
       cta: "Nuvarande eller tidigare medlem? Lägg till din väg",
       mapLabel: "Karta över Sverige med AICHIS medlemmar",
       hint: "Håll muspekaren över eller tryck på en växt för att se personens väg. Använd filtren för att bara visa vissa personer.",
@@ -872,7 +872,7 @@ const BOARD_HISTORY = [
    CHILEANS IN SWEDEN  (map of current and past AICHIS members)
    -------------------------------------------------------------------------
    Every entry is drawn as a plant on the map of Sweden, in its `city`. The
-   plant shows the person's career stage (`stage`):
+   plant shows the person's career stage or role (`stage`):
 
    - "student"  bachelor's or master's student  -> a seed
    - "phd"      PhD student                     -> a seedling
