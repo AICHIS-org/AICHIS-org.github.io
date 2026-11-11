@@ -99,6 +99,13 @@ const CONTENT = {
       historyTitle: "Trayectoria",
       noHistory: "Pronto agregaremos su trayectoria.",
       close: "Cerrar",
+      groupLabel: "Mostrar en el mapa",
+      byCity: "Por ciudad",
+      byUniversity: "Por universidad",
+      zoomIn: "Acercar",
+      zoomOut: "Alejar",
+      zoomReset: "Ver toda Suecia",
+      zoomHint: "Haz clic en el mapa para acercarte.",
       stages: {
         student: "Licenciatura o magíster",
         phd: "Doctorado",
@@ -205,6 +212,13 @@ const CONTENT = {
       historyTitle: "Path",
       noHistory: "Their path will be added soon.",
       close: "Close",
+      groupLabel: "Show on the map",
+      byCity: "By city",
+      byUniversity: "By university",
+      zoomIn: "Zoom in",
+      zoomOut: "Zoom out",
+      zoomReset: "Show all of Sweden",
+      zoomHint: "Click on the map to zoom in.",
       stages: {
         student: "Bachelor's or master's",
         phd: "PhD",
@@ -311,6 +325,13 @@ const CONTENT = {
       historyTitle: "Väg",
       noHistory: "Personens väg läggs till snart.",
       close: "Stäng",
+      groupLabel: "Visa på kartan",
+      byCity: "Per stad",
+      byUniversity: "Per universitet",
+      zoomIn: "Zooma in",
+      zoomOut: "Zooma ut",
+      zoomReset: "Visa hela Sverige",
+      zoomHint: "Klicka på kartan för att zooma in.",
       stages: {
         student: "Kandidat eller master",
         phd: "Doktorand",
@@ -863,6 +884,9 @@ const BOARD_HISTORY = [
    - `stage`      one of the four above.
    - `city`       one of the names in CITIES below (add a city there if it's
                   missing).
+   - `university` optional: one of the keys in UNIVERSITIES below. Visitors
+                  can switch the map from "by city" to "by university", which
+                  puts the person on that campus instead.
    - `current`    true for current members, false for former members.
    - `history`    optional: their path, shown when someone hovers over or
                   taps them. A list of { years, role, place } — `role` can be
@@ -910,22 +934,43 @@ const CITIES = {
   "Kiruna":       [67.86, 20.23],
 };
 
+// Universities a member can be linked to: `name` is shown on the map, `at` is
+// the [latitude, longitude] of the main campus.
+const UNIVERSITIES = {
+  "KTH":     { name: "KTH",                       at: [59.3498, 18.0707] },
+  "SU":      { name: "Stockholm University",      at: [59.3650, 18.0587] },
+  "KI":      { name: "Karolinska Institutet",     at: [59.3480, 18.0270] },
+  "SLU":     { name: "SLU Uppsala",               at: [59.8160, 17.6560] },
+  "SLU-Alnarp": { name: "SLU Alnarp",             at: [55.6580, 13.0830] },
+  "UU":      { name: "Uppsala University",        at: [59.8500, 17.6300] },
+  "LU":      { name: "Lund University",           at: [55.7116, 13.2030] },
+  "GU":      { name: "University of Gothenburg",  at: [57.6980, 11.9710] },
+  "Chalmers": { name: "Chalmers",                 at: [57.6890, 11.9750] },
+  "LiU":     { name: "Linköping University",      at: [58.3980, 15.5760] },
+  "UmU":     { name: "Umeå University",           at: [63.8200, 20.3070] },
+  "LTU":     { name: "Luleå University of Technology", at: [65.6170, 22.1400] },
+  "MAU":     { name: "Malmö University",          at: [55.6090, 12.9940] },
+  "ORU":     { name: "Örebro University",         at: [59.2540, 15.2490] },
+  "LNU":     { name: "Linnaeus University",       at: [56.8550, 14.8290] },
+};
+
 const MEMBER_MAP = [
-  { name: "Markos Saravia Ramirez",   stage: "student", city: "Stockholm", current: true },
-  { name: "Paola Olguin Muñoz",      stage: "student", city: "Alnarp",    current: true },
-  { name: "Sofía Bobadilla",         stage: "phd",     city: "Stockholm", current: true },
-  { name: "Ignacio Verdugo",         stage: "phd",     city: "Stockholm", current: true },
-  { name: "María José Pino",         stage: "phd",     city: "Stockholm", current: true },
-  { name: "Macarena Tejos Bravo",    stage: "postdoc", city: "Stockholm", current: true },
-  { name: "Albano Cáceres-Verschae", stage: "postdoc", city: "Stockholm", current: true },
-  { name: "Gustavo Monasterio",      stage: "pi",      city: "Stockholm", current: true },
-  { name: "Eduardo A. Sagredo",      stage: "pi",      city: "Stockholm", current: true },
-  { name: "Patricia Munoz Salvatierra", stage: "pi",  city: "Stockholm", current: true },
+  { name: "Markos Saravia Ramirez",      stage: "student", city: "Stockholm", university: "SU",  current: true },
+  { name: "Paola Olguin Muñoz",          stage: "student", city: "Uppsala",   university: "SLU", current: true },
+  { name: "Sofía Bobadilla",             stage: "phd",     city: "Stockholm", university: "KTH", current: true },
+  { name: "Ignacio Verdugo",             stage: "phd",     city: "Stockholm", university: "SU",  current: true },
+  { name: "María José Pino",             stage: "phd",     city: "Stockholm", university: "KI",  current: true },
+  { name: "Macarena Tejos Bravo",        stage: "postdoc", city: "Stockholm", university: "KI",  current: true },
+  { name: "Albano Cáceres-Verschae",     stage: "postdoc", city: "Stockholm", university: "KI",  current: true },
+  { name: "Gustavo Monasterio",          stage: "pi",      city: "Stockholm", university: "KI",  current: true },
+  { name: "Eduardo A. Sagredo",          stage: "pi",      city: "Stockholm", university: "SU",  current: true },
+  { name: "Patricia Munoz Salvatierra",  stage: "pi",      city: "Stockholm", university: "KTH", current: true },
   // Example with a path (copy and fill in; delete the // to use it):
   // {
   //   name: "Nombre Apellido",
   //   stage: "postdoc",
   //   city: "Lund",
+  //   university: "LU",
   //   current: false,
   //   history: [
   //     { years: "2021–2024", role: { es: "Postdoctorado", en: "Postdoc", sv: "Postdoktor" }, place: "Lund University" },

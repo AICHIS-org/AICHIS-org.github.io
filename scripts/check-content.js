@@ -26,7 +26,7 @@ try {
   // top-level `const`/`let` don't attach to the context object itself, so
   // pull the values out via a second eval in the same lexical scope.
   sandbox = vm.runInContext(
-    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, CITIES, MEMBER_MAP, PARTNERS, RESOURCES })",
+    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, CITIES, UNIVERSITIES, MEMBER_MAP, PARTNERS, RESOURCES })",
     context
   );
 } catch (err) {
@@ -135,6 +135,9 @@ for (const m of sandbox.MEMBER_MAP || []) {
   }
   if (!(sandbox.CITIES || {})[m.city]) {
     errors.push(`MEMBER_MAP "${m.name}": city "${m.city}" is not in CITIES — add it there with its coordinates`);
+  }
+  if (m.university !== undefined && !(sandbox.UNIVERSITIES || {})[m.university]) {
+    errors.push(`MEMBER_MAP "${m.name}": university "${m.university}" is not in UNIVERSITIES — add it there with its coordinates`);
   }
   if (typeof m.current !== "boolean") {
     errors.push(`MEMBER_MAP "${m.name}": current must be true or false`);

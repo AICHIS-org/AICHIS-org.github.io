@@ -70,7 +70,10 @@ entry in `MEMBER_MAP` is drawn as a plant in its city, by career stage:
 | `"pi"` | professor / principal investigator | tree |
 
 `city` must be one of the names in `CITIES` (add a city there with its
-latitude and longitude if it's missing). `current` is `true` or `false`.
+latitude and longitude if it's missing). `university` is optional and must be
+one of the keys in `UNIVERSITIES` — visitors can switch the map between
+"by city" and "by university", and zoom in by clicking on it.
+`current` is `true` or `false`.
 If `name` matches someone in `PROFILES`, their photo, position and board roles
 are filled in automatically. The optional `history` list
 (`{ years, role, place }`, newest first) is what visitors see when they hover

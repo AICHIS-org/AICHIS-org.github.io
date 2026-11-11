@@ -355,15 +355,29 @@
 
   const pickLang = (v, lang) => (v && typeof v === "object" && !Array.isArray(v) ? v[lang] : v);
 
-  // Map state survives language changes: who is pinned, which groups are hidden.
+  // Map state survives language changes: who is pinned, which groups are
+  // hidden, and how far in the map is zoomed (k) around which point (x, y).
   let mapPinned = null;
   const mapHidden = new Set();
+  const MAP_MAX_ZOOM = 64; // deep enough to tell apart campuses in the same city
+  let mapGroupBy = "city"; // or "university"
+  // County outlines from assets/img/sweden-map.svg, drawn into the map itself
+  // (instead of as a picture) so borders stay thin however far we zoom in.
+  let swedenPaths = null;
+  let mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
 
   function mapPeople() {
     return MEMBER_MAP.filter((m) => STAGES.includes(m.stage) && CITIES[m.city]).map((m, i) => {
       const profile = PROFILES.find((p) => p.name === m.name);
       return { ...m, i, profile, member: (profile && profile.member) || {}, photo: m.photo || (profile && profile.photo) || "" };
     });
+  }
+
+  // Where a person is drawn: on their university's campus when the map is
+  // grouped by university (and we know it), otherwise in their city.
+  function anchorOf(p) {
+    const uni = mapGroupBy === "university" && UNIVERSITIES[p.university];
+    return uni ? { key: "u:" + p.university, label: uni.name, at: uni.at } : { key: "c:" + p.city, label: p.city, at: CITIES[p.city] };
   }
 
   // Board roles a person has held: the current one (PROFILES) and past ones (BOARD_HISTORY).
@@ -423,33 +437,99 @@
     const t = CONTENT[lang].researchers;
     const people = mapPeople();
 
-    // Spread people who share a city in a sunflower pattern around it.
-    const perCity = {};
-    const pins = people.map((p) => {
-      const n = (perCity[p.city] = (perCity[p.city] || 0) + 1) - 1;
-      const [cx, cy] = projectCity(CITIES[p.city]);
-      const r = 6 * Math.sqrt(n);
-      const a = n * 2.39996; // golden angle
-      return { p, x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    // The visible part of the map. Pins, dots and labels keep the same size on
+    // screen at every zoom, so zooming in spreads crowded cities apart.
+    const { k } = mapView;
+    const viewW = SWEDEN_MAP.width / k, viewH = SWEDEN_MAP.height / k;
+    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+    const viewX = clamp(mapView.x - viewW / 2, 0, SWEDEN_MAP.width - viewW);
+    const viewY = clamp(mapView.y - viewH / 2, 0, SWEDEN_MAP.height - viewH);
+
+    // Each pin starts on its city and is nudged just far enough to stop
+    // overlapping the others, so it stays as close to its real place as it can
+    // (a crowded Stockholm doesn't spill over Uppsala). A dot marks the real
+    // spot, with a thin line to every pin that had to move.
+    const PIN_R = (12 * 0.42) / k; // matches .map-pin .pin-body scale in styles.css
+    const visible = people.filter((p) => !mapHidden.has(p.stage) && !mapHidden.has(p.current ? "current" : "past"));
+    const perPlace = {};
+    const pins = visible.map((p) => {
+      const place = anchorOf(p);
+      const n = (perPlace[place.key] = (perPlace[place.key] || 0) + 1) - 1;
+      const [cx, cy] = projectCity(place.at);
+      const a = n * 2.39996; // golden angle: a tidy, deterministic first guess
+      const r = (PIN_R / 3) * Math.sqrt(n);
+      return { p, place, cx, cy, x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
     });
+    for (let step = 0; step < 300; step++) {
+      for (let i = 0; i < pins.length; i++) {
+        for (let j = i + 1; j < pins.length; j++) {
+          const a = pins[i], b = pins[j];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const d = Math.hypot(dx, dy) || 0.01;
+          const overlap = 2 * PIN_R + 0.6 / k - d;
+          if (overlap > 0) {
+            a.x -= (dx / d) * overlap / 2; a.y -= (dy / d) * overlap / 2;
+            b.x += (dx / d) * overlap / 2; b.y += (dy / d) * overlap / 2;
+          }
+        }
+      }
+      pins.forEach((pin) => { pin.x += (pin.cx - pin.x) * 0.04; pin.y += (pin.cy - pin.y) * 0.04; });
+    }
     pins.sort((a, b) => a.y - b.y); // lower pins drawn on top
 
+    // place name to the left of its group of pins, level with the real spot
+    const cities = Object.keys(perPlace).map((key) => {
+      const group = pins.filter((pin) => pin.place.key === key);
+      const { cx, cy, place } = group[0];
+      return { name: place.label, cx, cy, labelY: cy, labelX: Math.min(cx, ...group.map((pin) => pin.x)) - PIN_R - 1.5 / k };
+    });
+    // labels close to each other: push the lower one down until they don't overlap
+    const lineH = 5.6 / k;
+    cities.sort((a, b) => a.cy - b.cy).forEach((c, i) => {
+      for (let j = 0; j < i; j++) {
+        const o = cities[j];
+        const nameW = (n) => n.length * 2.6 / k; // rough text width
+        const overlapX = c.labelX - nameW(c.name) < o.labelX && o.labelX - nameW(o.name) < c.labelX;
+        if (overlapX && Math.abs(c.labelY - o.labelY) < lineH) c.labelY = o.labelY + lineH;
+      }
+    });
+    const f = (v) => v.toFixed(3);
+
+    // remember which zoom button had focus, so keyboard users keep their place
+    const focused = document.activeElement && document.activeElement.dataset && document.activeElement.dataset.zoom;
     canvas.innerHTML = `
-      <svg viewBox="0 0 ${SWEDEN_MAP.width} ${SWEDEN_MAP.height}" role="group" aria-label="${esc(t.mapLabel)}">
-        <image href="assets/img/sweden-map.svg" width="${SWEDEN_MAP.width}" height="${SWEDEN_MAP.height}" />
-        ${pins.map(({ p, x, y }) => {
-          const hidden = mapHidden.has(p.stage) || mapHidden.has(p.current ? "current" : "past");
-          return `
-        <g class="map-pin${p.current ? "" : " is-past"}${hidden ? " is-hidden" : ""}${p.i === mapPinned ? " is-active" : ""}"
-           transform="translate(${x.toFixed(2)} ${y.toFixed(2)})" data-i="${p.i}"
-           role="button" tabindex="${hidden ? -1 : 0}" aria-label="${esc(p.name)} — ${esc(t.stages[p.stage])}">
+      <svg viewBox="${f(viewX)} ${f(viewY)} ${f(viewW)} ${f(viewH)}" role="group" aria-label="${esc(t.mapLabel)}">
+        ${swedenPaths
+          ? `<g class="map-land" stroke-width="${f(0.45 / k)}">${swedenPaths.map((d) => `<path d="${esc(d)}" />`).join("")}</g>`
+          : `<image href="assets/img/sweden-map.svg" width="${SWEDEN_MAP.width}" height="${SWEDEN_MAP.height}" />`}
+        <g class="map-leaders" aria-hidden="true" stroke-width="${f(0.35 / k)}">
+          ${pins.map(({ x, y, cx, cy }) => `<line x1="${f(cx)}" y1="${f(cy)}" x2="${f(x)}" y2="${f(y)}" />`).join("")}
+        </g>
+        <g class="map-cities" aria-hidden="true">
+          ${cities.map((c) => `<circle cx="${f(c.cx)}" cy="${f(c.cy)}" r="${f(1.1 / k)}" />`).join("")}
+        </g>
+        ${pins.map(({ p, x, y }) => `
+        <g class="map-pin${p.current ? "" : " is-past"}${p.i === mapPinned ? " is-active" : ""}"
+           transform="translate(${f(x)} ${f(y)}) scale(${f(1 / k)})" data-i="${p.i}"
+           role="button" tabindex="0" aria-label="${esc(p.name)} — ${esc(t.stages[p.stage])} — ${esc(anchorOf(p).label)}">
           <g class="pin-body">
             <circle class="pin-bg" r="12" />
             <g transform="translate(-12 -12)">${PLANTS[p.stage]}</g>
           </g>
-        </g>`;
-        }).join("")}
-      </svg>`;
+        </g>`).join("")}
+        ${k > 1 ? `
+        <g class="map-labels" aria-hidden="true" font-size="${f(4.6 / k)}" stroke-width="${f(1.2 / k)}">
+          ${cities.map((c) => `<text x="${f(c.labelX)}" y="${f(c.labelY + 1.6 / k)}" text-anchor="end">${esc(c.name)}</text>`).join("")}
+        </g>` : ""}
+      </svg>
+      <div class="map-zoom">
+        <button type="button" data-zoom="in" aria-label="${esc(t.zoomIn)}" title="${esc(t.zoomIn)}"${k >= MAP_MAX_ZOOM ? " disabled" : ""}>+</button>
+        <button type="button" data-zoom="out" aria-label="${esc(t.zoomOut)}" title="${esc(t.zoomOut)}"${k <= 1 ? " disabled" : ""}>&minus;</button>
+        ${k > 1 ? `<button type="button" data-zoom="reset" class="map-zoom-reset">${esc(t.zoomReset)}</button>` : ""}
+      </div>
+      <p class="map-zoom-hint">${esc(t.zoomHint)}</p>`;
+    const again = focused && canvas.querySelector(`[data-zoom="${focused}"]:not([disabled])`);
+    if (again) again.focus();
 
     const count = (pred) => people.filter(pred).length;
     const filterBtn = (key, label, icon, n) => `
@@ -458,6 +538,11 @@
       </button>`;
     filters.setAttribute("aria-label", t.filterLabel);
     filters.innerHTML = `
+      <div class="map-group" role="group" aria-label="${esc(t.groupLabel)}">
+        <span class="map-group-label">${esc(t.groupLabel)}</span>
+        <button type="button" data-group="city" aria-pressed="${mapGroupBy === "city"}">${esc(t.byCity)}</button>
+        <button type="button" data-group="university" aria-pressed="${mapGroupBy === "university"}">${esc(t.byUniversity)}</button>
+      </div>
       <div class="map-filter-row">
         ${STAGES.map((s) => filterBtn(s, t.stages[s], plantIcon(s), count((p) => p.stage === s))).join("")}
       </div>
@@ -481,7 +566,25 @@
     detail.innerHTML = mapDetailHTML(person, lang, person && i === mapPinned);
   }
 
+  // Zoom so that all these [lat, lon] points fit comfortably in view.
+  function fitMapTo(points) {
+    if (!points.length) return;
+    const xy = points.map(projectCity);
+    const xs = xy.map((p) => p[0]), ys = xy.map((p) => p[1]);
+    const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+    const k = Math.min(MAP_MAX_ZOOM, (0.6 * SWEDEN_MAP.width) / (w || 1), (0.6 * SWEDEN_MAP.height) / (h || 1));
+    mapView = { k: Math.max(1, k), x: (Math.max(...xs) + Math.min(...xs)) / 2, y: (Math.max(...ys) + Math.min(...ys)) / 2 };
+  }
+
   function initMemberMap() {
+    fetch("assets/img/sweden-map.svg")
+      .then((res) => (res.ok ? res.text() : Promise.reject(res.status)))
+      .then((text) => {
+        const svg = new DOMParser().parseFromString(text, "image/svg+xml");
+        swedenPaths = Array.from(svg.querySelectorAll("path"), (path) => path.getAttribute("d") || "");
+        renderMemberMap(document.documentElement.lang);
+      })
+      .catch(() => {}); // keep the picture version
     const canvas = document.getElementById("member-map");
     const filters = document.getElementById("map-filters");
     const detail = document.getElementById("map-detail");
@@ -509,9 +612,34 @@
       const g = pinOf(event);
       if (g) showOnMap(Number(g.dataset.i));
     });
+    const zoomTo = (k, x = mapView.x, y = mapView.y) => {
+      mapView = { k: Math.min(Math.max(k, 1), MAP_MAX_ZOOM), x, y };
+      if (mapView.k === 1) mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
+      renderMemberMap(document.documentElement.lang);
+    };
+
     canvas.addEventListener("click", (event) => {
       const g = pinOf(event);
-      if (g) pin(Number(g.dataset.i));
+      if (g) return pin(Number(g.dataset.i));
+      const btn = event.target.closest("[data-zoom]");
+      if (btn) {
+        const action = btn.dataset.zoom;
+        if (action === "in") {
+          // zoom in on the selected person, if there is one
+          const person = mapPeople().find((p) => p.i === mapPinned);
+          const [x, y] = person ? projectCity(anchorOf(person).at) : [mapView.x, mapView.y];
+          return zoomTo(mapView.k * 2, x, y);
+        }
+        return zoomTo(action === "out" ? mapView.k / 2 : 1);
+      }
+      // a click on the map itself zooms in there (or just moves there, once fully zoomed in)
+      const svg = event.target.closest("svg");
+      if (!svg) return;
+      const point = svg.createSVGPoint();
+      point.x = event.clientX;
+      point.y = event.clientY;
+      const at = point.matrixTransform(svg.getScreenCTM().inverse());
+      zoomTo(mapView.k * 2, at.x, at.y);
     });
     canvas.addEventListener("keydown", (event) => {
       const g = pinOf(event);
@@ -528,6 +656,16 @@
     });
 
     filters.addEventListener("click", (event) => {
+      const group = event.target.closest("[data-group]");
+      if (group) {
+        mapGroupBy = group.dataset.group;
+        if (mapGroupBy === "university") fitMapTo(mapPeople().map((p) => anchorOf(p).at));
+        else mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
+        renderMemberMap(document.documentElement.lang);
+        const again = filters.querySelector(`[data-group="${mapGroupBy}"]`);
+        if (again && event.detail === 0) again.focus();
+        return;
+      }
       const btn = event.target.closest(".map-filter");
       if (!btn) return;
       const key = btn.dataset.key;
