@@ -86,10 +86,10 @@ const CONTENT = {
     },
     researchers: {
       title: "Chilenos en Suecia",
-      lead: "Dónde están, y dónde han estado, los miembros de AICHIS a lo largo de Suecia. Cada planta es una etapa de la carrera: pasa el cursor o toca una para ver la trayectoria de esa persona.",
+      lead: "Dónde están, y dónde han estado, los miembros de AICHIS a lo largo de Suecia. Cada planta muestra la etapa o el rol de esa persona: pasa el cursor o toca una para ver su trayectoria.",
       cta: "¿Eres o fuiste miembro? Agrega tu trayectoria",
       mapLabel: "Mapa de Suecia con los miembros de AICHIS",
-      hint: "Pasa el cursor o toca una planta para ver su trayectoria.",
+      hint: "Pasa el cursor o toca una planta para ver su trayectoria. Usa los filtros para ver solo a algunas personas.",
       filterLabel: "Filtrar el mapa",
       current: "Actuales",
       past: "Anteriores",
@@ -99,11 +99,19 @@ const CONTENT = {
       historyTitle: "Trayectoria",
       noHistory: "Pronto agregaremos su trayectoria.",
       close: "Cerrar",
+      otherUniversity: "Otra / sin universidad",
+      showAll: "Mostrar a todos",
+      zoomIn: "Acercar",
+      zoomOut: "Alejar",
+      zoomReset: "Ver toda Suecia",
+      zoomHint: "Haz clic en el mapa para acercarte.",
       stages: {
         student: "Licenciatura o magíster",
         phd: "Doctorado",
         postdoc: "Postdoctorado",
         pi: "Profesor/a o investigador/a principal",
+        researcher: "Investigador/a",
+        professional: "Profesional",
       },
     },
     collaborations: {
@@ -192,10 +200,10 @@ const CONTENT = {
     },
     researchers: {
       title: "Chileans in Sweden",
-      lead: "Where AICHIS members are, and have been, across Sweden. Each plant is a career stage: hover over or tap one to see that person's path.",
+      lead: "Where AICHIS members are, and have been, across Sweden. Each plant shows the person's career stage or role: hover over or tap one to see their path.",
       cta: "Current or former member? Add your path",
       mapLabel: "Map of Sweden showing AICHIS members",
-      hint: "Hover over or tap a plant to see their path.",
+      hint: "Hover over or tap a plant to see their path. Use the filters to show only some people.",
       filterLabel: "Filter the map",
       current: "Current",
       past: "Former",
@@ -205,11 +213,19 @@ const CONTENT = {
       historyTitle: "Path",
       noHistory: "Their path will be added soon.",
       close: "Close",
+      otherUniversity: "Other / no university",
+      showAll: "Show everyone",
+      zoomIn: "Zoom in",
+      zoomOut: "Zoom out",
+      zoomReset: "Show all of Sweden",
+      zoomHint: "Click on the map to zoom in.",
       stages: {
         student: "Bachelor's or master's",
         phd: "PhD",
         postdoc: "Postdoc",
         pi: "Professor or principal investigator",
+        researcher: "Researcher",
+        professional: "Professional",
       },
     },
     collaborations: {
@@ -298,10 +314,10 @@ const CONTENT = {
     },
     researchers: {
       title: "Chilenare i Sverige",
-      lead: "Var AICHIS medlemmar finns, och har funnits, i Sverige. Varje växt är ett karriärsteg: håll muspekaren över eller tryck på en för att se personens väg.",
+      lead: "Var AICHIS medlemmar finns, och har funnits, i Sverige. Varje växt visar personens karriärsteg eller roll: håll muspekaren över eller tryck på en för att se personens väg.",
       cta: "Nuvarande eller tidigare medlem? Lägg till din väg",
       mapLabel: "Karta över Sverige med AICHIS medlemmar",
-      hint: "Håll muspekaren över eller tryck på en växt för att se personens väg.",
+      hint: "Håll muspekaren över eller tryck på en växt för att se personens väg. Använd filtren för att bara visa vissa personer.",
       filterLabel: "Filtrera kartan",
       current: "Nuvarande",
       past: "Tidigare",
@@ -311,11 +327,19 @@ const CONTENT = {
       historyTitle: "Väg",
       noHistory: "Personens väg läggs till snart.",
       close: "Stäng",
+      otherUniversity: "Annat / inget universitet",
+      showAll: "Visa alla",
+      zoomIn: "Zooma in",
+      zoomOut: "Zooma ut",
+      zoomReset: "Visa hela Sverige",
+      zoomHint: "Klicka på kartan för att zooma in.",
       stages: {
         student: "Kandidat eller master",
         phd: "Doktorand",
         postdoc: "Postdoktor",
         pi: "Professor eller huvudforskare",
+        researcher: "Forskare",
+        professional: "Yrkesverksam",
       },
     },
     collaborations: {
@@ -848,21 +872,26 @@ const BOARD_HISTORY = [
    CHILEANS IN SWEDEN  (map of current and past AICHIS members)
    -------------------------------------------------------------------------
    Every entry is drawn as a plant on the map of Sweden, in its `city`. The
-   plant shows the person's career stage (`stage`):
+   plant shows the person's career stage or role (`stage`):
 
    - "student"  bachelor's or master's student  -> a seed
    - "phd"      PhD student                     -> a seedling
    - "postdoc"  postdoc                         -> a young tree
-   - "pi"       professor / principal investig. -> a tree
+   - "pi"       professor / principal investig. -> a big tree with fruit
+   - "researcher"  researcher (no other stage)  -> a medium tree
+   - "professional" works outside research,     -> a flower
+                    e.g. a psychologist
 
    Each entry has:
 
    - `name`       if it matches someone in PROFILES, their photo, position,
                   field and institution are taken from there (and their board
                   roles from BOARD_HISTORY) — no need to repeat them here.
-   - `stage`      one of the four above.
+   - `stage`      one of the six above.
    - `city`       one of the names in CITIES below (add a city there if it's
                   missing).
+   - `university` optional: one of the keys in UNIVERSITIES below. Visitors
+                  can filter the map by university.
    - `current`    true for current members, false for former members.
    - `history`    optional: their path, shown when someone hovers over or
                   taps them. A list of { years, role, place } — `role` can be
@@ -908,24 +937,51 @@ const CITIES = {
   "Umeå":         [63.83, 20.26],
   "Luleå":        [65.58, 22.15],
   "Kiruna":       [67.86, 20.23],
+  "Upplands Väsby": [59.52, 17.91],
+};
+
+// Universities a member can be linked to, by the key used in MEMBER_MAP;
+// `name` is what the map's filter shows.
+const UNIVERSITIES = {
+  "KTH":        { name: "KTH" },
+  "SU":         { name: "Stockholm University" },
+  "KI":         { name: "Karolinska Institutet" },
+  "SLU":        { name: "SLU" },
+  "UU":         { name: "Uppsala University" },
+  "LU":         { name: "Lund University" },
+  "GU":         { name: "University of Gothenburg" },
+  "Chalmers":   { name: "Chalmers" },
+  "LiU":        { name: "Linköping University" },
+  "UmU":        { name: "Umeå University" },
+  "LTU":        { name: "Luleå University of Technology" },
+  "MAU":        { name: "Malmö University" },
+  "ORU":        { name: "Örebro University" },
+  "LNU":        { name: "Linnaeus University" },
 };
 
 const MEMBER_MAP = [
-  { name: "Markos Saravia Ramirez",   stage: "student", city: "Stockholm", current: true },
-  { name: "Paola Olguin Muñoz",      stage: "student", city: "Alnarp",    current: true },
-  { name: "Sofía Bobadilla",         stage: "phd",     city: "Stockholm", current: true },
-  { name: "Ignacio Verdugo",         stage: "phd",     city: "Stockholm", current: true },
-  { name: "María José Pino",         stage: "phd",     city: "Stockholm", current: true },
-  { name: "Macarena Tejos Bravo",    stage: "postdoc", city: "Stockholm", current: true },
-  { name: "Albano Cáceres-Verschae", stage: "postdoc", city: "Stockholm", current: true },
-  { name: "Gustavo Monasterio",      stage: "pi",      city: "Stockholm", current: true },
-  { name: "Eduardo A. Sagredo",      stage: "pi",      city: "Stockholm", current: true },
-  { name: "Patricia Munoz Salvatierra", stage: "pi",  city: "Stockholm", current: true },
+  { name: "Markos Saravia Ramirez",      stage: "student", city: "Stockholm", university: "SU",  current: true },
+  { name: "Paola Olguin Muñoz",          stage: "student", city: "Uppsala",   university: "SLU", current: true },
+  { name: "Sofía Bobadilla",             stage: "phd",     city: "Stockholm", university: "KTH", current: true },
+  { name: "Ignacio Verdugo",             stage: "phd",     city: "Stockholm", university: "SU",  current: true },
+  { name: "María José Pino",             stage: "phd",     city: "Stockholm", university: "KI",  current: true },
+  { name: "Macarena Tejos Bravo",        stage: "postdoc", city: "Stockholm", university: "KI",  current: true },
+  { name: "Albano Cáceres-Verschae",     stage: "postdoc", city: "Stockholm", university: "KI",  current: true },
+  { name: "Gustavo Monasterio",          stage: "pi",      city: "Stockholm", university: "KI",  current: true },
+  { name: "Eduardo A. Sagredo",          stage: "pi",      city: "Stockholm", university: "SU",  current: true },
+  { name: "Patricia Munoz Salvatierra",  stage: "pi",      city: "Stockholm", university: "KTH", current: true },
+  { name: "Carolina Oses",               stage: "pi",      city: "Stockholm", university: "KTH", current: true },
+  { name: "Rodrigo Morales Castro",      stage: "researcher", city: "Stockholm", university: "KI", current: true },
+  { name: "Alejandro Fonseca Cárdenas",  stage: "researcher", city: "Uppsala",   university: "SLU", current: true },
+  { name: "Giorgio Giusti",              stage: "researcher", city: "Stockholm", current: true },
+  { name: "Alejandra San Juan",          stage: "professional", city: "Upplands Väsby", current: true },
+  { name: "Marion Muñoz García",         stage: "professional", city: "Stockholm", current: true },
   // Example with a path (copy and fill in; delete the // to use it):
   // {
   //   name: "Nombre Apellido",
   //   stage: "postdoc",
   //   city: "Lund",
+  //   university: "LU",
   //   current: false,
   //   history: [
   //     { years: "2021–2024", role: { es: "Postdoctorado", en: "Postdoc", sv: "Postdoktor" }, place: "Lund University" },

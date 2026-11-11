@@ -26,7 +26,7 @@ try {
   // top-level `const`/`let` don't attach to the context object itself, so
   // pull the values out via a second eval in the same lexical scope.
   sandbox = vm.runInContext(
-    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, CITIES, MEMBER_MAP, PARTNERS, RESOURCES })",
+    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, CITIES, UNIVERSITIES, MEMBER_MAP, PARTNERS, RESOURCES })",
     context
   );
 } catch (err) {
@@ -124,10 +124,23 @@ for (const edition of sandbox.EXPLORA_EDITIONS || []) {
 }
 for (const entry of sandbox.BOARD_HISTORY || []) {
   checkPhotoPaths(entry.members, `BOARD_HISTORY ${entry.year}`);
+  for (const m of entry.members || []) {
+    if (!m.role) errors.push(`BOARD_HISTORY ${entry.year} "${m.name}": missing role (is this entry in the right list?)`);
+  }
 }
 
-/* --- 4. MEMBER_MAP: a known stage and city for every person ------------ */
-const STAGES = ["student", "phd", "postdoc", "pi"];
+/* --- 4. MEMBER_MAP: every member on it, with a known stage and city ----- */
+for (const p of sandbox.PROFILES || []) {
+  if (p.member && !(sandbox.MEMBER_MAP || []).some((m) => m.name === p.name)) {
+    errors.push(`PROFILES "${p.name}" is a member but not on the map — add them to MEMBER_MAP`);
+  }
+}
+for (const m of sandbox.MEMBER_MAP || []) {
+  if (m.current && !(sandbox.PROFILES || []).some((p) => p.name === m.name && p.member)) {
+    errors.push(`MEMBER_MAP "${m.name}" is a current member but has no PROFILES entry with that exact name`);
+  }
+}
+const STAGES = ["student", "phd", "postdoc", "pi", "researcher", "professional"];
 checkPhotoPaths(sandbox.MEMBER_MAP, "MEMBER_MAP");
 for (const m of sandbox.MEMBER_MAP || []) {
   if (!STAGES.includes(m.stage)) {
@@ -135,6 +148,9 @@ for (const m of sandbox.MEMBER_MAP || []) {
   }
   if (!(sandbox.CITIES || {})[m.city]) {
     errors.push(`MEMBER_MAP "${m.name}": city "${m.city}" is not in CITIES — add it there with its coordinates`);
+  }
+  if (m.university !== undefined && !(sandbox.UNIVERSITIES || {})[m.university]) {
+    errors.push(`MEMBER_MAP "${m.name}": university "${m.university}" is not in UNIVERSITIES — add it there with its coordinates`);
   }
   if (typeof m.current !== "boolean") {
     errors.push(`MEMBER_MAP "${m.name}": current must be true or false`);

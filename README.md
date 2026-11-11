@@ -67,10 +67,15 @@ entry in `MEMBER_MAP` is drawn as a plant in its city, by career stage:
 | `"student"` | bachelor's or master's student | seed |
 | `"phd"` | PhD student | seedling |
 | `"postdoc"` | postdoc | young tree |
-| `"pi"` | professor / principal investigator | tree |
+| `"pi"` | professor / principal investigator | big tree with fruit |
+| `"researcher"` | researcher (no other stage fits) | medium tree |
+| `"professional"` | works outside research, e.g. a psychologist | flower |
 
 `city` must be one of the names in `CITIES` (add a city there with its
-latitude and longitude if it's missing). `current` is `true` or `false`.
+latitude and longitude if it's missing). `university` is optional and must be
+one of the keys in `UNIVERSITIES` (add one there if it's missing) — visitors
+can filter the map by university, and zoom in by clicking on it.
+`current` is `true` or `false`.
 If `name` matches someone in `PROFILES`, their photo, position and board roles
 are filled in automatically. The optional `history` list
 (`{ years, role, place }`, newest first) is what visitors see when they hover

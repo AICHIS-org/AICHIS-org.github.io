@@ -167,6 +167,7 @@
   const ICONS = {
     email: `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13zm2.2.5 7.8 6.15L19.8 6H4.2zM20 8.1l-7.4 5.84a1 1 0 0 1-1.24 0L4 8.1v10.4c0 .28.22.5.5.5h15a.5.5 0 0 0 .5-.5V8.1z"/></svg>`,
     linkedin: `<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>`,
+    university: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0d3b8c" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 12 5l9 4.5-9 4.5z"/><path d="M7 11.6V16c1.4 1.3 3 2 5 2s3.6-.7 5-2v-4.4"/><path d="M21 9.5V14"/></svg>`,
     webpage: `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.9 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.9-3.8-9s1.3-6.3 3.8-9z"/></svg>`,
   };
 
@@ -343,21 +344,29 @@
   }
 
   // One plant per career stage, drawn in a 24x24 box.
-  const STAGES = ["student", "phd", "postdoc", "pi"];
+  const STAGES = ["student", "phd", "postdoc", "pi", "researcher", "professional"];
   const PLANTS = {
     student: `<ellipse cx="12" cy="13" rx="5" ry="6.5" fill="#a86b32" transform="rotate(-25 12 13)"/><path d="M10 9.5c1.5 1 2.5 3 2.6 6" stroke="#6e4219" stroke-width="1.2" fill="none" stroke-linecap="round"/>`,
     phd: `<path d="M12 20.5V12" stroke="#3f7d3a" stroke-width="1.8" stroke-linecap="round"/><path d="M12 13C12 8.5 8.5 6.5 4.5 7c.2 4 3.3 6.5 7.5 6z" fill="#5aa64b"/><path d="M12 11c0-4 3-6 7-5.6-.3 3.7-3 6-7 5.6z" fill="#7cc35e"/><path d="M8 20.5h8" stroke="#8a5a2b" stroke-width="1.6" stroke-linecap="round"/>`,
     postdoc: `<path d="M12 21v-8.5" stroke="#7a4e2d" stroke-width="2" stroke-linecap="round"/><path d="M12 15.5l-2.6-2.4" stroke="#7a4e2d" stroke-width="1.4" stroke-linecap="round"/><circle cx="12" cy="9" r="5.5" fill="#5aa64b"/>`,
-    pi: `<path d="M10.7 22h2.6l-.3-8.5h-2z" fill="#7a4e2d"/><circle cx="7.6" cy="11.5" r="4.8" fill="#3f8a3a"/><circle cx="16.4" cy="11.5" r="4.8" fill="#3f8a3a"/><circle cx="12" cy="7.5" r="5.8" fill="#4f9e45"/>`,
+    pi: `<path d="M10.4 23h3.2l-.45-8.5h-2.3z" fill="#7a4e2d"/><circle cx="6.4" cy="12.2" r="5" fill="#3f8a3a"/><circle cx="17.6" cy="12.2" r="5" fill="#3f8a3a"/><circle cx="12" cy="13.2" r="5" fill="#4f9e45"/><circle cx="12" cy="7" r="6.3" fill="#4f9e45"/><g fill="#d52b1e"><circle cx="8.6" cy="9.4" r="1.15"/><circle cx="15" cy="5.6" r="1.15"/><circle cx="16.8" cy="12.6" r="1.15"/><circle cx="11.2" cy="14.6" r="1.15"/><circle cx="6.2" cy="14" r="1.15"/><circle cx="13.2" cy="9.8" r="1.15"/></g>`,
+    researcher: `<path d="M11.1 21.5h1.8l-.25-7.5h-1.3z" fill="#7a4e2d"/><circle cx="8.8" cy="12.4" r="3.9" fill="#3f8a3a"/><circle cx="15.2" cy="12.4" r="3.9" fill="#3f8a3a"/><circle cx="12" cy="9" r="4.8" fill="#4f9e45"/>`,
+    professional: `<path d="M12 21.5V11" stroke="#3f7d3a" stroke-width="1.6" stroke-linecap="round"/><path d="M12 18c-2.6 0-4.2-1.5-4.7-3.6 2.6 0 4.2 1.4 4.7 3.6z" fill="#5aa64b"/><g fill="#f8c300"><circle cx="12" cy="4.6" r="2.5"/><circle cx="15.3" cy="7.2" r="2.5"/><circle cx="14" cy="10.9" r="2.5"/><circle cx="10" cy="10.9" r="2.5"/><circle cx="8.7" cy="7.2" r="2.5"/></g><circle cx="12" cy="8" r="1.9" fill="#d52b1e"/>`,
   };
   const plantIcon = (stage, size = 22) =>
     `<svg class="plant-icon" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${PLANTS[stage] || ""}</svg>`;
 
   const pickLang = (v, lang) => (v && typeof v === "object" && !Array.isArray(v) ? v[lang] : v);
 
-  // Map state survives language changes: who is pinned, which groups are hidden.
+  // Map state survives language changes: who is pinned, which groups are
+  // hidden, and how far in the map is zoomed (k) around which point (x, y).
   let mapPinned = null;
-  const mapHidden = new Set();
+  const mapSelected = new Set(); // filter chips that are pressed
+  const MAP_MAX_ZOOM = 16;
+  // County outlines from assets/img/sweden-map.svg, drawn into the map itself
+  // (instead of as a picture) so borders stay thin however far we zoom in.
+  let swedenPaths = null;
+  let mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
 
   function mapPeople() {
     return MEMBER_MAP.filter((m) => STAGES.includes(m.stage) && CITIES[m.city]).map((m, i) => {
@@ -365,6 +374,24 @@
       return { ...m, i, profile, member: (profile && profile.member) || {}, photo: m.photo || (profile && profile.photo) || "" };
     });
   }
+
+  // Where a person is drawn: their city.
+  function anchorOf(p) {
+    return { key: p.city, label: p.city, at: CITIES[p.city] };
+  }
+
+  // Filter keys: the stage, "current"/"past", and "uni:<key>" ("uni:" for
+  // people with no university listed). Pressing chips narrows the map down to
+  // them: chips of the same kind add up (KTH + SU), different kinds combine
+  // (KTH + PhD = PhD students at KTH). Nothing pressed shows everyone.
+  const uniKeyOf = (p) => "uni:" + (UNIVERSITIES[p.university] ? p.university : "");
+  const keysOf = (p) => [p.stage, p.current ? "current" : "past", uniKeyOf(p)];
+  const kindOf = (key) => (STAGES.includes(key) ? 0 : key === "current" || key === "past" ? 1 : 2);
+  const isHiddenOnMap = (p) =>
+    keysOf(p).some((own) => {
+      const pressed = [...mapSelected].filter((key) => kindOf(key) === kindOf(own));
+      return pressed.length > 0 && !pressed.includes(own);
+    });
 
   // Board roles a person has held: the current one (PROFILES) and past ones (BOARD_HISTORY).
   function boardRolesOf(name, lang) {
@@ -423,40 +450,111 @@
     const t = CONTENT[lang].researchers;
     const people = mapPeople();
 
-    // Spread people who share a city in a sunflower pattern around it.
-    const perCity = {};
-    const pins = people.map((p) => {
-      const n = (perCity[p.city] = (perCity[p.city] || 0) + 1) - 1;
-      const [cx, cy] = projectCity(CITIES[p.city]);
-      const r = 6 * Math.sqrt(n);
-      const a = n * 2.39996; // golden angle
-      return { p, x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    // The visible part of the map. Pins, dots and labels keep the same size on
+    // screen at every zoom, so zooming in spreads crowded cities apart.
+    const { k } = mapView;
+    const viewW = SWEDEN_MAP.width / k, viewH = SWEDEN_MAP.height / k;
+    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+    const viewX = clamp(mapView.x - viewW / 2, 0, SWEDEN_MAP.width - viewW);
+    const viewY = clamp(mapView.y - viewH / 2, 0, SWEDEN_MAP.height - viewH);
+
+    // Each pin starts on its city and is nudged just far enough to stop
+    // overlapping the others, so it stays as close to its real place as it can
+    // (a crowded Stockholm doesn't spill over Uppsala). A dot marks the real
+    // spot, with a thin line to every pin that had to move.
+    const PIN_R = (12 * 0.42) / k; // matches .map-pin .pin-body scale in styles.css
+    const visible = people.filter((p) => !isHiddenOnMap(p));
+    const perPlace = {};
+    const pins = visible.map((p) => {
+      const place = anchorOf(p);
+      const n = (perPlace[place.key] = (perPlace[place.key] || 0) + 1) - 1;
+      const [cx, cy] = projectCity(place.at);
+      const a = n * 2.39996; // golden angle: a tidy, deterministic first guess
+      const r = (PIN_R / 3) * Math.sqrt(n);
+      return { p, place, cx, cy, x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
     });
+    for (let step = 0; step < 300; step++) {
+      for (let i = 0; i < pins.length; i++) {
+        for (let j = i + 1; j < pins.length; j++) {
+          const a = pins[i], b = pins[j];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const d = Math.hypot(dx, dy) || 0.01;
+          const overlap = 2 * PIN_R + 0.6 / k - d;
+          if (overlap > 0) {
+            a.x -= (dx / d) * overlap / 2; a.y -= (dy / d) * overlap / 2;
+            b.x += (dx / d) * overlap / 2; b.y += (dy / d) * overlap / 2;
+          }
+        }
+      }
+      pins.forEach((pin) => { pin.x += (pin.cx - pin.x) * 0.04; pin.y += (pin.cy - pin.y) * 0.04; });
+    }
     pins.sort((a, b) => a.y - b.y); // lower pins drawn on top
 
+    // place name to the left of its group of pins, level with the real spot
+    const cities = Object.keys(perPlace).map((key) => {
+      const group = pins.filter((pin) => pin.place.key === key);
+      const { cx, cy, place } = group[0];
+      return { name: place.label, cx, cy, labelY: cy, labelX: Math.min(cx, ...group.map((pin) => pin.x)) - PIN_R - 1.5 / k };
+    });
+    // labels close to each other: push the lower one down until they don't overlap
+    const lineH = 5.6 / k;
+    cities.sort((a, b) => a.cy - b.cy).forEach((c, i) => {
+      for (let j = 0; j < i; j++) {
+        const o = cities[j];
+        const nameW = (n) => n.length * 2.6 / k; // rough text width
+        const overlapX = c.labelX - nameW(c.name) < o.labelX && o.labelX - nameW(o.name) < c.labelX;
+        if (overlapX && Math.abs(c.labelY - o.labelY) < lineH) c.labelY = o.labelY + lineH;
+      }
+    });
+    const f = (v) => v.toFixed(3);
+
+    // remember which zoom button had focus, so keyboard users keep their place
+    const focused = document.activeElement && document.activeElement.dataset && document.activeElement.dataset.zoom;
     canvas.innerHTML = `
-      <svg viewBox="0 0 ${SWEDEN_MAP.width} ${SWEDEN_MAP.height}" role="group" aria-label="${esc(t.mapLabel)}">
-        <image href="assets/img/sweden-map.svg" width="${SWEDEN_MAP.width}" height="${SWEDEN_MAP.height}" />
-        ${pins.map(({ p, x, y }) => {
-          const hidden = mapHidden.has(p.stage) || mapHidden.has(p.current ? "current" : "past");
-          return `
-        <g class="map-pin${p.current ? "" : " is-past"}${hidden ? " is-hidden" : ""}${p.i === mapPinned ? " is-active" : ""}"
-           transform="translate(${x.toFixed(2)} ${y.toFixed(2)})" data-i="${p.i}"
-           role="button" tabindex="${hidden ? -1 : 0}" aria-label="${esc(p.name)} — ${esc(t.stages[p.stage])}">
+      <svg viewBox="${f(viewX)} ${f(viewY)} ${f(viewW)} ${f(viewH)}" role="group" aria-label="${esc(t.mapLabel)}">
+        ${swedenPaths
+          ? `<g class="map-land" stroke-width="${f(0.45 / k)}">${swedenPaths.map((d) => `<path d="${esc(d)}" />`).join("")}</g>`
+          : `<image href="assets/img/sweden-map.svg" width="${SWEDEN_MAP.width}" height="${SWEDEN_MAP.height}" />`}
+        <g class="map-leaders" aria-hidden="true" stroke-width="${f(0.35 / k)}">
+          ${pins.map(({ x, y, cx, cy }) => `<line x1="${f(cx)}" y1="${f(cy)}" x2="${f(x)}" y2="${f(y)}" />`).join("")}
+        </g>
+        <g class="map-cities" aria-hidden="true">
+          ${cities.map((c) => `<circle cx="${f(c.cx)}" cy="${f(c.cy)}" r="${f(1.1 / k)}" />`).join("")}
+        </g>
+        ${pins.map(({ p, x, y }) => `
+        <g class="map-pin${p.current ? "" : " is-past"}${p.i === mapPinned ? " is-active" : ""}"
+           transform="translate(${f(x)} ${f(y)}) scale(${f(1 / k)})" data-i="${p.i}"
+           role="button" tabindex="0" aria-label="${esc(p.name)} — ${esc(t.stages[p.stage])} — ${esc(anchorOf(p).label)}">
           <g class="pin-body">
             <circle class="pin-bg" r="12" />
             <g transform="translate(-12 -12)">${PLANTS[p.stage]}</g>
           </g>
-        </g>`;
-        }).join("")}
-      </svg>`;
+        </g>`).join("")}
+        ${k > 1 ? `
+        <g class="map-labels" aria-hidden="true" font-size="${f(4.6 / k)}" stroke-width="${f(1.2 / k)}">
+          ${cities.map((c) => `<text x="${f(c.labelX)}" y="${f(c.labelY + 1.6 / k)}" text-anchor="end">${esc(c.name)}</text>`).join("")}
+        </g>` : ""}
+      </svg>
+      <div class="map-zoom">
+        <button type="button" data-zoom="in" aria-label="${esc(t.zoomIn)}" title="${esc(t.zoomIn)}"${k >= MAP_MAX_ZOOM ? " disabled" : ""}>+</button>
+        <button type="button" data-zoom="out" aria-label="${esc(t.zoomOut)}" title="${esc(t.zoomOut)}"${k <= 1 ? " disabled" : ""}>&minus;</button>
+        ${k > 1 ? `<button type="button" data-zoom="reset" class="map-zoom-reset">${esc(t.zoomReset)}</button>` : ""}
+      </div>
+      <p class="map-zoom-hint">${esc(t.zoomHint)}</p>`;
+    const again = focused && canvas.querySelector(`[data-zoom="${focused}"]:not([disabled])`);
+    if (again) again.focus();
 
     const count = (pred) => people.filter(pred).length;
     const filterBtn = (key, label, icon, n) => `
-      <button type="button" class="map-filter" data-key="${key}" aria-pressed="${!mapHidden.has(key)}">
+      <button type="button" class="map-filter" data-key="${key}" aria-pressed="${mapSelected.has(key)}">
         ${icon}<span>${esc(label)}</span><span class="map-count">${n}</span>
       </button>`;
     filters.setAttribute("aria-label", t.filterLabel);
+    // one chip per university that has someone on the map, most people first
+    const uniKeys = [...new Set(people.map(uniKeyOf))]
+      .map((key) => ({ key, n: count((p) => uniKeyOf(p) === key) }))
+      .sort((a, b) => b.n - a.n || (a.key === "uni:") - (b.key === "uni:") || a.key.localeCompare(b.key));
+    const uniName = (key) => (key === "uni:" ? t.otherUniversity : UNIVERSITIES[key.slice(4)].name);
     filters.innerHTML = `
       <div class="map-filter-row">
         ${STAGES.map((s) => filterBtn(s, t.stages[s], plantIcon(s), count((p) => p.stage === s))).join("")}
@@ -464,7 +562,11 @@
       <div class="map-filter-row map-filter-status">
         ${filterBtn("current", t.current, `<span class="map-dot"></span>`, count((p) => p.current))}
         ${filterBtn("past", t.past, `<span class="map-dot is-past"></span>`, count((p) => !p.current))}
-      </div>`;
+      </div>
+      <div class="map-filter-row">
+        ${uniKeys.map(({ key, n }) => filterBtn(key, uniName(key), ICONS.university, n)).join("")}
+      </div>
+      ${mapSelected.size ? `<button type="button" class="map-show-all" data-clear>${esc(t.showAll)}</button>` : ""}`;
 
     showOnMap(mapPinned, lang);
   }
@@ -482,6 +584,14 @@
   }
 
   function initMemberMap() {
+    fetch("assets/img/sweden-map.svg")
+      .then((res) => (res.ok ? res.text() : Promise.reject(res.status)))
+      .then((text) => {
+        const svg = new DOMParser().parseFromString(text, "image/svg+xml");
+        swedenPaths = Array.from(svg.querySelectorAll("path"), (path) => path.getAttribute("d") || "");
+        renderMemberMap(document.documentElement.lang);
+      })
+      .catch(() => {}); // keep the picture version
     const canvas = document.getElementById("member-map");
     const filters = document.getElementById("map-filters");
     const detail = document.getElementById("map-detail");
@@ -509,9 +619,34 @@
       const g = pinOf(event);
       if (g) showOnMap(Number(g.dataset.i));
     });
+    const zoomTo = (k, x = mapView.x, y = mapView.y) => {
+      mapView = { k: Math.min(Math.max(k, 1), MAP_MAX_ZOOM), x, y };
+      if (mapView.k === 1) mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
+      renderMemberMap(document.documentElement.lang);
+    };
+
     canvas.addEventListener("click", (event) => {
       const g = pinOf(event);
-      if (g) pin(Number(g.dataset.i));
+      if (g) return pin(Number(g.dataset.i));
+      const btn = event.target.closest("[data-zoom]");
+      if (btn) {
+        const action = btn.dataset.zoom;
+        if (action === "in") {
+          // zoom in on the selected person, if there is one
+          const person = mapPeople().find((p) => p.i === mapPinned);
+          const [x, y] = person ? projectCity(anchorOf(person).at) : [mapView.x, mapView.y];
+          return zoomTo(mapView.k * 2, x, y);
+        }
+        return zoomTo(action === "out" ? mapView.k / 2 : 1);
+      }
+      // a click on the map itself zooms in there (or just moves there, once fully zoomed in)
+      const svg = event.target.closest("svg");
+      if (!svg) return;
+      const point = svg.createSVGPoint();
+      point.x = event.clientX;
+      point.y = event.clientY;
+      const at = point.matrixTransform(svg.getScreenCTM().inverse());
+      zoomTo(mapView.k * 2, at.x, at.y);
     });
     canvas.addEventListener("keydown", (event) => {
       const g = pinOf(event);
@@ -528,14 +663,22 @@
     });
 
     filters.addEventListener("click", (event) => {
+      if (event.target.closest("[data-clear]")) {
+        mapSelected.clear();
+        renderMemberMap(document.documentElement.lang);
+        return;
+      }
       const btn = event.target.closest(".map-filter");
       if (!btn) return;
       const key = btn.dataset.key;
-      if (mapHidden.has(key)) mapHidden.delete(key);
-      else mapHidden.add(key);
+      if (mapSelected.has(key)) mapSelected.delete(key);
+      else mapSelected.add(key);
       const person = mapPeople().find((p) => p.i === mapPinned);
-      if (person && (mapHidden.has(person.stage) || mapHidden.has(person.current ? "current" : "past"))) mapPinned = null;
+      if (person && isHiddenOnMap(person)) mapPinned = null;
       renderMemberMap(document.documentElement.lang);
+      // the chips are redrawn, so give keyboard users their place back
+      const again = filters.querySelector(`.map-filter[data-key="${key}"]`);
+      if (again && event.detail === 0) again.focus();
     });
   }
 
