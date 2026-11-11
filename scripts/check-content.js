@@ -124,6 +124,9 @@ for (const edition of sandbox.EXPLORA_EDITIONS || []) {
 }
 for (const entry of sandbox.BOARD_HISTORY || []) {
   checkPhotoPaths(entry.members, `BOARD_HISTORY ${entry.year}`);
+  for (const m of entry.members || []) {
+    if (!m.role) errors.push(`BOARD_HISTORY ${entry.year} "${m.name}": missing role (is this entry in the right list?)`);
+  }
 }
 
 /* --- 4. MEMBER_MAP: a known stage and city for every person ------------ */

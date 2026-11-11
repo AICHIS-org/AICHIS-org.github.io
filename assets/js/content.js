@@ -842,8 +842,6 @@ const BOARD_HISTORY = [
       { name: "Eduardo A. Sagredo",    role: ROLES.presidentM,     photo: "assets/img/profiles/eduardo-sagredo.jpeg" },
       { name: "Gustavo Monasterio", role: ROLES.vicePresident,  photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
       { name: "Rodrigo Morales Castro", role: ROLES.treasurer,  photo: "assets/img/profiles/rodrigo-morales.jpeg" },
-  { name: "Alejandro Fonseca Cárdenas",  stage: "researcher", city: "Uppsala",   university: "SLU", current: true },
-  { name: "Giorgio Giusti",              stage: "researcher", city: "Stockholm", current: true },
       { name: "Markos Saravia Ramirez", role: ROLES.secretary,  photo: "" },
       { name: "Ignacio Verdugo",    role: ROLES.communications, photo: "assets/img/profiles/ignacio-verdugo.jpeg" },
     ],
@@ -879,8 +877,8 @@ const BOARD_HISTORY = [
    - "student"  bachelor's or master's student  -> a seed
    - "phd"      PhD student                     -> a seedling
    - "postdoc"  postdoc                         -> a young tree
-   - "pi"       professor / principal investig. -> a tree
-   - "researcher"  researcher (no other stage)  -> a bush
+   - "pi"       professor / principal investig. -> a big tree with fruit
+   - "researcher"  researcher (no other stage)  -> a medium tree
    - "professional" works outside research,     -> a flower
                     e.g. a psychologist
 
@@ -974,6 +972,8 @@ const MEMBER_MAP = [
   { name: "Patricia Munoz Salvatierra",  stage: "pi",      city: "Stockholm", university: "KTH", current: true },
   { name: "Carolina Oses",               stage: "pi",      city: "Stockholm", university: "KTH", current: true },
   { name: "Rodrigo Morales Castro",      stage: "researcher", city: "Stockholm", university: "KI", current: true },
+  { name: "Alejandro Fonseca Cárdenas",  stage: "researcher", city: "Uppsala",   university: "SLU", current: true },
+  { name: "Giorgio Giusti",              stage: "researcher", city: "Stockholm", current: true },
   { name: "Alejandra San Juan",          stage: "professional", city: "Upplands Väsby", current: true },
   { name: "Marion Muñoz García",         stage: "professional", city: "Stockholm", current: true },
   // Example with a path (copy and fill in; delete the // to use it):
