@@ -359,7 +359,7 @@
   // Map state survives language changes: who is pinned, which groups are
   // hidden, and how far in the map is zoomed (k) around which point (x, y).
   let mapPinned = null;
-  const mapHidden = new Set();
+  const mapSelected = new Set(); // filter chips that are pressed
   const MAP_MAX_ZOOM = 16;
   // County outlines from assets/img/sweden-map.svg, drawn into the map itself
   // (instead of as a picture) so borders stay thin however far we zoom in.
@@ -379,10 +379,17 @@
   }
 
   // Filter keys: the stage, "current"/"past", and "uni:<key>" ("uni:" for
-  // people with no university listed).
+  // people with no university listed). Pressing chips narrows the map down to
+  // them: chips of the same kind add up (KTH + SU), different kinds combine
+  // (KTH + PhD = PhD students at KTH). Nothing pressed shows everyone.
   const uniKeyOf = (p) => "uni:" + (UNIVERSITIES[p.university] ? p.university : "");
+  const keysOf = (p) => [p.stage, p.current ? "current" : "past", uniKeyOf(p)];
+  const kindOf = (key) => (STAGES.includes(key) ? 0 : key === "current" || key === "past" ? 1 : 2);
   const isHiddenOnMap = (p) =>
-    mapHidden.has(p.stage) || mapHidden.has(p.current ? "current" : "past") || mapHidden.has(uniKeyOf(p));
+    keysOf(p).some((own) => {
+      const pressed = [...mapSelected].filter((key) => kindOf(key) === kindOf(own));
+      return pressed.length > 0 && !pressed.includes(own);
+    });
 
   // Board roles a person has held: the current one (PROFILES) and past ones (BOARD_HISTORY).
   function boardRolesOf(name, lang) {
@@ -537,7 +544,7 @@
 
     const count = (pred) => people.filter(pred).length;
     const filterBtn = (key, label, icon, n) => `
-      <button type="button" class="map-filter" data-key="${key}" aria-pressed="${!mapHidden.has(key)}">
+      <button type="button" class="map-filter" data-key="${key}" aria-pressed="${mapSelected.has(key)}">
         ${icon}<span>${esc(label)}</span><span class="map-count">${n}</span>
       </button>`;
     filters.setAttribute("aria-label", t.filterLabel);
@@ -556,7 +563,8 @@
       </div>
       <div class="map-filter-row">
         ${uniKeys.map(({ key, n }) => filterBtn(key, uniName(key), ICONS.university, n)).join("")}
-      </div>`;
+      </div>
+      ${mapSelected.size ? `<button type="button" class="map-show-all" data-clear>${esc(t.showAll)}</button>` : ""}`;
 
     showOnMap(mapPinned, lang);
   }
@@ -653,11 +661,16 @@
     });
 
     filters.addEventListener("click", (event) => {
+      if (event.target.closest("[data-clear]")) {
+        mapSelected.clear();
+        renderMemberMap(document.documentElement.lang);
+        return;
+      }
       const btn = event.target.closest(".map-filter");
       if (!btn) return;
       const key = btn.dataset.key;
-      if (mapHidden.has(key)) mapHidden.delete(key);
-      else mapHidden.add(key);
+      if (mapSelected.has(key)) mapSelected.delete(key);
+      else mapSelected.add(key);
       const person = mapPeople().find((p) => p.i === mapPinned);
       if (person && isHiddenOnMap(person)) mapPinned = null;
       renderMemberMap(document.documentElement.lang);
