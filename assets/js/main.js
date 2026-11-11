@@ -167,6 +167,7 @@
   const ICONS = {
     email: `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13zm2.2.5 7.8 6.15L19.8 6H4.2zM20 8.1l-7.4 5.84a1 1 0 0 1-1.24 0L4 8.1v10.4c0 .28.22.5.5.5h15a.5.5 0 0 0 .5-.5V8.1z"/></svg>`,
     linkedin: `<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>`,
+    university: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0d3b8c" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 12 5l9 4.5-9 4.5z"/><path d="M7 11.6V16c1.4 1.3 3 2 5 2s3.6-.7 5-2v-4.4"/><path d="M21 9.5V14"/></svg>`,
     webpage: `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.9 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.9-3.8-9s1.3-6.3 3.8-9z"/></svg>`,
   };
 
@@ -359,8 +360,7 @@
   // hidden, and how far in the map is zoomed (k) around which point (x, y).
   let mapPinned = null;
   const mapHidden = new Set();
-  const MAP_MAX_ZOOM = 64; // deep enough to tell apart campuses in the same city
-  let mapGroupBy = "city"; // or "university"
+  const MAP_MAX_ZOOM = 16;
   // County outlines from assets/img/sweden-map.svg, drawn into the map itself
   // (instead of as a picture) so borders stay thin however far we zoom in.
   let swedenPaths = null;
@@ -373,12 +373,16 @@
     });
   }
 
-  // Where a person is drawn: on their university's campus when the map is
-  // grouped by university (and we know it), otherwise in their city.
+  // Where a person is drawn: their city.
   function anchorOf(p) {
-    const uni = mapGroupBy === "university" && UNIVERSITIES[p.university];
-    return uni ? { key: "u:" + p.university, label: uni.name, at: uni.at } : { key: "c:" + p.city, label: p.city, at: CITIES[p.city] };
+    return { key: p.city, label: p.city, at: CITIES[p.city] };
   }
+
+  // Filter keys: the stage, "current"/"past", and "uni:<key>" ("uni:" for
+  // people with no university listed).
+  const uniKeyOf = (p) => "uni:" + (UNIVERSITIES[p.university] ? p.university : "");
+  const isHiddenOnMap = (p) =>
+    mapHidden.has(p.stage) || mapHidden.has(p.current ? "current" : "past") || mapHidden.has(uniKeyOf(p));
 
   // Board roles a person has held: the current one (PROFILES) and past ones (BOARD_HISTORY).
   function boardRolesOf(name, lang) {
@@ -450,7 +454,7 @@
     // (a crowded Stockholm doesn't spill over Uppsala). A dot marks the real
     // spot, with a thin line to every pin that had to move.
     const PIN_R = (12 * 0.42) / k; // matches .map-pin .pin-body scale in styles.css
-    const visible = people.filter((p) => !mapHidden.has(p.stage) && !mapHidden.has(p.current ? "current" : "past"));
+    const visible = people.filter((p) => !isHiddenOnMap(p));
     const perPlace = {};
     const pins = visible.map((p) => {
       const place = anchorOf(p);
@@ -537,18 +541,21 @@
         ${icon}<span>${esc(label)}</span><span class="map-count">${n}</span>
       </button>`;
     filters.setAttribute("aria-label", t.filterLabel);
+    // one chip per university that has someone on the map, most people first
+    const uniKeys = [...new Set(people.map(uniKeyOf))]
+      .map((key) => ({ key, n: count((p) => uniKeyOf(p) === key) }))
+      .sort((a, b) => b.n - a.n || (a.key === "uni:") - (b.key === "uni:") || a.key.localeCompare(b.key));
+    const uniName = (key) => (key === "uni:" ? t.otherUniversity : UNIVERSITIES[key.slice(4)].name);
     filters.innerHTML = `
-      <div class="map-group" role="group" aria-label="${esc(t.groupLabel)}">
-        <span class="map-group-label">${esc(t.groupLabel)}</span>
-        <button type="button" data-group="city" aria-pressed="${mapGroupBy === "city"}">${esc(t.byCity)}</button>
-        <button type="button" data-group="university" aria-pressed="${mapGroupBy === "university"}">${esc(t.byUniversity)}</button>
-      </div>
       <div class="map-filter-row">
         ${STAGES.map((s) => filterBtn(s, t.stages[s], plantIcon(s), count((p) => p.stage === s))).join("")}
       </div>
       <div class="map-filter-row map-filter-status">
         ${filterBtn("current", t.current, `<span class="map-dot"></span>`, count((p) => p.current))}
         ${filterBtn("past", t.past, `<span class="map-dot is-past"></span>`, count((p) => !p.current))}
+      </div>
+      <div class="map-filter-row">
+        ${uniKeys.map(({ key, n }) => filterBtn(key, uniName(key), ICONS.university, n)).join("")}
       </div>`;
 
     showOnMap(mapPinned, lang);
@@ -564,16 +571,6 @@
     detail.dataset.shown = key;
     const person = i == null ? null : mapPeople().find((p) => p.i === i);
     detail.innerHTML = mapDetailHTML(person, lang, person && i === mapPinned);
-  }
-
-  // Zoom so that all these [lat, lon] points fit comfortably in view.
-  function fitMapTo(points) {
-    if (!points.length) return;
-    const xy = points.map(projectCity);
-    const xs = xy.map((p) => p[0]), ys = xy.map((p) => p[1]);
-    const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
-    const k = Math.min(MAP_MAX_ZOOM, (0.6 * SWEDEN_MAP.width) / (w || 1), (0.6 * SWEDEN_MAP.height) / (h || 1));
-    mapView = { k: Math.max(1, k), x: (Math.max(...xs) + Math.min(...xs)) / 2, y: (Math.max(...ys) + Math.min(...ys)) / 2 };
   }
 
   function initMemberMap() {
@@ -656,24 +653,17 @@
     });
 
     filters.addEventListener("click", (event) => {
-      const group = event.target.closest("[data-group]");
-      if (group) {
-        mapGroupBy = group.dataset.group;
-        if (mapGroupBy === "university") fitMapTo(mapPeople().map((p) => anchorOf(p).at));
-        else mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
-        renderMemberMap(document.documentElement.lang);
-        const again = filters.querySelector(`[data-group="${mapGroupBy}"]`);
-        if (again && event.detail === 0) again.focus();
-        return;
-      }
       const btn = event.target.closest(".map-filter");
       if (!btn) return;
       const key = btn.dataset.key;
       if (mapHidden.has(key)) mapHidden.delete(key);
       else mapHidden.add(key);
       const person = mapPeople().find((p) => p.i === mapPinned);
-      if (person && (mapHidden.has(person.stage) || mapHidden.has(person.current ? "current" : "past"))) mapPinned = null;
+      if (person && isHiddenOnMap(person)) mapPinned = null;
       renderMemberMap(document.documentElement.lang);
+      // the chips are redrawn, so give keyboard users their place back
+      const again = filters.querySelector(`.map-filter[data-key="${key}"]`);
+      if (again && event.detail === 0) again.focus();
     });
   }
 

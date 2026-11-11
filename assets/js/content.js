@@ -99,9 +99,7 @@ const CONTENT = {
       historyTitle: "Trayectoria",
       noHistory: "Pronto agregaremos su trayectoria.",
       close: "Cerrar",
-      groupLabel: "Mostrar en el mapa",
-      byCity: "Por ciudad",
-      byUniversity: "Por universidad",
+      otherUniversity: "Otra / sin universidad",
       zoomIn: "Acercar",
       zoomOut: "Alejar",
       zoomReset: "Ver toda Suecia",
@@ -212,9 +210,7 @@ const CONTENT = {
       historyTitle: "Path",
       noHistory: "Their path will be added soon.",
       close: "Close",
-      groupLabel: "Show on the map",
-      byCity: "By city",
-      byUniversity: "By university",
+      otherUniversity: "Other / no university",
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",
       zoomReset: "Show all of Sweden",
@@ -325,9 +321,7 @@ const CONTENT = {
       historyTitle: "Väg",
       noHistory: "Personens väg läggs till snart.",
       close: "Stäng",
-      groupLabel: "Visa på kartan",
-      byCity: "Per stad",
-      byUniversity: "Per universitet",
+      otherUniversity: "Annat / inget universitet",
       zoomIn: "Zooma in",
       zoomOut: "Zooma ut",
       zoomReset: "Visa hela Sverige",
@@ -885,8 +879,7 @@ const BOARD_HISTORY = [
    - `city`       one of the names in CITIES below (add a city there if it's
                   missing).
    - `university` optional: one of the keys in UNIVERSITIES below. Visitors
-                  can switch the map from "by city" to "by university", which
-                  puts the person on that campus instead.
+                  can filter the map by university.
    - `current`    true for current members, false for former members.
    - `history`    optional: their path, shown when someone hovers over or
                   taps them. A list of { years, role, place } — `role` can be
@@ -934,24 +927,23 @@ const CITIES = {
   "Kiruna":       [67.86, 20.23],
 };
 
-// Universities a member can be linked to: `name` is shown on the map, `at` is
-// the [latitude, longitude] of the main campus.
+// Universities a member can be linked to, by the key used in MEMBER_MAP;
+// `name` is what the map's filter shows.
 const UNIVERSITIES = {
-  "KTH":     { name: "KTH",                       at: [59.3498, 18.0707] },
-  "SU":      { name: "Stockholm University",      at: [59.3650, 18.0587] },
-  "KI":      { name: "Karolinska Institutet",     at: [59.3480, 18.0270] },
-  "SLU":     { name: "SLU Uppsala",               at: [59.8160, 17.6560] },
-  "SLU-Alnarp": { name: "SLU Alnarp",             at: [55.6580, 13.0830] },
-  "UU":      { name: "Uppsala University",        at: [59.8500, 17.6300] },
-  "LU":      { name: "Lund University",           at: [55.7116, 13.2030] },
-  "GU":      { name: "University of Gothenburg",  at: [57.6980, 11.9710] },
-  "Chalmers": { name: "Chalmers",                 at: [57.6890, 11.9750] },
-  "LiU":     { name: "Linköping University",      at: [58.3980, 15.5760] },
-  "UmU":     { name: "Umeå University",           at: [63.8200, 20.3070] },
-  "LTU":     { name: "Luleå University of Technology", at: [65.6170, 22.1400] },
-  "MAU":     { name: "Malmö University",          at: [55.6090, 12.9940] },
-  "ORU":     { name: "Örebro University",         at: [59.2540, 15.2490] },
-  "LNU":     { name: "Linnaeus University",       at: [56.8550, 14.8290] },
+  "KTH":        { name: "KTH" },
+  "SU":         { name: "Stockholm University" },
+  "KI":         { name: "Karolinska Institutet" },
+  "SLU":        { name: "SLU" },
+  "UU":         { name: "Uppsala University" },
+  "LU":         { name: "Lund University" },
+  "GU":         { name: "University of Gothenburg" },
+  "Chalmers":   { name: "Chalmers" },
+  "LiU":        { name: "Linköping University" },
+  "UmU":        { name: "Umeå University" },
+  "LTU":        { name: "Luleå University of Technology" },
+  "MAU":        { name: "Malmö University" },
+  "ORU":        { name: "Örebro University" },
+  "LNU":        { name: "Linnaeus University" },
 };
 
 const MEMBER_MAP = [
