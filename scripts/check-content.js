@@ -129,7 +129,17 @@ for (const entry of sandbox.BOARD_HISTORY || []) {
   }
 }
 
-/* --- 4. MEMBER_MAP: a known stage and city for every person ------------ */
+/* --- 4. MEMBER_MAP: every member on it, with a known stage and city ----- */
+for (const p of sandbox.PROFILES || []) {
+  if (p.member && !(sandbox.MEMBER_MAP || []).some((m) => m.name === p.name)) {
+    errors.push(`PROFILES "${p.name}" is a member but not on the map — add them to MEMBER_MAP`);
+  }
+}
+for (const m of sandbox.MEMBER_MAP || []) {
+  if (m.current && !(sandbox.PROFILES || []).some((p) => p.name === m.name && p.member)) {
+    errors.push(`MEMBER_MAP "${m.name}" is a current member but has no PROFILES entry with that exact name`);
+  }
+}
 const STAGES = ["student", "phd", "postdoc", "pi", "researcher", "professional"];
 checkPhotoPaths(sandbox.MEMBER_MAP, "MEMBER_MAP");
 for (const m of sandbox.MEMBER_MAP || []) {
