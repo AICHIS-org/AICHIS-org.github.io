@@ -960,6 +960,7 @@ const MEMBER_MAP = [
   { name: "Gustavo Monasterio",          stage: "pi",      city: "Stockholm", university: "KI",  current: true },
   { name: "Eduardo A. Sagredo",          stage: "pi",      city: "Stockholm", university: "SU",  current: true },
   { name: "Patricia Munoz Salvatierra",  stage: "pi",      city: "Stockholm", university: "KTH", current: true },
+  { name: "Carolina Oses",               stage: "pi",      city: "Stockholm", university: "KTH", current: true },
   // Example with a path (copy and fill in; delete the // to use it):
   // {
   //   name: "Nombre Apellido",
