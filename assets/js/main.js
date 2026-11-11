@@ -344,12 +344,14 @@
   }
 
   // One plant per career stage, drawn in a 24x24 box.
-  const STAGES = ["student", "phd", "postdoc", "pi"];
+  const STAGES = ["student", "phd", "postdoc", "pi", "researcher", "professional"];
   const PLANTS = {
     student: `<ellipse cx="12" cy="13" rx="5" ry="6.5" fill="#a86b32" transform="rotate(-25 12 13)"/><path d="M10 9.5c1.5 1 2.5 3 2.6 6" stroke="#6e4219" stroke-width="1.2" fill="none" stroke-linecap="round"/>`,
     phd: `<path d="M12 20.5V12" stroke="#3f7d3a" stroke-width="1.8" stroke-linecap="round"/><path d="M12 13C12 8.5 8.5 6.5 4.5 7c.2 4 3.3 6.5 7.5 6z" fill="#5aa64b"/><path d="M12 11c0-4 3-6 7-5.6-.3 3.7-3 6-7 5.6z" fill="#7cc35e"/><path d="M8 20.5h8" stroke="#8a5a2b" stroke-width="1.6" stroke-linecap="round"/>`,
     postdoc: `<path d="M12 21v-8.5" stroke="#7a4e2d" stroke-width="2" stroke-linecap="round"/><path d="M12 15.5l-2.6-2.4" stroke="#7a4e2d" stroke-width="1.4" stroke-linecap="round"/><circle cx="12" cy="9" r="5.5" fill="#5aa64b"/>`,
     pi: `<path d="M10.7 22h2.6l-.3-8.5h-2z" fill="#7a4e2d"/><circle cx="7.6" cy="11.5" r="4.8" fill="#3f8a3a"/><circle cx="16.4" cy="11.5" r="4.8" fill="#3f8a3a"/><circle cx="12" cy="7.5" r="5.8" fill="#4f9e45"/>`,
+    researcher: `<path d="M12 21.5v-3" stroke="#7a4e2d" stroke-width="1.6" stroke-linecap="round"/><circle cx="7.4" cy="15.2" r="4.3" fill="#4f9e45"/><circle cx="16.6" cy="15.2" r="4.3" fill="#4f9e45"/><circle cx="12" cy="11.8" r="5.2" fill="#6cb75a"/><circle cx="9.6" cy="10.8" r="1" fill="#d52b1e"/><circle cx="14.9" cy="13.6" r="1" fill="#d52b1e"/><circle cx="11.2" cy="15.8" r="1" fill="#d52b1e"/>`,
+    professional: `<path d="M12 21.5V11" stroke="#3f7d3a" stroke-width="1.6" stroke-linecap="round"/><path d="M12 18c-2.6 0-4.2-1.5-4.7-3.6 2.6 0 4.2 1.4 4.7 3.6z" fill="#5aa64b"/><g fill="#f8c300"><circle cx="12" cy="4.6" r="2.5"/><circle cx="15.3" cy="7.2" r="2.5"/><circle cx="14" cy="10.9" r="2.5"/><circle cx="10" cy="10.9" r="2.5"/><circle cx="8.7" cy="7.2" r="2.5"/></g><circle cx="12" cy="8" r="1.9" fill="#d52b1e"/>`,
   };
   const plantIcon = (stage, size = 22) =>
     `<svg class="plant-icon" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${PLANTS[stage] || ""}</svg>`;

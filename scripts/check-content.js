@@ -127,7 +127,7 @@ for (const entry of sandbox.BOARD_HISTORY || []) {
 }
 
 /* --- 4. MEMBER_MAP: a known stage and city for every person ------------ */
-const STAGES = ["student", "phd", "postdoc", "pi"];
+const STAGES = ["student", "phd", "postdoc", "pi", "researcher", "professional"];
 checkPhotoPaths(sandbox.MEMBER_MAP, "MEMBER_MAP");
 for (const m of sandbox.MEMBER_MAP || []) {
   if (!STAGES.includes(m.stage)) {

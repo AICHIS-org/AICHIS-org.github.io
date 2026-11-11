@@ -110,6 +110,8 @@ const CONTENT = {
         phd: "Doctorado",
         postdoc: "Postdoctorado",
         pi: "Profesor/a o investigador/a principal",
+        researcher: "Investigador/a",
+        professional: "Profesional",
       },
     },
     collaborations: {
@@ -222,6 +224,8 @@ const CONTENT = {
         phd: "PhD",
         postdoc: "Postdoc",
         pi: "Professor or principal investigator",
+        researcher: "Researcher",
+        professional: "Professional",
       },
     },
     collaborations: {
@@ -334,6 +338,8 @@ const CONTENT = {
         phd: "Doktorand",
         postdoc: "Postdoktor",
         pi: "Professor eller huvudforskare",
+        researcher: "Forskare",
+        professional: "Yrkesverksam",
       },
     },
     collaborations: {
@@ -872,13 +878,16 @@ const BOARD_HISTORY = [
    - "phd"      PhD student                     -> a seedling
    - "postdoc"  postdoc                         -> a young tree
    - "pi"       professor / principal investig. -> a tree
+   - "researcher"  researcher (no other stage)  -> a bush
+   - "professional" works outside research,     -> a flower
+                    e.g. a psychologist
 
    Each entry has:
 
    - `name`       if it matches someone in PROFILES, their photo, position,
                   field and institution are taken from there (and their board
                   roles from BOARD_HISTORY) — no need to repeat them here.
-   - `stage`      one of the four above.
+   - `stage`      one of the six above.
    - `city`       one of the names in CITIES below (add a city there if it's
                   missing).
    - `university` optional: one of the keys in UNIVERSITIES below. Visitors
@@ -928,6 +937,7 @@ const CITIES = {
   "Umeå":         [63.83, 20.26],
   "Luleå":        [65.58, 22.15],
   "Kiruna":       [67.86, 20.23],
+  "Upplands Väsby": [59.52, 17.91],
 };
 
 // Universities a member can be linked to, by the key used in MEMBER_MAP;
@@ -961,6 +971,9 @@ const MEMBER_MAP = [
   { name: "Eduardo A. Sagredo",          stage: "pi",      city: "Stockholm", university: "SU",  current: true },
   { name: "Patricia Munoz Salvatierra",  stage: "pi",      city: "Stockholm", university: "KTH", current: true },
   { name: "Carolina Oses",               stage: "pi",      city: "Stockholm", university: "KTH", current: true },
+  { name: "Rodrigo Morales Castro",      stage: "researcher", city: "Stockholm", university: "KI", current: true },
+  { name: "Alejandra San Juan",          stage: "professional", city: "Upplands Väsby", current: true },
+  { name: "Marion Muñoz García",         stage: "professional", city: "Stockholm", current: true },
   // Example with a path (copy and fill in; delete the // to use it):
   // {
   //   name: "Nombre Apellido",

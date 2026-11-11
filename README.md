@@ -68,6 +68,8 @@ entry in `MEMBER_MAP` is drawn as a plant in its city, by career stage:
 | `"phd"` | PhD student | seedling |
 | `"postdoc"` | postdoc | young tree |
 | `"pi"` | professor / principal investigator | tree |
+| `"researcher"` | researcher (no other stage fits) | bush |
+| `"professional"` | works outside research, e.g. a psychologist | flower |
 
 `city` must be one of the names in `CITIES` (add a city there with its
 latitude and longitude if it's missing). `university` is optional and must be
