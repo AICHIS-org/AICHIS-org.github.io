@@ -912,7 +912,7 @@ const CITIES = {
 
 const MEMBER_MAP = [
   { name: "Markos Saravia Ramirez",   stage: "student", city: "Stockholm", current: true },
-  { name: "Paola Olguin Muñoz",      stage: "student", city: "Alnarp",    current: true },
+  { name: "Paola Olguin Muñoz",      stage: "student", city: "Uppsala",   current: true },
   { name: "Sofía Bobadilla",         stage: "phd",     city: "Stockholm", current: true },
   { name: "Ignacio Verdugo",         stage: "phd",     city: "Stockholm", current: true },
   { name: "María José Pino",         stage: "phd",     city: "Stockholm", current: true },
