@@ -903,10 +903,10 @@ const BOARD_HISTORY = [
                   can filter the map by university.
    - `current`    true for current members, false for former members.
    - `history`    optional: their path, newest first. When someone hovers
-                  over or taps the person, it is listed on their card and
-                  drawn on the map: lines between their places in Sweden,
-                  and arrows to and from the countries they came from or went
-                  to. Each step is
+                  over or taps the person, it is listed on their card.
+                  Clicking them opens a world map of their journey, with
+                  arrows from country to country; moves inside Sweden are
+                  drawn on the Sweden map. Each step is
                     { years, stage, role, place, city, country }
                   - `years`   e.g. "2019 – 2024" or "2025 – now"
                   - `stage`   one of the six above: picks the step's plant
@@ -958,9 +958,9 @@ const CITIES = {
   "Upplands Väsby": [59.52, 17.91],
 };
 
-// Countries a path step can be in: `name` is shown on the card and map,
-// `at` is a [latitude, longitude] inside the country, used to point the map's
-// arrows towards it. Add a country here if a path needs it.
+// Countries a path step can be in: `name` is shown on the card and the world
+// map, `at` is a [latitude, longitude] inside the country, where its stop is
+// drawn on the world map. Add a country here if a path needs it.
 const COUNTRIES = {
   "Sweden":         { name: { es: "Suecia", en: "Sweden", sv: "Sverige" }, at: [62.0, 15.0] },
   "Chile":          { name: { es: "Chile", en: "Chile", sv: "Chile" }, at: [-33.45, -70.67] },

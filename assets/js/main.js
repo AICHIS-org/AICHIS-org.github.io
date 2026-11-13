@@ -369,8 +369,8 @@
   let swedenPaths = null;
   let mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
   // Set by each render, for drawing a person's path on top: where every pin
-  // ended up, and the zoom and visible box it was drawn with.
-  let mapDrawn = { pins: {}, k: 1, box: [0, 0, SWEDEN_MAP.width, SWEDEN_MAP.height] };
+  // ended up, and the zoom it was drawn with.
+  let mapDrawn = { pins: {}, k: 1 };
 
   function mapPeople() {
     return MEMBER_MAP.filter((m) => STAGES.includes(m.stage) && CITIES[m.city]).map((m, i) => {
@@ -658,7 +658,7 @@
     if (traveller) {
       const pad = parseFloat(getComputedStyle(canvas).paddingLeft) || 0;
       canvas.innerHTML = worldViewHTML(traveller, lang, Math.max(240, canvas.clientWidth - 2 * pad));
-      mapDrawn = { pins: {}, k: 1, box: [0, 0, SWEDEN_MAP.width, SWEDEN_MAP.height] };
+      mapDrawn = { pins: {}, k: 1 };
       renderMapFilters(filters, people, t);
       showOnMap(mapPinned, lang);
       return;
@@ -759,7 +759,7 @@
       <p class="map-zoom-hint">${esc(t.zoomHint)}</p>`;
     const again = focused && canvas.querySelector(`[data-zoom="${focused}"]:not([disabled])`);
     if (again) again.focus();
-    mapDrawn = { pins: Object.fromEntries(pins.map((pin) => [pin.p.i, [pin.x, pin.y]])), k, box: [viewX, viewY, viewW, viewH] };
+    mapDrawn = { pins: Object.fromEntries(pins.map((pin) => [pin.p.i, [pin.x, pin.y]])), k };
 
     renderMapFilters(filters, people, t);
     showOnMap(mapPinned, lang);
@@ -769,7 +769,7 @@
   function showOnMap(i, lang = document.documentElement.lang) {
     const detail = document.getElementById("map-detail");
     if (!detail) return;
-    drawMapPath(i, lang);
+    drawMapPath(i);
     // mouseover fires for every part of a pin, so skip redrawing the same card
     const inWorld = !!worldPerson();
     const key = `${i}|${lang}|${mapPinned}|${inWorld}|${!!worldPaths}`;
@@ -781,16 +781,6 @@
   }
 
   /* --- a person's path, drawn on the map ---------------------------------- */
-  // Initial compass bearing from one [lat, lon] to another (radians, 0 = north).
-  function bearing([lat1, lon1], [lat2, lon2]) {
-    const r = Math.PI / 180;
-    const dLon = (lon2 - lon1) * r;
-    return Math.atan2(
-      Math.sin(dLon) * Math.cos(lat2 * r),
-      Math.cos(lat1 * r) * Math.sin(lat2 * r) - Math.sin(lat1 * r) * Math.cos(lat2 * r) * Math.cos(dLon)
-    );
-  }
-
   // Groups a path (oldest first) into stops: one per run of steps in the same
   // Swedish city, and one per run of steps abroad.
   function pathStops(person) {
@@ -805,101 +795,59 @@
     return stops;
   }
 
-  function drawMapPath(i, lang) {
+  function drawMapPath(i) {
     const layer = document.querySelector("#member-map .map-path");
     if (!layer) return;
     const svg = layer.ownerSVGElement;
     const person = i == null ? null : mapPeople().find((p) => p.i === i);
     const pinXY = person && mapDrawn.pins[person.i];
-    const show = !!(pinXY && (person.history || []).length);
     // mouseover fires for every part of a pin: draw each path only once. (And
     // never move a pin in the page here — doing that mid-click loses the click.)
-    const key = show ? `${i}|${lang}` : "";
+    const key = pinXY ? String(i) : "";
     if ((layer.dataset.key || "") === key) return;
     layer.dataset.key = key;
-    svg.classList.toggle("has-path", show);
-    svg.querySelectorAll(".map-pin").forEach((g) => g.classList.toggle("is-on-path", show && Number(g.dataset.i) === i));
-    layer.innerHTML = show ? mapPathSVG(person, pinXY, lang) : "";
+    // Only the part of a path inside Sweden is drawn here; the journey between
+    // countries is the world viewer's job. Nothing to draw, nothing fades.
+    const path = pinXY ? mapPathSVG(person, pinXY) : "";
+    svg.classList.toggle("has-path", !!path);
+    svg.querySelectorAll(".map-pin").forEach((g) => g.classList.toggle("is-on-path", !!path && Number(g.dataset.i) === i));
+    layer.innerHTML = path;
   }
 
-  function mapPathSVG(person, pinXY, lang) {
-    const { k, box } = mapDrawn;
+  function mapPathSVG(person, pinXY) {
+    const { k } = mapDrawn;
     const f = (v) => v.toFixed(3);
     const PIN_R = (12 * 0.42) / k;
     const MINI = PIN_R * 1.1; // size of the small plants for each step
-    const ARROW = 26 / k;
     const out = [];
 
-    const stops = pathStops(person);
     // where each stop in Sweden is drawn: on the person's own pin when it's
     // their city, otherwise on that city
+    const stops = [];
+    pathStops(person).filter((stop) => stop.city).forEach((stop) => {
+      const last = stops[stops.length - 1];
+      // back in the same city after time abroad: still one place on this map
+      if (last && last.city === stop.city) last.steps.push(...stop.steps);
+      else stops.push({ city: stop.city, steps: stop.steps.slice() });
+    });
     const pointOf = (stop) => (stop.city === person.city ? pinXY : projectCity(CITIES[stop.city]));
-    const latLonOf = (stop) => CITIES[stop.city];
-    const countriesOf = (stop) =>
-      stop.steps.map((s) => s.country).filter((c, j, all) => c !== all[j - 1]);
-    const countryName = (c) => (COUNTRIES[c] ? COUNTRIES[c].name[lang] : c);
-    const minis = (steps, x, y, anchorRight) =>
-      steps.map((s, j) => {
-        const mx = anchorRight ? x + j * MINI : x - (steps.length - j) * MINI;
-        return `<g class="map-path-plant" transform="translate(${f(mx)} ${f(y - MINI / 2)}) scale(${f(MINI / 24)})">
-          <circle cx="12" cy="12" r="12" /><g>${PLANTS[s.stage] || ""}</g></g>`;
-      }).join("");
-
-    // arrow from/to a stop in Sweden, pointing along the bearing to a country
-    const arrow = (stop, country, incoming, steps) => {
-      const at = COUNTRIES[country] && COUNTRIES[country].at;
-      if (!at) return "";
-      const b = bearing(latLonOf(stop), at);
-      const dx = Math.sin(b), dy = -Math.cos(b);
-      const [sx, sy] = pointOf(stop);
-      // keep the far end inside the visible map
-      const [bx, by, bw, bh] = box;
-      const pad = 4 / k;
-      let len = ARROW;
-      const fits = (l) => sx + dx * l > bx + pad && sx + dx * l < bx + bw - pad && sy + dy * l > by + pad && sy + dy * l < by + bh - pad;
-      while (len > PIN_R * 2.5 && !fits(len)) len *= 0.85;
-      const near = [sx + dx * PIN_R * 1.25, sy + dy * PIN_R * 1.25];
-      const far = [sx + dx * len, sy + dy * len];
-      const [from, to] = incoming ? [far, near] : [near, far];
-      const ux = (to[0] - from[0]) / Math.hypot(to[0] - from[0], to[1] - from[1]);
-      const uy = (to[1] - from[1]) / Math.hypot(to[0] - from[0], to[1] - from[1]);
-      const h = 2.6 / k; // arrowhead size
-      const head = [
-        to,
-        [to[0] - ux * h - uy * h * 0.6, to[1] - uy * h + ux * h * 0.6],
-        [to[0] - ux * h + uy * h * 0.6, to[1] - uy * h - ux * h * 0.6],
-      ];
-      const right = dx >= 0;
-      const label = countriesOf({ steps }).map(countryName).join(" → ");
-      const tx = far[0] + (right ? 1.5 : -1.5) / k;
-      return `
-        <line class="map-path-line is-abroad" x1="${f(from[0])}" y1="${f(from[1])}" x2="${f(to[0])}" y2="${f(to[1])}" />
-        <polygon class="map-path-head" points="${head.map((p) => f(p[0]) + "," + f(p[1])).join(" ")}" />
-        <text class="map-path-label" x="${f(tx)}" y="${f(far[1] - 1.2 / k)}" text-anchor="${right ? "start" : "end"}">${esc((incoming ? "" : "→ ") + label)}</text>`;
-    };
+    const minis = (steps, x, y) =>
+      steps.map((s, j) => `<g class="map-path-plant" transform="translate(${f(x + j * MINI)} ${f(y - MINI / 2)}) scale(${f(MINI / 24)})">
+          <circle cx="12" cy="12" r="12" /><g>${PLANTS[s.stage] || ""}</g></g>`).join("");
 
     stops.forEach((stop, n) => {
-      if (stop.city) {
-        // a line from the previous stop in Sweden
-        const prev = stops[n - 1];
-        if (prev && prev.city) {
-          const [x1, y1] = pointOf(prev), [x2, y2] = pointOf(stop);
-          out.push(`<line class="map-path-line" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke-dasharray="${f(2 / k)} ${f(1.4 / k)}" />`);
-        }
-        // the steps here, as small plants; the person's latest step is the pin itself
-        const [x, y] = pointOf(stop);
-        const steps = stop.steps.filter((s) => s !== person.history[0]);
-        if (steps.length) out.push(minis(steps, x + PIN_R * 1.2, y, true));
-        return;
+      // a line from the previous place in Sweden
+      const prev = stops[n - 1];
+      if (prev) {
+        const [x1, y1] = pointOf(prev), [x2, y2] = pointOf(stop);
+        out.push(`<line class="map-path-line" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke-dasharray="${f(2 / k)} ${f(1.4 / k)}" />`);
       }
-      // abroad: where they came from (into the next stop in Sweden) and where
-      // they went (out of the previous one)
-      const before = stops[n - 1], after = stops[n + 1];
-      const countries = countriesOf(stop);
-      if (after && after.city) out.push(arrow(after, countries[countries.length - 1], true, stop.steps));
-      if (before && before.city) out.push(arrow(before, countries[0], false, stop.steps));
+      // the steps here, as small plants; the person's latest step is the pin itself
+      const [x, y] = pointOf(stop);
+      const steps = stop.steps.filter((s) => s !== person.history[0]);
+      if (steps.length) out.push(minis(steps, x + PIN_R * 1.2, y));
     });
-    return `<g stroke-width="${f(0.8 / k)}" font-size="${f(4.2 / k)}">${out.join("")}</g>`;
+    return out.length ? `<g stroke-width="${f(0.8 / k)}">${out.join("")}</g>` : "";
   }
 
   function initMemberMap() {

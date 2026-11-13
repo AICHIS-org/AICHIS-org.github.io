@@ -79,9 +79,9 @@ can filter the map by university, and zoom in by clicking on it.
 If `name` matches someone in `PROFILES`, their photo, position and board roles
 are filled in automatically. The optional `history` list (newest first) is
 what visitors see when they hover over or tap the plant: each step is
-`{ years, stage, role, place, city, country }`, and the map draws lines between a person's places in Sweden and
-arrows towards the countries they came from or went to; the person's card
-shows the whole journey on a small world map. `country` must be one
+`{ years, stage, role, place, city, country }`. Clicking someone whose path
+leaves Sweden opens a world map of their journey, with arrows from country to
+country; moves inside Sweden are drawn on the Sweden map. `country` must be one
 of the keys in `COUNTRIES`, and steps in Sweden need a `city` from `CITIES`.
 
 ### Events
