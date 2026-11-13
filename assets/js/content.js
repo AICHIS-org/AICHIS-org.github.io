@@ -676,11 +676,15 @@ const PROFILES = [
     board: { role: ROLES.deputy },
     member: {
       role: { es: "Estudiante de doctorado", en: "PhD Student", sv: "Doktorand" },
-      field: { es: "Física Médica", en: "Medical Physics", sv: "Medicinsk fysik" },
+      field: {
+        es: "Física Médica de Radiaciones: Inmunorradioterapia",
+        en: "Medical Radiation Physics: Immunoradiotherapy",
+        sv: "Medicinsk strålningsfysik: immunoradioterapi",
+      },
       institution: "Stockholm University - Karolinska Institutet",
       email: "ignacio.verdugo@fysik.su.se",
       linkedin: "https://www.linkedin.com/in/ignacio-verdugo-naranjo/",
-      webpage: "https://www.su.se/profiles/i/igve9547",
+      webpage: "https://ignacio-verdugo.github.io/ignacioverdugo.github.io/",
     },
   },
   {
@@ -852,7 +856,7 @@ const BOARD_HISTORY = [
       { name: "Gustavo Monasterio", role: ROLES.vicePresident,  photo: "assets/img/profiles/gustavo-monasterio.jpeg" },
       { name: "Rodrigo Morales Castro", role: ROLES.treasurer,  photo: "assets/img/profiles/rodrigo-morales.jpeg" },
       { name: "Markos Saravia Ramirez", role: ROLES.secretary,  photo: "" },
-      { name: "Ignacio Verdugo",    role: ROLES.communications, photo: "assets/img/profiles/ignacio-verdugo.jpeg" },
+      { name: "Ignacio Verdugo",    role: ROLES.communicationsDirectorM, photo: "assets/img/profiles/ignacio-verdugo.jpeg" },
     ],
   },
   {
