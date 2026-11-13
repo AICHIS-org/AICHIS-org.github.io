@@ -707,6 +707,28 @@ img { max-width: 100%; display: block; }
   stroke-linejoin: round;
 }
 .map-path-plant circle { fill: var(--white); stroke: var(--red); stroke-width: 1.4; }
+/* a person's journey on a small world map, on their card */
+.map-world {
+  margin: 4px 0 12px;
+  background: #f7f9fd;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.map-world svg { display: block; width: 100%; }
+.world-land path { fill: #dfe7f5; stroke: var(--white); stroke-linejoin: round; }
+.world-land path.is-visited { fill: #9db5e3; }
+.world-arrow { fill: none; stroke: var(--red); stroke-linecap: round; }
+.world-arrow-head { fill: var(--red); }
+.world-stop circle { fill: var(--white); stroke: var(--red); stroke-width: 1.6; }
+.world-labels text {
+  font-family: var(--font);
+  font-weight: 600;
+  fill: var(--blue-dark);
+  paint-order: stroke;
+  stroke: var(--white);
+  stroke-linejoin: round;
+}
 .map-what { display: flex; align-items: flex-start; gap: 6px; }
 .map-what .plant-icon { flex: none; margin-top: 2px; }
 .map-labels text {

@@ -80,7 +80,8 @@ If `name` matches someone in `PROFILES`, their photo, position and board roles
 are filled in automatically. The optional `history` list (newest first) is
 what visitors see when they hover over or tap the plant: each step is
 `{ years, stage, role, place, city, country }`, and the map draws lines between a person's places in Sweden and
-arrows towards the countries they came from or went to. `country` must be one
+arrows towards the countries they came from or went to; the person's card
+shows the whole journey on a small world map. `country` must be one
 of the keys in `COUNTRIES`, and steps in Sweden need a `city` from `CITIES`.
 
 ### Events
@@ -132,6 +133,7 @@ assets/
   img/aichis_members_embassy_2023.jpg   Members group photo (Members section banner)
   img/profiles/                  Individual profile photos, named firstname-lastname.ext
   img/sweden-map.svg             Map of Sweden used by the Chileans in Sweden section
+  img/world-map.svg              World map used to draw a member's path on their card
 scripts/
   check-content.js               PR check: translations complete, photos exist
   check-security.js              PR check: no unsafe links, embeds or scripts

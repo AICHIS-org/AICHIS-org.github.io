@@ -408,6 +408,117 @@
     return roles;
   }
 
+  /* --- a person's journey on a small world map (shown on their card) ------ */
+  // Same projection that drew assets/img/world-map.svg — keep them in sync.
+  const WORLD_MAP = { width: 360, height: 145, latTop: 85 };
+  let worldPaths = null; // [{ name, d }], loaded from the SVG file
+  const projectWorld = ([lat, lon]) => [lon + 180, WORLD_MAP.latTop - lat];
+
+  // The countries of a path, oldest first: one stop per run of steps in the
+  // same country. Stops in Sweden sit on the person's city.
+  function worldStops(person) {
+    const stops = [];
+    (person.history || []).slice().reverse().forEach((step) => {
+      const country = COUNTRIES[step.country];
+      if (!country) return;
+      const last = stops[stops.length - 1];
+      if (last && last.country === step.country) last.steps.push(step);
+      else stops.push({ country: step.country, at: (step.country === "Sweden" && CITIES[step.city]) || country.at, steps: [step] });
+    });
+    return stops;
+  }
+
+  function worldJourneyHTML(person, lang) {
+    const stops = worldStops(person);
+    if (!worldPaths || stops.length < 2) return "";
+    const f = (v) => v.toFixed(2);
+    const { width: W, height: H } = WORLD_MAP;
+    const pts = stops.map((s) => projectWorld(s.at));
+
+    // show just the part of the world the journey covers
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+    const w = clamp(Math.max(Math.max(...xs) - Math.min(...xs), (Math.max(...ys) - Math.min(...ys)) * (W / H)) * 1.3 + 40, 130, W);
+    const h = (w * H) / W;
+    const vx = clamp((Math.max(...xs) + Math.min(...xs)) / 2 - w / 2, 0, W - w);
+    const vy = clamp((Math.max(...ys) + Math.min(...ys)) / 2 - h / 2, 0, H - h);
+    const u = w / W; // sizes below are for the whole-world view
+    const R = 6.5 * u;
+
+    const visited = new Set(stops.map((s) => s.country));
+    const land = worldPaths
+      .map((c) => `<path${visited.has(c.name) ? ' class="is-visited"' : ""} d="${esc(c.d)}" />`)
+      .join("");
+
+    // a curved arrow from each stop to the next
+    const tips = []; // where arrowheads are, so labels can keep clear of them
+    const arrows = pts.slice(1).map((to, n) => {
+      const from = pts[n];
+      const dx = to[0] - from[0], dy = to[1] - from[1];
+      const len = Math.hypot(dx, dy);
+      if (len < 0.01) return "";
+      const bend = 0.18;
+      const cx = (from[0] + to[0]) / 2 - dy * bend, cy = (from[1] + to[1]) / 2 + dx * bend;
+      const at = (t) => [
+        (1 - t) * (1 - t) * from[0] + 2 * (1 - t) * t * cx + t * t * to[0],
+        (1 - t) * (1 - t) * from[1] + 2 * (1 - t) * t * cy + t * t * to[1],
+      ];
+      // arrowhead where the curve reaches the edge of the next stop's marker
+      const t = Math.max(0.5, 1 - (R * 1.2) / len);
+      const tip = at(t), back = at(t - 0.02);
+      const ux = (tip[0] - back[0]) / Math.hypot(tip[0] - back[0], tip[1] - back[1]);
+      const uy = (tip[1] - back[1]) / Math.hypot(tip[0] - back[0], tip[1] - back[1]);
+      const a = 4 * u;
+      tips.push([tip[0] - ux * a * 0.5, tip[1] - uy * a * 0.5]);
+      const head = [tip, [tip[0] - ux * a - uy * a * 0.55, tip[1] - uy * a + ux * a * 0.55], [tip[0] - ux * a + uy * a * 0.55, tip[1] - uy * a - ux * a * 0.55]];
+      return `<path class="world-arrow" d="M${f(from[0])} ${f(from[1])}Q${f(cx)} ${f(cy)} ${f(to[0])} ${f(to[1])}" />
+        <polygon class="world-arrow-head" points="${head.map((p) => f(p[0]) + "," + f(p[1])).join(" ")}" />`;
+    }).join("");
+
+    // one marker per country (the plant of the latest step there) and its name,
+    // placed below, above or beside the marker — wherever it doesn't collide
+    const markers = [];
+    stops.forEach((s, n) => {
+      const prev = markers.find((m) => m.country === s.country);
+      if (prev) prev.stage = s.steps[s.steps.length - 1].stage;
+      else markers.push({ country: s.country, xy: pts[n], stage: s.steps[s.steps.length - 1].stage });
+    });
+    const boxes = markers
+      .map((m) => [m.xy[0] - R, m.xy[1] - R, m.xy[0] + R, m.xy[1] + R])
+      .concat(tips.map(([x, y]) => [x - 3 * u, y - 3 * u, x + 3 * u, y + 3 * u]));
+    const hits = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
+    const fontSize = 7 * u;
+    const labels = markers.map((m) => {
+      const name = COUNTRIES[m.country].name[lang];
+      const tw = name.length * fontSize * 0.58, th = fontSize;
+      const [x, y] = m.xy;
+      const options = [
+        { x, y: y + R + th, anchor: "middle", box: [x - tw / 2, y + R, x + tw / 2, y + R + th * 1.2] },
+        { x, y: y - R - th * 0.35, anchor: "middle", box: [x - tw / 2, y - R - th * 1.2, x + tw / 2, y - R] },
+        { x: x + R + 1.5 * u, y: y + th * 0.35, anchor: "start", box: [x + R, y - th / 2, x + R + tw + 2 * u, y + th / 2] },
+        { x: x - R - 1.5 * u, y: y + th * 0.35, anchor: "end", box: [x - R - tw - 2 * u, y - th / 2, x - R, y + th / 2] },
+      ];
+      const inView = (b) => b[0] > vx && b[2] < vx + w && b[1] > vy && b[3] < vy + h;
+      const pick = options.find((o) => inView(o.box) && !boxes.some((b) => hits(o.box, b))) || options[0];
+      boxes.push(pick.box);
+      return `<text x="${f(pick.x)}" y="${f(pick.y)}" text-anchor="${pick.anchor}">${esc(name)}</text>`;
+    }).join("");
+
+    const route = stops.map((s) => COUNTRIES[s.country].name[lang]).join(" → ");
+    return `
+      <figure class="map-world">
+        <svg viewBox="${f(vx)} ${f(vy)} ${f(w)} ${f(h)}" role="img" aria-label="${esc(route)}">
+          <g class="world-land" stroke-width="${f(0.3 * u)}">${land}</g>
+          <g stroke-width="${f(1.3 * u)}">${arrows}</g>
+          ${markers.map((m) => `
+          <g class="world-stop" transform="translate(${f(m.xy[0] - R)} ${f(m.xy[1] - R)}) scale(${f((2 * R) / 24)})">
+            <circle cx="12" cy="12" r="12" /><g>${PLANTS[m.stage] || ""}</g>
+          </g>`).join("")}
+          <g class="world-labels" font-size="${f(fontSize)}" stroke-width="${f(1.6 * u)}">${labels}</g>
+        </svg>
+      </figure>`;
+  }
+
   function mapDetailHTML(person, lang, pinned) {
     const t = CONTENT[lang].researchers;
     if (!person) return `<p class="map-hint">${esc(t.hint)}</p>`;
@@ -441,6 +552,7 @@
         <p class="member-inst">${esc(place)}</p>
         ${board.length ? `<h4 class="map-subtitle">${esc(t.aichisTitle)}</h4>${list(board.map((b) => ({ when: b.when, what: b.role })))}` : ""}
         <h4 class="map-subtitle">${esc(t.historyTitle)}</h4>
+        ${worldJourneyHTML(person, lang)}
         ${history.length
           ? list(history.map((h) => ({ when: h.years, stage: h.stage, what: [pickLang(h.role, lang), whereOf(h)].filter(Boolean).join(" — ") })))
           : `<p class="map-empty">${esc(t.noHistory)}</p>`}
@@ -721,6 +833,20 @@
         renderMemberMap(document.documentElement.lang);
       })
       .catch(() => {}); // keep the picture version
+    fetch("assets/img/world-map.svg")
+      .then((res) => (res.ok ? res.text() : Promise.reject(res.status)))
+      .then((text) => {
+        const svg = new DOMParser().parseFromString(text, "image/svg+xml");
+        worldPaths = Array.from(svg.querySelectorAll("path"), (path) => ({
+          name: path.getAttribute("data-name") || "",
+          d: path.getAttribute("d") || "",
+        }));
+        // redraw an open card, now with its world map
+        const detail = document.getElementById("map-detail");
+        if (detail) delete detail.dataset.shown;
+        showOnMap(mapPinned);
+      })
+      .catch(() => {}); // cards simply show no world map
     const canvas = document.getElementById("member-map");
     const filters = document.getElementById("map-filters");
     const detail = document.getElementById("map-detail");
