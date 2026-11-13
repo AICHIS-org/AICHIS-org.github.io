@@ -361,6 +361,7 @@
   // Map state survives language changes: who is pinned, which groups are
   // hidden, and how far in the map is zoomed (k) around which point (x, y).
   let mapPinned = null;
+  let mapWorldOff = false; // the visitor went back to the Sweden map while someone is pinned
   const mapSelected = new Set(); // filter chips that are pressed
   const MAP_MAX_ZOOM = 16;
   // County outlines from assets/img/sweden-map.svg, drawn into the map itself
@@ -428,22 +429,42 @@
     return stops;
   }
 
-  function worldJourneyHTML(person, lang) {
+  const hasWorldPath = (person) => !!person && worldStops(person).some((s) => s.country !== "Sweden");
+
+  // The person whose journey fills the main map: whoever is pinned, if their
+  // path leaves Sweden (and the visitor hasn't gone back to the Sweden map).
+  function worldPerson() {
+    if (mapPinned == null || mapWorldOff || !worldPaths) return null;
+    const person = mapPeople().find((p) => p.i === mapPinned);
+    return hasWorldPath(person) ? person : null;
+  }
+
+  // "2025 – now" -> "2025 – hoy" / "2025 – nu"
+  const yearsText = (years, lang) => String(years || "").replace(/\bnow\b/i, CONTENT[lang].researchers.now);
+
+  // The journey as an SVG: `big` for the main map, small for the card.
+  // `widthPx` is how wide it will be shown, so markers and text get a
+  // readable size whatever part of the world is in view.
+  function worldJourneySVG(person, lang, { big = false, widthPx = 420 } = {}) {
     const stops = worldStops(person);
     if (!worldPaths || stops.length < 2) return "";
     const f = (v) => v.toFixed(2);
     const { width: W, height: H } = WORLD_MAP;
+    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
     const pts = stops.map((s) => projectWorld(s.at));
+    const size = big
+      ? { r: clamp(widthPx / 55, 8, 15), font: clamp(widthPx / 70, 9, 13), line: clamp(widthPx / 250, 1.4, 2.4), head: clamp(widthPx / 70, 5, 9), maxH: 520, minAspect: 1.7 }
+      : { r: 8, font: 8.5, line: 1.6, head: 5, maxH: Infinity, minAspect: W / H };
 
     // show just the part of the world the journey covers
-    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
-    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
-    const w = clamp(Math.max(Math.max(...xs) - Math.min(...xs), (Math.max(...ys) - Math.min(...ys)) * (W / H)) * 1.3 + 40, 130, W);
-    const h = (w * H) / W;
+    const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
+    const spanX = Math.max(...xs) - Math.min(...xs), spanY = Math.max(...ys) - Math.min(...ys);
+    const w = clamp(Math.max(spanX + 64, (spanY + 50) * size.minAspect, 130), 0, W);
+    const h = clamp(Math.max(spanY + 50, (w * H) / W), 0, H);
     const vx = clamp((Math.max(...xs) + Math.min(...xs)) / 2 - w / 2, 0, W - w);
     const vy = clamp((Math.max(...ys) + Math.min(...ys)) / 2 - h / 2, 0, H - h);
-    const u = w / W; // sizes below are for the whole-world view
-    const R = 6.5 * u;
+    const px = (n) => n / Math.min(widthPx / w, size.maxH / h); // screen px -> map units
+    const R = px(size.r), font = px(size.font);
 
     const visited = new Set(stops.map((s) => s.country));
     const land = worldPaths
@@ -451,7 +472,7 @@
       .join("");
 
     // a curved arrow from each stop to the next
-    const tips = []; // where arrowheads are, so labels can keep clear of them
+    const busy = []; // points labels should keep clear of: arrowheads and the curves
     const arrows = pts.slice(1).map((to, n) => {
       const from = pts[n];
       const dx = to[0] - from[0], dy = to[1] - from[1];
@@ -468,58 +489,87 @@
       const tip = at(t), back = at(t - 0.02);
       const ux = (tip[0] - back[0]) / Math.hypot(tip[0] - back[0], tip[1] - back[1]);
       const uy = (tip[1] - back[1]) / Math.hypot(tip[0] - back[0], tip[1] - back[1]);
-      const a = 4 * u;
-      tips.push([tip[0] - ux * a * 0.5, tip[1] - uy * a * 0.5]);
+      const a = px(size.head);
+      busy.push([tip[0] - ux * a * 0.5, tip[1] - uy * a * 0.5]);
+      for (let k = 0.15; k < 0.9; k += 0.1) busy.push(at(k));
       const head = [tip, [tip[0] - ux * a - uy * a * 0.55, tip[1] - uy * a + ux * a * 0.55], [tip[0] - ux * a + uy * a * 0.55, tip[1] - uy * a - ux * a * 0.55]];
       return `<path class="world-arrow" d="M${f(from[0])} ${f(from[1])}Q${f(cx)} ${f(cy)} ${f(to[0])} ${f(to[1])}" />
-        <polygon class="world-arrow-head" points="${head.map((p) => f(p[0]) + "," + f(p[1])).join(" ")}" />`;
+        <polygon class="world-arrow-head" points="${head.map((q) => f(q[0]) + "," + f(q[1])).join(" ")}" />`;
     }).join("");
 
-    // one marker per country (the plant of the latest step there) and its name,
-    // placed below, above or beside the marker — wherever it doesn't collide
+    // one marker per country: the plant of the latest step there, its name
+    // and (on the big map) the years spent there
+    const spanOf = (steps) => {
+      const parts = (step) => String(step.years || "").split(/\s*[–-]\s*/);
+      const a = parts(steps[0])[0], b = parts(steps[steps.length - 1]).pop();
+      return yearsText(a === b ? a : `${a} – ${b}`, lang);
+    };
     const markers = [];
     stops.forEach((s, n) => {
       const prev = markers.find((m) => m.country === s.country);
-      if (prev) prev.stage = s.steps[s.steps.length - 1].stage;
-      else markers.push({ country: s.country, xy: pts[n], stage: s.steps[s.steps.length - 1].stage });
+      if (prev) {
+        prev.stage = s.steps[s.steps.length - 1].stage;
+        prev.spans.push(spanOf(s.steps));
+      } else markers.push({ country: s.country, xy: pts[n], stage: s.steps[s.steps.length - 1].stage, spans: [spanOf(s.steps)] });
     });
+
+    // labels go below, above or beside the marker — wherever they don't collide
     const boxes = markers
       .map((m) => [m.xy[0] - R, m.xy[1] - R, m.xy[0] + R, m.xy[1] + R])
-      .concat(tips.map(([x, y]) => [x - 3 * u, y - 3 * u, x + 3 * u, y + 3 * u]));
+      .concat(busy.map(([x, y]) => [x - px(4), y - px(4), x + px(4), y + px(4)]));
     const hits = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
-    const fontSize = 7 * u;
+    const gap = px(3);
     const labels = markers.map((m) => {
       const name = COUNTRIES[m.country].name[lang];
-      const tw = name.length * fontSize * 0.58, th = fontSize;
+      const years = big && widthPx >= 480 ? m.spans.join(", ") : ""; // no room for years on phones
+      const tw = Math.max(name.length * font * 0.6, years.length * font * 0.5);
+      const th = font * (years ? 2.3 : 1.15);
       const [x, y] = m.xy;
       const options = [
-        { x, y: y + R + th, anchor: "middle", box: [x - tw / 2, y + R, x + tw / 2, y + R + th * 1.2] },
-        { x, y: y - R - th * 0.35, anchor: "middle", box: [x - tw / 2, y - R - th * 1.2, x + tw / 2, y - R] },
-        { x: x + R + 1.5 * u, y: y + th * 0.35, anchor: "start", box: [x + R, y - th / 2, x + R + tw + 2 * u, y + th / 2] },
-        { x: x - R - 1.5 * u, y: y + th * 0.35, anchor: "end", box: [x - R - tw - 2 * u, y - th / 2, x - R, y + th / 2] },
+        { anchor: "middle", box: [x - tw / 2, y + R + gap, x + tw / 2, y + R + gap + th] },
+        { anchor: "middle", box: [x - tw / 2, y - R - gap - th, x + tw / 2, y - R - gap] },
+        { anchor: "start", box: [x + R + gap, y - th / 2, x + R + gap + tw, y + th / 2] },
+        { anchor: "end", box: [x - R - gap - tw, y - th / 2, x - R - gap, y + th / 2] },
       ];
       const inView = (b) => b[0] > vx && b[2] < vx + w && b[1] > vy && b[3] < vy + h;
-      const pick = options.find((o) => inView(o.box) && !boxes.some((b) => hits(o.box, b))) || options[0];
+      const pick = options.find((o) => inView(o.box) && !boxes.some((b) => hits(o.box, b)))
+        || options.find((o) => inView(o.box)) || options[0];
       boxes.push(pick.box);
-      return `<text x="${f(pick.x)}" y="${f(pick.y)}" text-anchor="${pick.anchor}">${esc(name)}</text>`;
+      const tx = pick.anchor === "middle" ? (pick.box[0] + pick.box[2]) / 2 : pick.anchor === "start" ? pick.box[0] : pick.box[2];
+      return `<text x="${f(tx)}" y="${f(pick.box[1] + font * 0.9)}" text-anchor="${pick.anchor}">${esc(name)}${
+        years ? `<tspan class="world-years" x="${f(tx)}" dy="${f(font * 1.15)}">${esc(years)}</tspan>` : ""}</text>`;
     }).join("");
 
     const route = stops.map((s) => COUNTRIES[s.country].name[lang]).join(" → ");
     return `
-      <figure class="map-world">
-        <svg viewBox="${f(vx)} ${f(vy)} ${f(w)} ${f(h)}" role="img" aria-label="${esc(route)}">
-          <g class="world-land" stroke-width="${f(0.3 * u)}">${land}</g>
-          <g stroke-width="${f(1.3 * u)}">${arrows}</g>
+        <svg class="${big ? "world-big" : "world-mini"}" viewBox="${f(vx)} ${f(vy)} ${f(w)} ${f(h)}" role="img" aria-label="${esc(route)}">
+          <g class="world-land" stroke-width="${f(px(0.5))}">${land}</g>
+          <g stroke-width="${f(px(size.line))}">${arrows}</g>
           ${markers.map((m) => `
           <g class="world-stop" transform="translate(${f(m.xy[0] - R)} ${f(m.xy[1] - R)}) scale(${f((2 * R) / 24)})">
             <circle cx="12" cy="12" r="12" /><g>${PLANTS[m.stage] || ""}</g>
           </g>`).join("")}
-          <g class="world-labels" font-size="${f(fontSize)}" stroke-width="${f(1.6 * u)}">${labels}</g>
-        </svg>
-      </figure>`;
+          <g class="world-labels" font-size="${f(font)}" stroke-width="${f(px(3))}">${labels}</g>
+        </svg>`;
   }
 
-  function mapDetailHTML(person, lang, pinned) {
+  // The main map as a world viewer, for the pinned person's journey.
+  function worldViewHTML(person, lang, widthPx) {
+    const t = CONTENT[lang].researchers;
+    const route = worldStops(person).map((s) => COUNTRIES[s.country].name[lang]).join(" → ");
+    return `
+      <div class="world-view">
+        <div class="world-view-head">
+          <p class="world-title"><strong>${esc(person.name)}</strong><span>${esc(route)}</span></p>
+          <button type="button" class="world-back" data-world="close">&larr; ${esc(t.backToSweden)}</button>
+        </div>
+        ${worldJourneySVG(person, lang, { big: true, widthPx })}
+      </div>`;
+  }
+
+  // `world`: how the card shows the journey — "figure" (a small world map),
+  // "button" (the same, opening the big one) or "none" (the big one is open).
+  function mapDetailHTML(person, lang, pinned, world = "figure") {
     const t = CONTENT[lang].researchers;
     if (!person) return `<p class="map-hint">${esc(t.hint)}</p>`;
     const m = person.member;
@@ -535,6 +585,14 @@
       `<ol class="map-timeline">${items.map((h) => `
           <li><span class="map-when">${esc(h.when)}</span><span class="map-what">${h.stage ? plantIcon(h.stage, 16) : ""}<span>${esc(h.what)}</span></span></li>`).join("")}</ol>`;
     const whereOf = (h) => [h.place, h.city, COUNTRIES[h.country] ? COUNTRIES[h.country].name[lang] : h.country].filter(Boolean).join(", ");
+    const panel = document.getElementById("map-detail");
+    const miniSVG = world !== "none" && hasWorldPath(person)
+      ? worldJourneySVG(person, lang, { widthPx: Math.max(240, ((panel && panel.clientWidth) || 470) - 50) })
+      : "";
+    const miniWorld = !miniSVG ? ""
+      : world === "button"
+        ? `<button type="button" class="map-world" data-world="open" title="${esc(t.openWorld)}">${miniSVG}<span class="map-world-open">${esc(t.openWorld)}</span></button>`
+        : `<figure class="map-world">${miniSVG}</figure>`;
 
     return `
       <article class="map-card${person.current ? "" : " is-past"}">
@@ -552,11 +610,37 @@
         <p class="member-inst">${esc(place)}</p>
         ${board.length ? `<h4 class="map-subtitle">${esc(t.aichisTitle)}</h4>${list(board.map((b) => ({ when: b.when, what: b.role })))}` : ""}
         <h4 class="map-subtitle">${esc(t.historyTitle)}</h4>
-        ${worldJourneyHTML(person, lang)}
+        ${miniWorld}
         ${history.length
-          ? list(history.map((h) => ({ when: h.years, stage: h.stage, what: [pickLang(h.role, lang), whereOf(h)].filter(Boolean).join(" — ") })))
+          ? list(history.map((h) => ({ when: yearsText(h.years, lang), stage: h.stage, what: [pickLang(h.role, lang), whereOf(h)].filter(Boolean).join(" — ") })))
           : `<p class="map-empty">${esc(t.noHistory)}</p>`}
       </article>`;
+  }
+
+  function renderMapFilters(filters, people, t) {
+    const count = (pred) => people.filter(pred).length;
+    const filterBtn = (key, label, icon, n) => `
+      <button type="button" class="map-filter" data-key="${key}" aria-pressed="${mapSelected.has(key)}">
+        ${icon}<span>${esc(label)}</span><span class="map-count">${n}</span>
+      </button>`;
+    filters.setAttribute("aria-label", t.filterLabel);
+    // one chip per university that has someone on the map, most people first
+    const uniKeys = [...new Set(people.map(uniKeyOf))]
+      .map((key) => ({ key, n: count((p) => uniKeyOf(p) === key) }))
+      .sort((a, b) => b.n - a.n || (a.key === "uni:") - (b.key === "uni:") || a.key.localeCompare(b.key));
+    const uniName = (key) => (key === "uni:" ? t.otherUniversity : UNIVERSITIES[key.slice(4)].name);
+    filters.innerHTML = `
+      <div class="map-filter-row">
+        ${STAGES.map((s) => filterBtn(s, t.stages[s], plantIcon(s), count((p) => p.stage === s))).join("")}
+      </div>
+      <div class="map-filter-row map-filter-status">
+        ${filterBtn("current", t.current, `<span class="map-dot"></span>`, count((p) => p.current))}
+        ${filterBtn("past", t.past, `<span class="map-dot is-past"></span>`, count((p) => !p.current))}
+      </div>
+      <div class="map-filter-row">
+        ${uniKeys.map(({ key, n }) => filterBtn(key, uniName(key), ICONS.university, n)).join("")}
+      </div>
+      ${mapSelected.size ? `<button type="button" class="map-show-all" data-clear>${esc(t.showAll)}</button>` : ""}`;
   }
 
   function renderMemberMap(lang) {
@@ -565,6 +649,20 @@
     if (!canvas || !filters) return;
     const t = CONTENT[lang].researchers;
     const people = mapPeople();
+
+    // someone with an international path is pinned: the map becomes a world
+    // viewer for their journey (full width, see .member-map.is-world)
+    const traveller = worldPerson();
+    const wrap = canvas.closest(".member-map");
+    if (wrap) wrap.classList.toggle("is-world", !!traveller);
+    if (traveller) {
+      const pad = parseFloat(getComputedStyle(canvas).paddingLeft) || 0;
+      canvas.innerHTML = worldViewHTML(traveller, lang, Math.max(240, canvas.clientWidth - 2 * pad));
+      mapDrawn = { pins: {}, k: 1, box: [0, 0, SWEDEN_MAP.width, SWEDEN_MAP.height] };
+      renderMapFilters(filters, people, t);
+      showOnMap(mapPinned, lang);
+      return;
+    }
 
     // The visible part of the map. Pins, dots and labels keep the same size on
     // screen at every zoom, so zooming in spreads crowded cities apart.
@@ -604,7 +702,8 @@
       }
       pins.forEach((pin) => { pin.x += (pin.cx - pin.x) * 0.04; pin.y += (pin.cy - pin.y) * 0.04; });
     }
-    pins.sort((a, b) => a.y - b.y); // lower pins drawn on top
+    // lower pins drawn on top, and the selected person above everyone
+    pins.sort((a, b) => (a.p.i === mapPinned) - (b.p.i === mapPinned) || a.y - b.y);
 
     // place name to the left of its group of pins, level with the real spot
     const cities = Object.keys(perPlace).map((key) => {
@@ -662,30 +761,7 @@
     if (again) again.focus();
     mapDrawn = { pins: Object.fromEntries(pins.map((pin) => [pin.p.i, [pin.x, pin.y]])), k, box: [viewX, viewY, viewW, viewH] };
 
-    const count = (pred) => people.filter(pred).length;
-    const filterBtn = (key, label, icon, n) => `
-      <button type="button" class="map-filter" data-key="${key}" aria-pressed="${mapSelected.has(key)}">
-        ${icon}<span>${esc(label)}</span><span class="map-count">${n}</span>
-      </button>`;
-    filters.setAttribute("aria-label", t.filterLabel);
-    // one chip per university that has someone on the map, most people first
-    const uniKeys = [...new Set(people.map(uniKeyOf))]
-      .map((key) => ({ key, n: count((p) => uniKeyOf(p) === key) }))
-      .sort((a, b) => b.n - a.n || (a.key === "uni:") - (b.key === "uni:") || a.key.localeCompare(b.key));
-    const uniName = (key) => (key === "uni:" ? t.otherUniversity : UNIVERSITIES[key.slice(4)].name);
-    filters.innerHTML = `
-      <div class="map-filter-row">
-        ${STAGES.map((s) => filterBtn(s, t.stages[s], plantIcon(s), count((p) => p.stage === s))).join("")}
-      </div>
-      <div class="map-filter-row map-filter-status">
-        ${filterBtn("current", t.current, `<span class="map-dot"></span>`, count((p) => p.current))}
-        ${filterBtn("past", t.past, `<span class="map-dot is-past"></span>`, count((p) => !p.current))}
-      </div>
-      <div class="map-filter-row">
-        ${uniKeys.map(({ key, n }) => filterBtn(key, uniName(key), ICONS.university, n)).join("")}
-      </div>
-      ${mapSelected.size ? `<button type="button" class="map-show-all" data-clear>${esc(t.showAll)}</button>` : ""}`;
-
+    renderMapFilters(filters, people, t);
     showOnMap(mapPinned, lang);
   }
 
@@ -695,11 +771,13 @@
     if (!detail) return;
     drawMapPath(i, lang);
     // mouseover fires for every part of a pin, so skip redrawing the same card
-    const key = `${i}|${lang}|${mapPinned}`;
+    const inWorld = !!worldPerson();
+    const key = `${i}|${lang}|${mapPinned}|${inWorld}|${!!worldPaths}`;
     if (detail.dataset.shown === key) return;
     detail.dataset.shown = key;
     const person = i == null ? null : mapPeople().find((p) => p.i === i);
-    detail.innerHTML = mapDetailHTML(person, lang, person && i === mapPinned);
+    const pinned = !!person && i === mapPinned;
+    detail.innerHTML = mapDetailHTML(person, lang, pinned, !pinned ? "figure" : inWorld ? "none" : "button");
   }
 
   /* --- a person's path, drawn on the map ---------------------------------- */
@@ -734,12 +812,13 @@
     const person = i == null ? null : mapPeople().find((p) => p.i === i);
     const pinXY = person && mapDrawn.pins[person.i];
     const show = !!(pinXY && (person.history || []).length);
+    // mouseover fires for every part of a pin: draw each path only once. (And
+    // never move a pin in the page here — doing that mid-click loses the click.)
+    const key = show ? `${i}|${lang}` : "";
+    if ((layer.dataset.key || "") === key) return;
+    layer.dataset.key = key;
     svg.classList.toggle("has-path", show);
-    svg.querySelectorAll(".map-pin").forEach((g) => {
-      const mine = show && Number(g.dataset.i) === i;
-      g.classList.toggle("is-on-path", mine);
-      if (mine) g.parentNode.insertBefore(g, svg.querySelector(".map-labels")); // above the other pins
-    });
+    svg.querySelectorAll(".map-pin").forEach((g) => g.classList.toggle("is-on-path", show && Number(g.dataset.i) === i));
     layer.innerHTML = show ? mapPathSVG(person, pinXY, lang) : "";
   }
 
@@ -796,8 +875,7 @@
       return `
         <line class="map-path-line is-abroad" x1="${f(from[0])}" y1="${f(from[1])}" x2="${f(to[0])}" y2="${f(to[1])}" />
         <polygon class="map-path-head" points="${head.map((p) => f(p[0]) + "," + f(p[1])).join(" ")}" />
-        <text class="map-path-label" x="${f(tx)}" y="${f(far[1] - 1.2 / k)}" text-anchor="${right ? "start" : "end"}">${esc((incoming ? "" : "→ ") + label)}</text>
-        ${minis(steps, tx, far[1] + MINI * 0.9, right)}`;
+        <text class="map-path-label" x="${f(tx)}" y="${f(far[1] - 1.2 / k)}" text-anchor="${right ? "start" : "end"}">${esc((incoming ? "" : "→ ") + label)}</text>`;
     };
 
     stops.forEach((stop, n) => {
@@ -841,10 +919,8 @@
           name: path.getAttribute("data-name") || "",
           d: path.getAttribute("d") || "",
         }));
-        // redraw an open card, now with its world map
-        const detail = document.getElementById("map-detail");
-        if (detail) delete detail.dataset.shown;
-        showOnMap(mapPinned);
+        // redraw, now that journeys can be shown
+        renderMemberMap(document.documentElement.lang);
       })
       .catch(() => {}); // cards simply show no world map
     const canvas = document.getElementById("member-map");
@@ -852,17 +928,43 @@
     const detail = document.getElementById("map-detail");
     if (!canvas || !filters || !detail) return;
     const pinOf = (event) => event.target.closest && event.target.closest(".map-pin");
-    const setActive = () =>
-      canvas.querySelectorAll(".map-pin").forEach((g) => g.classList.toggle("is-active", Number(g.dataset.i) === mapPinned));
-
-    const pin = (i) => {
-      mapPinned = mapPinned === i ? null : i;
-      setActive();
-      showOnMap(mapPinned);
-      // on narrow screens the panel sits below the map
-      if (mapPinned != null && window.matchMedia("(max-width: 760px)").matches) {
+    const wrap = canvas.closest(".member-map");
+    const inWorldView = () => !!wrap && wrap.classList.contains("is-world");
+    // Redraw after the pinned person or the world view changed. The layout
+    // jumps between the Sweden map and the world viewer, so bring the map back
+    // into view; `keyboard` moves focus along with it.
+    const redraw = (wasWorld, keyboard) => {
+      renderMemberMap(document.documentElement.lang);
+      const isWorld = inWorldView();
+      if (wasWorld !== isWorld && wrap) {
+        const top = wrap.getBoundingClientRect().top;
+        if (top < 80 || top > window.innerHeight * 0.6) wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (mapPinned != null && window.matchMedia("(max-width: 760px)").matches) {
+        // on narrow screens the panel sits below the map
         detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
+      if (!keyboard) return;
+      const target = isWorld
+        ? canvas.querySelector(".world-back")
+        : canvas.querySelector(`.map-pin[data-i="${mapPinned}"]`);
+      if (target) target.focus({ preventScroll: true });
+    };
+
+    const pin = (i, keyboard = false) => {
+      const wasWorld = inWorldView();
+      const closed = mapPinned === i ? i : null;
+      mapPinned = mapPinned === i ? null : i;
+      mapWorldOff = false;
+      redraw(wasWorld, keyboard);
+      if (keyboard && closed != null) {
+        const again = canvas.querySelector(`.map-pin[data-i="${closed}"]`);
+        if (again) again.focus({ preventScroll: true });
+      }
+    };
+    const setWorld = (on, keyboard) => {
+      const wasWorld = inWorldView();
+      mapWorldOff = !on;
+      redraw(wasWorld, keyboard);
     };
 
     canvas.addEventListener("mouseover", (event) => {
@@ -881,6 +983,8 @@
     };
 
     canvas.addEventListener("click", (event) => {
+      if (event.target.closest('[data-world="close"]')) return setWorld(false, event.detail === 0);
+      if (inWorldView()) return;
       const g = pinOf(event);
       if (g) return pin(Number(g.dataset.i));
       const btn = event.target.closest("[data-zoom]");
@@ -907,14 +1011,15 @@
       const g = pinOf(event);
       if (g && (event.key === "Enter" || event.key === " ")) {
         event.preventDefault();
-        pin(Number(g.dataset.i));
+        pin(Number(g.dataset.i), true);
       }
     });
     detail.addEventListener("click", (event) => {
-      if (event.target.closest(".map-close")) pin(mapPinned);
+      if (event.target.closest(".map-close")) return pin(mapPinned, event.detail === 0);
+      if (event.target.closest('[data-world="open"]')) setWorld(true, event.detail === 0);
     });
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && mapPinned != null) pin(mapPinned);
+      if (event.key === "Escape" && mapPinned != null) pin(mapPinned, true);
     });
 
     filters.addEventListener("click", (event) => {
