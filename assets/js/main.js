@@ -830,21 +830,28 @@
       if (last && last.city === stop.city) last.steps.push(...stop.steps);
       else stops.push({ city: stop.city, steps: stop.steps.slice() });
     });
+    // someone who stayed in one place in Sweden: nothing to draw, the map
+    // stays as it is (their steps are on the card)
+    if (stops.length < 2) return "";
     const pointOf = (stop) => (stop.city === person.city ? pinXY : projectCity(CITIES[stop.city]));
     const minis = (steps, x, y) =>
       steps.map((s, j) => `<g class="map-path-plant" transform="translate(${f(x + j * MINI)} ${f(y - MINI / 2)}) scale(${f(MINI / 24)})">
           <circle cx="12" cy="12" r="12" /><g>${PLANTS[s.stage] || ""}</g></g>`).join("");
 
+    // a line for each move between two places in Sweden
     stops.forEach((stop, n) => {
-      // a line from the previous place in Sweden
       const prev = stops[n - 1];
-      if (prev) {
-        const [x1, y1] = pointOf(prev), [x2, y2] = pointOf(stop);
-        out.push(`<line class="map-path-line" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke-dasharray="${f(2 / k)} ${f(1.4 / k)}" />`);
-      }
-      // the steps here, as small plants; the person's latest step is the pin itself
-      const [x, y] = pointOf(stop);
-      const steps = stop.steps.filter((s) => s !== person.history[0]);
+      if (!prev) return;
+      const [x1, y1] = pointOf(prev), [x2, y2] = pointOf(stop);
+      out.push(`<line class="map-path-line" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke-dasharray="${f(2 / k)} ${f(1.4 / k)}" />`);
+    });
+    // the steps in each place, as one row of small plants (also when the person
+    // came back to it later); their latest step is the pin itself
+    const byCity = new Map();
+    stops.forEach((stop) => byCity.set(stop.city, (byCity.get(stop.city) || []).concat(stop.steps)));
+    byCity.forEach((all, city) => {
+      const steps = all.filter((s) => s !== person.history[0]);
+      const [x, y] = pointOf({ city });
       if (steps.length) out.push(minis(steps, x + PIN_R * 1.2, y));
     });
     return out.length ? `<g stroke-width="${f(0.8 / k)}">${out.join("")}</g>` : "";
