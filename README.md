@@ -77,9 +77,11 @@ one of the keys in `UNIVERSITIES` (add one there if it's missing) — visitors
 can filter the map by university, and zoom in by clicking on it.
 `current` is `true` or `false`.
 If `name` matches someone in `PROFILES`, their photo, position and board roles
-are filled in automatically. The optional `history` list
-(`{ years, role, place }`, newest first) is what visitors see when they hover
-over or tap the plant.
+are filled in automatically. The optional `history` list (newest first) is
+what visitors see when they hover over or tap the plant: each step is
+`{ years, stage, role, place, city, country }`, and the map draws lines between a person's places in Sweden and
+arrows towards the countries they came from or went to. `country` must be one
+of the keys in `COUNTRIES`, and steps in Sweden need a `city` from `CITIES`.
 
 ### Events
 The **Events** section embeds the Luma calendar (https://luma.com/AICHIS).

@@ -693,6 +693,22 @@ img { max-width: 100%; display: block; }
 .map-land { fill: #dfe7f5; stroke: var(--white); stroke-linejoin: round; }
 .map-leaders line { stroke: var(--blue-dark); opacity: .45; }
 .map-cities circle { fill: var(--blue-dark); }
+/* a person's path: shown on hover / tap, other pins fade back */
+.has-path .map-pin:not(.is-on-path) { opacity: .3; }
+.has-path .map-leaders, .has-path .map-cities, .has-path .map-labels { opacity: .3; }
+.map-path-line { stroke: var(--red); fill: none; stroke-linecap: round; }
+.map-path-head { fill: var(--red); stroke: none; }
+.map-path-label {
+  font-family: var(--font);
+  font-weight: 600;
+  fill: var(--red);
+  paint-order: stroke;
+  stroke: var(--white);
+  stroke-linejoin: round;
+}
+.map-path-plant circle { fill: var(--white); stroke: var(--red); stroke-width: 1.4; }
+.map-what { display: flex; align-items: flex-start; gap: 6px; }
+.map-what .plant-icon { flex: none; margin-top: 2px; }
 .map-labels text {
   font-family: var(--font);
   font-weight: 600;

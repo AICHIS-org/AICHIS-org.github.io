@@ -893,9 +893,18 @@ const BOARD_HISTORY = [
    - `university` optional: one of the keys in UNIVERSITIES below. Visitors
                   can filter the map by university.
    - `current`    true for current members, false for former members.
-   - `history`    optional: their path, shown when someone hovers over or
-                  taps them. A list of { years, role, place } — `role` can be
-                  plain text or translated { es, en, sv }. Newest first.
+   - `history`    optional: their path, newest first. When someone hovers
+                  over or taps the person, it is listed on their card and
+                  drawn on the map: lines between their places in Sweden,
+                  and arrows to and from the countries they came from or went
+                  to. Each step is
+                    { years, stage, role, place, city, country }
+                  - `years`   e.g. "2019 – 2024" or "2025 – now"
+                  - `stage`   one of the six above: picks the step's plant
+                  - `role`    translated { es, en, sv } (or plain text)
+                  - `place`   university or workplace
+                  - `city`    for steps in Sweden: one of the names in CITIES
+                  - `country` one of the keys in COUNTRIES (e.g. "Sweden")
                   Leave it out until we have it.
 
    Former members who aren't in PROFILES can also have `photo`, `field`
@@ -940,6 +949,34 @@ const CITIES = {
   "Upplands Väsby": [59.52, 17.91],
 };
 
+// Countries a path step can be in: `name` is shown on the card and map,
+// `at` is a [latitude, longitude] inside the country, used to point the map's
+// arrows towards it. Add a country here if a path needs it.
+const COUNTRIES = {
+  "Sweden":         { name: { es: "Suecia", en: "Sweden", sv: "Sverige" }, at: [62.0, 15.0] },
+  "Chile":          { name: { es: "Chile", en: "Chile", sv: "Chile" }, at: [-33.45, -70.67] },
+  "Argentina":      { name: { es: "Argentina", en: "Argentina", sv: "Argentina" }, at: [-34.6, -58.4] },
+  "Brazil":         { name: { es: "Brasil", en: "Brazil", sv: "Brasilien" }, at: [-23.5, -46.6] },
+  "Peru":           { name: { es: "Perú", en: "Peru", sv: "Peru" }, at: [-12.05, -77.04] },
+  "Colombia":       { name: { es: "Colombia", en: "Colombia", sv: "Colombia" }, at: [4.7, -74.07] },
+  "Mexico":         { name: { es: "México", en: "Mexico", sv: "Mexiko" }, at: [19.43, -99.13] },
+  "United States":  { name: { es: "Estados Unidos", en: "United States", sv: "USA" }, at: [39.0, -98.0] },
+  "Canada":         { name: { es: "Canadá", en: "Canada", sv: "Kanada" }, at: [45.4, -75.7] },
+  "United Kingdom": { name: { es: "Reino Unido", en: "United Kingdom", sv: "Storbritannien" }, at: [51.5, -0.13] },
+  "Spain":          { name: { es: "España", en: "Spain", sv: "Spanien" }, at: [40.42, -3.7] },
+  "France":         { name: { es: "Francia", en: "France", sv: "Frankrike" }, at: [48.86, 2.35] },
+  "Germany":        { name: { es: "Alemania", en: "Germany", sv: "Tyskland" }, at: [52.52, 13.4] },
+  "Netherlands":    { name: { es: "Países Bajos", en: "Netherlands", sv: "Nederländerna" }, at: [52.37, 4.9] },
+  "Italy":          { name: { es: "Italia", en: "Italy", sv: "Italien" }, at: [41.9, 12.5] },
+  "Switzerland":    { name: { es: "Suiza", en: "Switzerland", sv: "Schweiz" }, at: [46.95, 7.45] },
+  "Denmark":        { name: { es: "Dinamarca", en: "Denmark", sv: "Danmark" }, at: [55.68, 12.57] },
+  "Norway":         { name: { es: "Noruega", en: "Norway", sv: "Norge" }, at: [59.91, 10.75] },
+  "Finland":        { name: { es: "Finlandia", en: "Finland", sv: "Finland" }, at: [60.17, 24.94] },
+  "Australia":      { name: { es: "Australia", en: "Australia", sv: "Australien" }, at: [-27.47, 153.03] },
+  "China":          { name: { es: "China", en: "China", sv: "Kina" }, at: [39.9, 116.4] },
+  "Japan":          { name: { es: "Japón", en: "Japan", sv: "Japan" }, at: [35.68, 139.69] },
+};
+
 // Universities a member can be linked to, by the key used in MEMBER_MAP;
 // `name` is what the map's filter shows.
 const UNIVERSITIES = {
@@ -963,7 +1000,55 @@ const MEMBER_MAP = [
   { name: "Markos Saravia Ramirez",      stage: "student", city: "Stockholm", university: "SU",  current: true },
   { name: "Paola Olguin Muñoz",          stage: "student", city: "Uppsala",   university: "SLU", current: true },
   { name: "Sofía Bobadilla",             stage: "phd",     city: "Stockholm", university: "KTH", current: true },
-  { name: "Ignacio Verdugo",             stage: "phd",     city: "Stockholm", university: "SU",  current: true },
+  {
+    name: "Ignacio Verdugo",
+    stage: "phd",
+    city: "Stockholm",
+    university: "SU",
+    current: true,
+    history: [
+      {
+        years: "2025 – now",
+        stage: "phd",
+        role: { es: "Estudiante de doctorado", en: "PhD Student", sv: "Doktorand" },
+        place: "Stockholm University & Karolinska Institutet",
+        city: "Stockholm",
+        country: "Sweden",
+      },
+      {
+        years: "2019 – 2024",
+        stage: "professional",
+        role: { es: "Especialista en aplicaciones clínicas", en: "Clinical Application Specialist", sv: "Klinisk applikationsspecialist" },
+        place: "Elekta AB",
+        city: "São Paulo",
+        country: "Brazil",
+      },
+      {
+        years: "2017 – 2019",
+        stage: "student",
+        role: { es: "Estudiante de magíster", en: "Master's Student", sv: "Masterstudent" },
+        place: "Universidade de São Paulo",
+        city: "Ribeirão Preto",
+        country: "Brazil",
+      },
+      {
+        years: "2015",
+        stage: "student",
+        role: { es: "Investigador de pregrado", en: "Undergraduate Researcher", sv: "Forskare på grundnivå" },
+        place: "Queensland University of Technology",
+        city: "Brisbane",
+        country: "Australia",
+      },
+      {
+        years: "2012 – 2016",
+        stage: "student",
+        role: { es: "Estudiante de pregrado", en: "Undergraduate Student", sv: "Kandidatstudent" },
+        place: "Pontificia Universidad Católica de Chile",
+        city: "Santiago",
+        country: "Chile",
+      },
+    ],
+  },
   { name: "María José Pino",             stage: "phd",     city: "Stockholm", university: "KI",  current: true },
   { name: "Macarena Tejos Bravo",        stage: "postdoc", city: "Stockholm", university: "KI",  current: true },
   { name: "Albano Cáceres-Verschae",     stage: "postdoc", city: "Stockholm", university: "KI",  current: true },
@@ -984,8 +1069,8 @@ const MEMBER_MAP = [
   //   university: "LU",
   //   current: false,
   //   history: [
-  //     { years: "2021–2024", role: { es: "Postdoctorado", en: "Postdoc", sv: "Postdoktor" }, place: "Lund University" },
-  //     { years: "2016–2021", role: { es: "Doctorado", en: "PhD", sv: "Doktorand" }, place: "Universidad de Chile" },
+  //     { years: "2021 – 2024", stage: "postdoc", role: { es: "Postdoctorado", en: "Postdoc", sv: "Postdoktor" }, place: "Lund University", city: "Lund", country: "Sweden" },
+  //     { years: "2016 – 2021", stage: "phd", role: { es: "Doctorado", en: "PhD", sv: "Doktorand" }, place: "Universidad de Chile", city: "Santiago", country: "Chile" },
   //   ],
   // },
 ];

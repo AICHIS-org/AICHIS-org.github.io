@@ -367,6 +367,9 @@
   // (instead of as a picture) so borders stay thin however far we zoom in.
   let swedenPaths = null;
   let mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
+  // Set by each render, for drawing a person's path on top: where every pin
+  // ended up, and the zoom and visible box it was drawn with.
+  let mapDrawn = { pins: {}, k: 1, box: [0, 0, SWEDEN_MAP.width, SWEDEN_MAP.height] };
 
   function mapPeople() {
     return MEMBER_MAP.filter((m) => STAGES.includes(m.stage) && CITIES[m.city]).map((m, i) => {
@@ -419,7 +422,8 @@
     const history = person.history || [];
     const list = (items) =>
       `<ol class="map-timeline">${items.map((h) => `
-          <li><span class="map-when">${esc(h.when)}</span><span>${esc(h.what)}</span></li>`).join("")}</ol>`;
+          <li><span class="map-when">${esc(h.when)}</span><span class="map-what">${h.stage ? plantIcon(h.stage, 16) : ""}<span>${esc(h.what)}</span></span></li>`).join("")}</ol>`;
+    const whereOf = (h) => [h.place, h.city, COUNTRIES[h.country] ? COUNTRIES[h.country].name[lang] : h.country].filter(Boolean).join(", ");
 
     return `
       <article class="map-card${person.current ? "" : " is-past"}">
@@ -438,7 +442,7 @@
         ${board.length ? `<h4 class="map-subtitle">${esc(t.aichisTitle)}</h4>${list(board.map((b) => ({ when: b.when, what: b.role })))}` : ""}
         <h4 class="map-subtitle">${esc(t.historyTitle)}</h4>
         ${history.length
-          ? list(history.map((h) => ({ when: h.years, what: [pickLang(h.role, lang), h.place].filter(Boolean).join(" — ") })))
+          ? list(history.map((h) => ({ when: h.years, stage: h.stage, what: [pickLang(h.role, lang), whereOf(h)].filter(Boolean).join(" — ") })))
           : `<p class="map-empty">${esc(t.noHistory)}</p>`}
       </article>`;
   }
@@ -521,6 +525,7 @@
         <g class="map-cities" aria-hidden="true">
           ${cities.map((c) => `<circle cx="${f(c.cx)}" cy="${f(c.cy)}" r="${f(1.1 / k)}" />`).join("")}
         </g>
+        <g class="map-path" aria-hidden="true"></g>
         ${pins.map(({ p, x, y }) => `
         <g class="map-pin${p.current ? "" : " is-past"}${p.i === mapPinned ? " is-active" : ""}"
            transform="translate(${f(x)} ${f(y)}) scale(${f(1 / k)})" data-i="${p.i}"
@@ -543,6 +548,7 @@
       <p class="map-zoom-hint">${esc(t.zoomHint)}</p>`;
     const again = focused && canvas.querySelector(`[data-zoom="${focused}"]:not([disabled])`);
     if (again) again.focus();
+    mapDrawn = { pins: Object.fromEntries(pins.map((pin) => [pin.p.i, [pin.x, pin.y]])), k, box: [viewX, viewY, viewW, viewH] };
 
     const count = (pred) => people.filter(pred).length;
     const filterBtn = (key, label, icon, n) => `
@@ -575,12 +581,135 @@
   function showOnMap(i, lang = document.documentElement.lang) {
     const detail = document.getElementById("map-detail");
     if (!detail) return;
+    drawMapPath(i, lang);
     // mouseover fires for every part of a pin, so skip redrawing the same card
     const key = `${i}|${lang}|${mapPinned}`;
     if (detail.dataset.shown === key) return;
     detail.dataset.shown = key;
     const person = i == null ? null : mapPeople().find((p) => p.i === i);
     detail.innerHTML = mapDetailHTML(person, lang, person && i === mapPinned);
+  }
+
+  /* --- a person's path, drawn on the map ---------------------------------- */
+  // Initial compass bearing from one [lat, lon] to another (radians, 0 = north).
+  function bearing([lat1, lon1], [lat2, lon2]) {
+    const r = Math.PI / 180;
+    const dLon = (lon2 - lon1) * r;
+    return Math.atan2(
+      Math.sin(dLon) * Math.cos(lat2 * r),
+      Math.cos(lat1 * r) * Math.sin(lat2 * r) - Math.sin(lat1 * r) * Math.cos(lat2 * r) * Math.cos(dLon)
+    );
+  }
+
+  // Groups a path (oldest first) into stops: one per run of steps in the same
+  // Swedish city, and one per run of steps abroad.
+  function pathStops(person) {
+    const stops = [];
+    (person.history || []).slice().reverse().forEach((step) => {
+      const inSweden = step.country === "Sweden" && CITIES[step.city];
+      const key = inSweden ? "se:" + step.city : "abroad";
+      const last = stops[stops.length - 1];
+      if (last && last.key === key) last.steps.push(step);
+      else stops.push({ key, city: inSweden ? step.city : null, steps: [step] });
+    });
+    return stops;
+  }
+
+  function drawMapPath(i, lang) {
+    const layer = document.querySelector("#member-map .map-path");
+    if (!layer) return;
+    const svg = layer.ownerSVGElement;
+    const person = i == null ? null : mapPeople().find((p) => p.i === i);
+    const pinXY = person && mapDrawn.pins[person.i];
+    const show = !!(pinXY && (person.history || []).length);
+    svg.classList.toggle("has-path", show);
+    svg.querySelectorAll(".map-pin").forEach((g) => {
+      const mine = show && Number(g.dataset.i) === i;
+      g.classList.toggle("is-on-path", mine);
+      if (mine) g.parentNode.insertBefore(g, svg.querySelector(".map-labels")); // above the other pins
+    });
+    layer.innerHTML = show ? mapPathSVG(person, pinXY, lang) : "";
+  }
+
+  function mapPathSVG(person, pinXY, lang) {
+    const { k, box } = mapDrawn;
+    const f = (v) => v.toFixed(3);
+    const PIN_R = (12 * 0.42) / k;
+    const MINI = PIN_R * 1.1; // size of the small plants for each step
+    const ARROW = 26 / k;
+    const out = [];
+
+    const stops = pathStops(person);
+    // where each stop in Sweden is drawn: on the person's own pin when it's
+    // their city, otherwise on that city
+    const pointOf = (stop) => (stop.city === person.city ? pinXY : projectCity(CITIES[stop.city]));
+    const latLonOf = (stop) => CITIES[stop.city];
+    const countriesOf = (stop) =>
+      stop.steps.map((s) => s.country).filter((c, j, all) => c !== all[j - 1]);
+    const countryName = (c) => (COUNTRIES[c] ? COUNTRIES[c].name[lang] : c);
+    const minis = (steps, x, y, anchorRight) =>
+      steps.map((s, j) => {
+        const mx = anchorRight ? x + j * MINI : x - (steps.length - j) * MINI;
+        return `<g class="map-path-plant" transform="translate(${f(mx)} ${f(y - MINI / 2)}) scale(${f(MINI / 24)})">
+          <circle cx="12" cy="12" r="12" /><g>${PLANTS[s.stage] || ""}</g></g>`;
+      }).join("");
+
+    // arrow from/to a stop in Sweden, pointing along the bearing to a country
+    const arrow = (stop, country, incoming, steps) => {
+      const at = COUNTRIES[country] && COUNTRIES[country].at;
+      if (!at) return "";
+      const b = bearing(latLonOf(stop), at);
+      const dx = Math.sin(b), dy = -Math.cos(b);
+      const [sx, sy] = pointOf(stop);
+      // keep the far end inside the visible map
+      const [bx, by, bw, bh] = box;
+      const pad = 4 / k;
+      let len = ARROW;
+      const fits = (l) => sx + dx * l > bx + pad && sx + dx * l < bx + bw - pad && sy + dy * l > by + pad && sy + dy * l < by + bh - pad;
+      while (len > PIN_R * 2.5 && !fits(len)) len *= 0.85;
+      const near = [sx + dx * PIN_R * 1.25, sy + dy * PIN_R * 1.25];
+      const far = [sx + dx * len, sy + dy * len];
+      const [from, to] = incoming ? [far, near] : [near, far];
+      const ux = (to[0] - from[0]) / Math.hypot(to[0] - from[0], to[1] - from[1]);
+      const uy = (to[1] - from[1]) / Math.hypot(to[0] - from[0], to[1] - from[1]);
+      const h = 2.6 / k; // arrowhead size
+      const head = [
+        to,
+        [to[0] - ux * h - uy * h * 0.6, to[1] - uy * h + ux * h * 0.6],
+        [to[0] - ux * h + uy * h * 0.6, to[1] - uy * h - ux * h * 0.6],
+      ];
+      const right = dx >= 0;
+      const label = countriesOf({ steps }).map(countryName).join(" → ");
+      const tx = far[0] + (right ? 1.5 : -1.5) / k;
+      return `
+        <line class="map-path-line is-abroad" x1="${f(from[0])}" y1="${f(from[1])}" x2="${f(to[0])}" y2="${f(to[1])}" />
+        <polygon class="map-path-head" points="${head.map((p) => f(p[0]) + "," + f(p[1])).join(" ")}" />
+        <text class="map-path-label" x="${f(tx)}" y="${f(far[1] - 1.2 / k)}" text-anchor="${right ? "start" : "end"}">${esc((incoming ? "" : "→ ") + label)}</text>
+        ${minis(steps, tx, far[1] + MINI * 0.9, right)}`;
+    };
+
+    stops.forEach((stop, n) => {
+      if (stop.city) {
+        // a line from the previous stop in Sweden
+        const prev = stops[n - 1];
+        if (prev && prev.city) {
+          const [x1, y1] = pointOf(prev), [x2, y2] = pointOf(stop);
+          out.push(`<line class="map-path-line" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke-dasharray="${f(2 / k)} ${f(1.4 / k)}" />`);
+        }
+        // the steps here, as small plants; the person's latest step is the pin itself
+        const [x, y] = pointOf(stop);
+        const steps = stop.steps.filter((s) => s !== person.history[0]);
+        if (steps.length) out.push(minis(steps, x + PIN_R * 1.2, y, true));
+        return;
+      }
+      // abroad: where they came from (into the next stop in Sweden) and where
+      // they went (out of the previous one)
+      const before = stops[n - 1], after = stops[n + 1];
+      const countries = countriesOf(stop);
+      if (after && after.city) out.push(arrow(after, countries[countries.length - 1], true, stop.steps));
+      if (before && before.city) out.push(arrow(before, countries[0], false, stop.steps));
+    });
+    return `<g stroke-width="${f(0.8 / k)}" font-size="${f(4.2 / k)}">${out.join("")}</g>`;
   }
 
   function initMemberMap() {
