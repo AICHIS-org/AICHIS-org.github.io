@@ -693,6 +693,90 @@ img { max-width: 100%; display: block; }
 .map-land { fill: #dfe7f5; stroke: var(--white); stroke-linejoin: round; }
 .map-leaders line { stroke: var(--blue-dark); opacity: .45; }
 .map-cities circle { fill: var(--blue-dark); }
+/* a person's path: shown on hover / tap, other pins fade back */
+.has-path .map-pin:not(.is-on-path) { opacity: .3; }
+.has-path .map-leaders, .has-path .map-cities, .has-path .map-labels { opacity: .3; }
+.map-path-line { stroke: var(--red); fill: none; stroke-linecap: round; }
+.map-path-plant > circle { fill: var(--white); stroke: var(--red); stroke-width: 1.4; }
+/* a person's journey on a small world map, on their card */
+.map-world {
+  margin: 4px 0 12px;
+  background: #f7f9fd;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.map-world svg { display: block; width: 100%; }
+button.map-world {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  cursor: zoom-in;
+}
+button.map-world:hover { border-color: var(--blue); }
+.map-world-open {
+  display: block;
+  padding: 6px 10px;
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--blue);
+  background: var(--white);
+  border-top: 1px solid var(--border);
+}
+
+/* the main map as a world viewer, while someone with an international path
+   is selected: full width, with their card underneath */
+.member-map { scroll-margin-top: 92px; }
+.member-map.is-world { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.member-map.is-world .member-map-side { position: static; }
+.member-map.is-world .map-filters { display: none; }
+.world-view-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 12px;
+}
+.world-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin: 0; }
+.world-title strong { font-family: var(--font-display); font-size: 1.12rem; color: var(--blue-dark); }
+.world-title span { color: var(--muted); font-size: .92rem; }
+.world-back {
+  padding: 6px 14px;
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--blue);
+  background: var(--white);
+  border: 1px solid var(--blue);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.world-back:hover { color: var(--white); background: var(--blue); }
+.member-map-canvas svg.world-big {
+  aspect-ratio: auto;
+  max-height: 520px;
+  background: #f7f9fd;
+  border-radius: 10px;
+  cursor: default;
+}
+.world-years { font-size: .88em; font-weight: 500; fill: var(--muted); }
+.world-land path { fill: #dfe7f5; stroke: var(--white); stroke-linejoin: round; }
+.world-land path.is-visited { fill: #9db5e3; }
+.world-arrow { fill: none; stroke: var(--red); stroke-linecap: round; }
+.world-arrow-head { fill: var(--red); }
+.world-stop > circle { fill: var(--white); stroke: var(--red); stroke-width: 1.6; }
+.world-labels text {
+  font-family: var(--font);
+  font-weight: 600;
+  fill: var(--blue-dark);
+  paint-order: stroke;
+  stroke: var(--white);
+  stroke-linejoin: round;
+}
+.map-what { display: flex; align-items: flex-start; gap: 6px; }
+.map-what .plant-icon { flex: none; margin-top: 2px; }
 .map-labels text {
   font-family: var(--font);
   font-weight: 600;

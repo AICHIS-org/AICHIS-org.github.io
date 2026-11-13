@@ -77,9 +77,12 @@ one of the keys in `UNIVERSITIES` (add one there if it's missing) — visitors
 can filter the map by university, and zoom in by clicking on it.
 `current` is `true` or `false`.
 If `name` matches someone in `PROFILES`, their photo, position and board roles
-are filled in automatically. The optional `history` list
-(`{ years, role, place }`, newest first) is what visitors see when they hover
-over or tap the plant.
+are filled in automatically. The optional `history` list (newest first) is
+what visitors see when they hover over or tap the plant: each step is
+`{ years, stage, role, place, city, country }`. Clicking someone whose path
+leaves Sweden opens a world map of their journey, with arrows from country to
+country; moves inside Sweden are drawn on the Sweden map. `country` must be one
+of the keys in `COUNTRIES`, and steps in Sweden need a `city` from `CITIES`.
 
 ### Events
 The **Events** section embeds the Luma calendar (https://luma.com/AICHIS).
@@ -130,6 +133,7 @@ assets/
   img/aichis_members_embassy_2023.jpg   Members group photo (Members section banner)
   img/profiles/                  Individual profile photos, named firstname-lastname.ext
   img/sweden-map.svg             Map of Sweden used by the Chileans in Sweden section
+  img/world-map.svg              World map used to draw a member's path on their card
 scripts/
   check-content.js               PR check: translations complete, photos exist
   check-security.js              PR check: no unsafe links, embeds or scripts

@@ -26,7 +26,7 @@ try {
   // top-level `const`/`let` don't attach to the context object itself, so
   // pull the values out via a second eval in the same lexical scope.
   sandbox = vm.runInContext(
-    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, CITIES, UNIVERSITIES, MEMBER_MAP, PARTNERS, RESOURCES })",
+    "({ CONTENT, EXPLORA_EDITIONS, PROFILES, BOARD_HISTORY, CITIES, COUNTRIES, UNIVERSITIES, MEMBER_MAP, PARTNERS, RESOURCES })",
     context
   );
 } catch (err) {
@@ -88,7 +88,7 @@ function checkTranslationLeaves(obj, pathStr) {
   }
 }
 
-for (const name of ["EXPLORA_EDITIONS", "PROFILES", "BOARD_HISTORY", "MEMBER_MAP", "PARTNERS", "RESOURCES"]) {
+for (const name of ["EXPLORA_EDITIONS", "PROFILES", "BOARD_HISTORY", "COUNTRIES", "MEMBER_MAP", "PARTNERS", "RESOURCES"]) {
   if (sandbox[name] !== undefined) checkTranslationLeaves(sandbox[name], name);
 }
 
@@ -152,6 +152,17 @@ for (const m of sandbox.MEMBER_MAP || []) {
   if (m.university !== undefined && !(sandbox.UNIVERSITIES || {})[m.university]) {
     errors.push(`MEMBER_MAP "${m.name}": university "${m.university}" is not in UNIVERSITIES — add it there with its coordinates`);
   }
+  (m.history || []).forEach((step, n) => {
+    const where = `MEMBER_MAP "${m.name}" history[${n}]`;
+    if (!step.years) errors.push(`${where}: missing years`);
+    if (!step.role) errors.push(`${where}: missing role`);
+    if (!STAGES.includes(step.stage)) errors.push(`${where}: stage "${step.stage}" must be one of ${STAGES.join(", ")}`);
+    if (!(sandbox.COUNTRIES || {})[step.country]) {
+      errors.push(`${where}: country "${step.country}" is not in COUNTRIES — add it there`);
+    } else if (step.country === "Sweden" && !(sandbox.CITIES || {})[step.city]) {
+      errors.push(`${where}: city "${step.city}" is in Sweden but not in CITIES — add it there`);
+    }
+  });
   if (typeof m.current !== "boolean") {
     errors.push(`MEMBER_MAP "${m.name}": current must be true or false`);
   }
