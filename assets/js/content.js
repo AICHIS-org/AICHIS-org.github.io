@@ -819,11 +819,7 @@ const PROFILES = [
     photo: "assets/img/profiles/paola-olguin.jpeg",
     link: "",
     member: {
-      role: {
-        es: "Estudiante de magíster, Arquitectura del Paisaje para un Urbanismo Sostenible",
-        en: "Master's Student, Landscape Architecture for Sustainable Urbanism",
-        sv: "Masterstudent, Landskapsarkitektur för hållbar urbanism",
-      },
+      role: { es: "Estudiante de magíster", en: "Master's Student", sv: "Masterstudent" },
       field: {
         es: "Arquitectura y Entorno Construido",
         en: "Architecture and Built Environment",
