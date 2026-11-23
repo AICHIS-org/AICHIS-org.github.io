@@ -1026,7 +1026,47 @@ const UNIVERSITIES = {
 const MEMBER_MAP = [
   { name: "Markos Saravia Ramirez",      stage: "student", city: "Stockholm", university: "SU",  current: true },
   { name: "Paola Olguin Muñoz",          stage: "student", city: "Uppsala",   university: "SLU", current: true },
-  { name: "Sofía Bobadilla",             stage: "phd",     city: "Stockholm", university: "KTH", current: true },
+  {
+    name: "Sofía Bobadilla",
+    stage: "phd",
+    city: "Stockholm",
+    university: "KTH",
+    current: true,
+    history: [
+      {
+        years: "2024 – now",
+        stage: "phd",
+        role: { es: "Estudiante de doctorado en Ciencias de la Computación", en: "PhD Student, Computer Science", sv: "Doktorand i datavetenskap" },
+        place: "KTH Royal Institute of Technology",
+        city: "Stockholm",
+        country: "Sweden",
+      },
+      {
+        years: "2022 – 2023",
+        stage: "researcher",
+        role: { es: "Ingeniero/a de investigación", en: "Research Engineer", sv: "Forskningsingenjör" },
+        place: "KTH Royal Institute of Technology",
+        city: "Stockholm",
+        country: "Sweden",
+      },
+      {
+        years: "2022",
+        stage: "student",
+        role: { es: "Estudiante de intercambio", en: "Exchange Student", sv: "Utbytesstudent" },
+        place: "KTH Royal Institute of Technology",
+        city: "Stockholm",
+        country: "Sweden",
+      },
+      {
+        years: "2017 – 2024",
+        stage: "student",
+        role: { es: "Ingeniería Civil en Computación", en: "Civil Engineering in Computer Science", sv: "Civilingenjörsutbildning i datavetenskap" },
+        place: "Universidad de Chile, Facultad de Ciencias Físicas y Matemáticas",
+        city: "Santiago",
+        country: "Chile",
+      },
+    ],
+  },
   {
     name: "Ignacio Verdugo",
     stage: "phd",
