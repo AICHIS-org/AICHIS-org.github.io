@@ -60,7 +60,8 @@ their card — leave any of these out entirely if unknown (don't set them to
 
 ### The map: `MEMBER_MAP`
 The **Chileans in Sweden** section is a map of current and past members. Each
-entry in `MEMBER_MAP` is drawn as a plant in its city, by career stage:
+entry in `MEMBER_MAP` is drawn as a plant at the address of its university (or
+in its city, when it has none), by career stage:
 
 | `stage` | Who | Plant |
 | --- | --- | --- |
@@ -76,6 +77,17 @@ latitude and longitude if it's missing). `university` is optional and must be
 one of the keys in `UNIVERSITIES` (add one there if it's missing) — visitors
 can filter the map by university, and zoom in by clicking on it.
 `current` is `true` or `false`.
+
+**Where the plant goes.** `UNIVERSITIES` lists each university with its
+address, and under `faculties` its faculties, schools and campuses with theirs.
+Add `faculty: "<key>"` to a member (one of the keys under their university) to
+draw them at that faculty's address; without it they are drawn at the
+university's main address, and members with no university at the centre of
+their `city`. To add a university or a faculty, copy an entry, take the address
+from the university's website and put its latitude and longitude in `at` (on
+[openstreetmap.org](https://www.openstreetmap.org), search for the address and
+read them from the page's link).
+
 If `name` matches someone in `PROFILES`, their photo, position and board roles
 are filled in automatically. The optional `history` list (newest first) is
 what visitors see when they hover over or tap the plant: each step is

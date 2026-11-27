@@ -363,7 +363,8 @@
   let mapPinned = null;
   let mapWorldOff = false; // the visitor went back to the Sweden map while someone is pinned
   const mapSelected = new Set(); // filter chips that are pressed
-  const MAP_MAX_ZOOM = 16;
+  const MAP_MAX_ZOOM = 64;
+  const MAP_SPOT_ZOOM = 32; // from this zoom on, the places inside a city are named
   // County outlines from assets/img/sweden-map.svg, drawn into the map itself
   // (instead of as a picture) so borders stay thin however far we zoom in.
   let swedenPaths = null;
@@ -379,9 +380,14 @@
     });
   }
 
-  // Where a person is drawn: their city.
+  // Where a person is drawn: at their faculty's address when their entry names
+  // one, otherwise at their university's, otherwise in their city.
   function anchorOf(p) {
-    return { key: p.city, label: p.city, at: CITIES[p.city] };
+    const uni = UNIVERSITIES[p.university];
+    const faculty = uni && uni.faculties && uni.faculties[p.faculty];
+    if (faculty && faculty.at) return { key: `${p.university}/${p.faculty}`, label: `${uni.name} · ${p.faculty}`, owner: uni.name, at: faculty.at };
+    if (uni && uni.at) return { key: "uni:" + p.university, label: uni.name, owner: uni.name, at: uni.at };
+    return { key: "city:" + p.city, label: p.city, owner: p.city, at: CITIES[p.city] };
   }
 
   // Filter keys: the stage, "current"/"past", and "uni:<key>" ("uni:" for
@@ -672,10 +678,10 @@
     const viewX = clamp(mapView.x - viewW / 2, 0, SWEDEN_MAP.width - viewW);
     const viewY = clamp(mapView.y - viewH / 2, 0, SWEDEN_MAP.height - viewH);
 
-    // Each pin starts on its city and is nudged just far enough to stop
-    // overlapping the others, so it stays as close to its real place as it can
-    // (a crowded Stockholm doesn't spill over Uppsala). A dot marks the real
-    // spot, with a thin line to every pin that had to move.
+    // Each pin starts on its real spot (see anchorOf) and is nudged just far
+    // enough to stop overlapping the others, so it stays as close to its real
+    // place as it can (a crowded Stockholm doesn't spill over Uppsala). A dot
+    // marks the real spot, with a thin line to every pin that had to move.
     const PIN_R = (12 * 0.42) / k; // matches .map-pin .pin-body scale in styles.css
     const visible = people.filter((p) => !isHiddenOnMap(p));
     const perPlace = {};
@@ -705,11 +711,34 @@
     // lower pins drawn on top, and the selected person above everyone
     pins.sort((a, b) => (a.p.i === mapPinned) - (b.p.i === mapPinned) || a.y - b.y);
 
-    // place name to the left of its group of pins, level with the real spot
-    const cities = Object.keys(perPlace).map((key) => {
+    // every real spot that has someone on it
+    const spots = Object.keys(perPlace).map((key) => {
       const group = pins.filter((pin) => pin.place.key === key);
-      const { cx, cy, place } = group[0];
-      return { name: place.label, cx, cy, labelY: cy, labelX: Math.min(cx, ...group.map((pin) => pin.x)) - PIN_R - 1.5 / k };
+      const { cx, cy, place, p } = group[0];
+      return { name: place.label, owner: place.owner, city: p.city, cx, cy, pins: group };
+    });
+    // Names go to the left of their pins, level with the real spot. Zoomed out
+    // there is one per city. Zoomed in on a city, spots far enough from each
+    // other are named on their own (KTH, SLU…); the ones still too close to
+    // tell apart share a name: their universities', or else the city's.
+    const apart = k >= MAP_SPOT_ZOOM ? 3 * PIN_R : Infinity;
+    const nameOf = (g) => {
+      if (k < MAP_SPOT_ZOOM) return g[0].city;
+      if (g.length === 1) return g[0].name;
+      const count = (owner) => g.filter((s) => s.owner === owner).reduce((n, s) => n + s.pins.length, 0);
+      const owners = [...new Set(g.map((s) => s.owner))].sort((a, b) => count(b) - count(a));
+      return owners.length <= 2 ? owners.join(" · ") : g[0].city;
+    };
+    const groups = [];
+    spots.forEach((s) => {
+      const joins = groups.filter((g) => g[0].city === s.city && g.some((o) => Math.hypot(o.cx - s.cx, o.cy - s.cy) < apart));
+      joins.forEach((g) => groups.splice(groups.indexOf(g), 1));
+      groups.push([s].concat(...joins));
+    });
+    const cities = groups.map((g) => {
+      const cy = g.reduce((sum, s) => sum + s.cy, 0) / g.length;
+      const left = Math.min(...g.map((s) => s.cx), ...g.flatMap((s) => s.pins.map((pin) => pin.x)));
+      return { name: nameOf(g), cy, labelY: cy, labelX: left - PIN_R - 1.5 / k };
     });
     // labels close to each other: push the lower one down until they don't overlap
     const lineH = 5.6 / k;
@@ -726,7 +755,7 @@
     // remember which zoom button had focus, so keyboard users keep their place
     const focused = document.activeElement && document.activeElement.dataset && document.activeElement.dataset.zoom;
     canvas.innerHTML = `
-      <svg viewBox="${f(viewX)} ${f(viewY)} ${f(viewW)} ${f(viewH)}" role="group" aria-label="${esc(t.mapLabel)}">
+      <svg viewBox="${f(viewX)} ${f(viewY)} ${f(viewW)} ${f(viewH)}"${k > 1 ? ' class="is-zoomed"' : ""} role="group" aria-label="${esc(t.mapLabel)}">
         ${swedenPaths
           ? `<g class="map-land" stroke-width="${f(0.45 / k)}">${swedenPaths.map((d) => `<path d="${esc(d)}" />`).join("")}</g>`
           : `<image href="assets/img/sweden-map.svg" width="${SWEDEN_MAP.width}" height="${SWEDEN_MAP.height}" />`}
@@ -734,13 +763,13 @@
           ${pins.map(({ x, y, cx, cy }) => `<line x1="${f(cx)}" y1="${f(cy)}" x2="${f(x)}" y2="${f(y)}" />`).join("")}
         </g>
         <g class="map-cities" aria-hidden="true">
-          ${cities.map((c) => `<circle cx="${f(c.cx)}" cy="${f(c.cy)}" r="${f(1.1 / k)}" />`).join("")}
+          ${spots.map((s) => `<circle cx="${f(s.cx)}" cy="${f(s.cy)}" r="${f(1.1 / k)}" />`).join("")}
         </g>
         <g class="map-path" aria-hidden="true"></g>
         ${pins.map(({ p, x, y }) => `
         <g class="map-pin${p.current ? "" : " is-past"}${p.i === mapPinned ? " is-active" : ""}"
            transform="translate(${f(x)} ${f(y)}) scale(${f(1 / k)})" data-i="${p.i}"
-           role="button" tabindex="0" aria-label="${esc(p.name)} — ${esc(t.stages[p.stage])} — ${esc(anchorOf(p).label)}">
+           role="button" tabindex="0" aria-label="${esc(p.name)} — ${esc(t.stages[p.stage])} — ${esc([...new Set([anchorOf(p).label, p.city])].join(", "))}">
           <g class="pin-body">
             <circle class="pin-bg" r="12" />
             <g transform="translate(-12 -12)">${PLANTS[p.stage]}</g>
@@ -936,8 +965,54 @@
       if (mapView.k === 1) mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
       renderMemberMap(document.documentElement.lang);
     };
+    // the centre of a view that stays inside the map at zoom k
+    const clampCentre = (x, y, k = mapView.k) => {
+      const w = SWEDEN_MAP.width / k / 2, h = SWEDEN_MAP.height / k / 2;
+      return [Math.min(Math.max(x, w), SWEDEN_MAP.width - w), Math.min(Math.max(y, h), SWEDEN_MAP.height - h)];
+    };
+
+    // Zoomed in, dragging the map moves it around. While the pointer moves only
+    // the view changes (pins sit where they were drawn, and their places only
+    // depend on the zoom); letting go keeps the new view. A press that hardly
+    // moves is still a click, on a pin or on the map.
+    let drag = null;
+    let dragged = false; // the click that ends a drag must not zoom or pin
+    canvas.addEventListener("pointerdown", (event) => {
+      dragged = false;
+      const svg = event.target.closest && event.target.closest("svg");
+      if (!svg || mapView.k <= 1 || inWorldView() || event.button !== 0) return;
+      const box = svg.viewBox.baseVal;
+      drag = { svg, id: event.pointerId, x0: event.clientX, y0: event.clientY, scale: 1 / svg.getScreenCTM().a, box: { x: box.x, y: box.y, w: box.width, h: box.height } };
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const dx = event.clientX - drag.x0, dy = event.clientY - drag.y0;
+      if (!drag.moving) {
+        if (Math.hypot(dx, dy) < 5) return;
+        drag.moving = true;
+        // captured only now, so a plain click still reaches the pin under it
+        drag.svg.setPointerCapture(event.pointerId);
+        drag.svg.classList.add("is-dragging");
+      }
+      const { box, scale } = drag;
+      const [x, y] = clampCentre(box.x + box.w / 2 - dx * scale, box.y + box.h / 2 - dy * scale);
+      drag.centre = [x, y];
+      drag.svg.setAttribute("viewBox", `${(x - box.w / 2).toFixed(3)} ${(y - box.h / 2).toFixed(3)} ${box.w.toFixed(3)} ${box.h.toFixed(3)}`);
+    });
+    const endDrag = (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      if (drag.moving) {
+        drag.svg.classList.remove("is-dragging");
+        if (drag.centre) mapView = { k: mapView.k, x: drag.centre[0], y: drag.centre[1] };
+        dragged = true;
+      }
+      drag = null;
+    };
+    canvas.addEventListener("pointerup", endDrag);
+    canvas.addEventListener("pointercancel", endDrag);
 
     canvas.addEventListener("click", (event) => {
+      if (dragged) return (dragged = false);
       if (event.target.closest('[data-world="close"]')) return setWorld(false, event.detail === 0);
       if (inWorldView()) return;
       const g = pinOf(event);
@@ -962,12 +1037,25 @@
       const at = point.matrixTransform(svg.getScreenCTM().inverse());
       zoomTo(mapView.k * 2, at.x, at.y);
     });
+    const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
     canvas.addEventListener("keydown", (event) => {
       const g = pinOf(event);
       if (g && (event.key === "Enter" || event.key === " ")) {
         event.preventDefault();
         pin(Number(g.dataset.i), true);
+        return;
       }
+      // zoomed in, the arrow keys move the map by a quarter of the view
+      const arrow = ARROWS[event.key];
+      if (!arrow || mapView.k <= 1 || inWorldView()) return;
+      event.preventDefault();
+      const { k } = mapView;
+      const [x, y] = clampCentre(mapView.x + (arrow[0] * SWEDEN_MAP.width) / k / 4, mapView.y + (arrow[1] * SWEDEN_MAP.height) / k / 4);
+      mapView = { k, x, y };
+      renderMemberMap(document.documentElement.lang);
+      // the map is redrawn, so give keyboard users their pin back
+      const again = g && canvas.querySelector(`.map-pin[data-i="${g.dataset.i}"]`);
+      if (again) again.focus({ preventScroll: true });
     });
     detail.addEventListener("click", (event) => {
       if (event.target.closest(".map-close")) return pin(mapPinned, event.detail === 0);

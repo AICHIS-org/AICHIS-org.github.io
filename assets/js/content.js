@@ -107,7 +107,7 @@ const CONTENT = {
       zoomIn: "Acercar",
       zoomOut: "Alejar",
       zoomReset: "Ver toda Suecia",
-      zoomHint: "Haz clic en el mapa para acercarte.",
+      zoomHint: "Haz clic en el mapa para acercarte y arrástralo para moverte.",
       stages: {
         student: "Licenciatura o magíster",
         phd: "Doctorado",
@@ -224,7 +224,7 @@ const CONTENT = {
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",
       zoomReset: "Show all of Sweden",
-      zoomHint: "Click on the map to zoom in.",
+      zoomHint: "Click on the map to zoom in, and drag it to move around.",
       stages: {
         student: "Bachelor's or master's",
         phd: "PhD",
@@ -341,7 +341,7 @@ const CONTENT = {
       zoomIn: "Zooma in",
       zoomOut: "Zooma ut",
       zoomReset: "Visa hela Sverige",
-      zoomHint: "Klicka på kartan för att zooma in.",
+      zoomHint: "Klicka på kartan för att zooma in och dra i den för att flytta runt.",
       stages: {
         student: "Kandidat eller master",
         phd: "Doktorand",
@@ -898,8 +898,9 @@ const BOARD_HISTORY = [
 /* =========================================================================
    CHILEANS IN SWEDEN  (map of current and past AICHIS members)
    -------------------------------------------------------------------------
-   Every entry is drawn as a plant on the map of Sweden, in its `city`. The
-   plant shows the person's career stage or role (`stage`):
+   Every entry is drawn as a plant on the map of Sweden, at its university
+   (or in its `city`, when it has none). The plant shows the person's career
+   stage or role (`stage`):
 
    - "student"  bachelor's or master's student  -> a seed
    - "phd"      PhD student                     -> a seedling
@@ -918,7 +919,12 @@ const BOARD_HISTORY = [
    - `city`       one of the names in CITIES below (add a city there if it's
                   missing).
    - `university` optional: one of the keys in UNIVERSITIES below. Visitors
-                  can filter the map by university.
+                  can filter the map by university, and the person is drawn
+                  at its address instead of the centre of their city.
+   - `faculty`    optional: one of the keys under `faculties` of their
+                  university in UNIVERSITIES (a faculty, school or campus).
+                  The person is then drawn at that address. Without it, the
+                  university's main address is used.
    - `current`    true for current members, false for former members.
    - `history`    optional: their path, newest first. When someone hovers
                   over or taps the person, it is listed on their card.
@@ -1004,23 +1010,206 @@ const COUNTRIES = {
   "Japan":          { name: { es: "Japón", en: "Japan", sv: "Japan" }, at: [35.68, 139.69] },
 };
 
-// Universities a member can be linked to, by the key used in MEMBER_MAP;
-// `name` is what the map's filter shows.
+// Universities a member can be linked to, by the key used in MEMBER_MAP.
+// A member is drawn at their university's address, or at their faculty's when
+// their entry names one:
+// - `name`      what the map's filter and labels show
+// - `address`   the university's main visiting address
+// - `at`        the [latitude, longitude] of that address
+// - `faculties` its faculties, schools and campuses, by the key used for
+//               `faculty` in MEMBER_MAP (the key is also the short name the
+//               map shows, e.g. "KTH · EECS"); each has its `name`, the
+//               `address` of its office and its `at`
+// Addresses are the ones each university publishes; coordinates come from
+// looking them up on openstreetmap.org.
 const UNIVERSITIES = {
-  "KTH":        { name: "KTH" },
-  "SU":         { name: "Stockholm University" },
-  "KI":         { name: "Karolinska Institutet" },
-  "SLU":        { name: "SLU" },
-  "UU":         { name: "Uppsala University" },
-  "LU":         { name: "Lund University" },
-  "GU":         { name: "University of Gothenburg" },
-  "Chalmers":   { name: "Chalmers" },
-  "LiU":        { name: "Linköping University" },
-  "UmU":        { name: "Umeå University" },
-  "LTU":        { name: "Luleå University of Technology" },
-  "MAU":        { name: "Malmö University" },
-  "ORU":        { name: "Örebro University" },
-  "LNU":        { name: "Linnaeus University" },
+  "KTH": {
+    name: "KTH",
+    address: "Brinellvägen 8, Stockholm",
+    at: [59.3498, 18.0708],
+    faculties: {
+      // the five schools (the address is each school's office), then KTH's other sites
+      "ABE":          { name: "School of Architecture and the Built Environment", address: "Teknikringen 74D, Stockholm", at: [59.3499, 18.0736] },
+      "EECS":         { name: "School of Electrical Engineering and Computer Science", address: "Lindstedtsvägen 3, Stockholm", at: [59.3469, 18.0733] },
+      "CBH":          { name: "School of Engineering Sciences in Chemistry, Biotechnology and Health", address: "Teknikringen 26, 114 28 Stockholm", at: [59.3488, 18.0751] },
+      "SCI":          { name: "School of Engineering Sciences", address: "Teknikringen 8, Stockholm", at: [59.3484, 18.072] },
+      "ITM":          { name: "School of Industrial Engineering and Management", address: "Lindstedtsvägen 30, Stockholm", at: [59.3483, 18.0741] },
+      "SciLifeLab":   { name: "KTH Solna (SciLifeLab)", address: "Tomtebodavägen 23A, 171 65 Solna", at: [59.3502, 18.0228] },
+      "Flemingsberg": { name: "KTH Flemingsberg", address: "Hälsovägen 11C, 141 57 Huddinge", at: [59.2217, 17.9377] },
+      "Kista":        { name: "KTH Kista", address: "Kistagången 16, Kista", at: [59.4051, 17.9493] },
+      "Södertälje":   { name: "KTH Södertälje", address: "Kvarnbergagatan 12, Södertälje", at: [59.202, 17.6205] },
+    },
+  },
+  "SU": {
+    name: "Stockholm University",
+    address: "Universitetsvägen 10A, Stockholm",
+    at: [59.3625, 18.0586],
+    faculties: {
+      // all in Frescati, except the last two
+      "Science":         { name: "Faculty of Science", address: "Universitetsvägen 14A, Stockholm", at: [59.3633, 18.0588] },
+      "Humanities":      { name: "Faculty of Humanities", address: "Universitetsvägen 10A, Stockholm", at: [59.3625, 18.0586] },
+      "Social Sciences": { name: "Faculty of Social Sciences", address: "Universitetsvägen 10A, Stockholm", at: [59.3625, 18.0586] },
+      "Law":             { name: "Faculty of Law", address: "Universitetsvägen 10A, Stockholm", at: [59.3625, 18.0586] },
+      "Albano":          { name: "Campus Albano", address: "Albanovägen 18, 114 19 Stockholm", at: [59.3548, 18.0571] },
+      "Kista":           { name: "Campus Kista (Department of Computer and Systems Sciences)", address: "Borgarfjordsgatan 12, Kista", at: [59.4072, 17.9458] },
+    },
+  },
+  "KI": {
+    name: "Karolinska Institutet",
+    address: "Nobels väg 6, 171 65 Solna",
+    at: [59.3485, 18.0279],
+    faculties: {
+      // KI has departments instead of faculties: these are its campuses
+      "Solna":        { name: "Campus Solna", address: "Nobels väg 6, 171 65 Solna", at: [59.3485, 18.0279] },
+      "Flemingsberg": { name: "Campus Flemingsberg", address: "Alfred Nobels Allé 8, 141 52 Huddinge", at: [59.2195, 17.9405] },
+      "SciLifeLab":   { name: "SciLifeLab, Campus Solna", address: "Tomtebodavägen 23A, 171 65 Solna", at: [59.3502, 18.0228] },
+    },
+  },
+  "SLU": {
+    name: "SLU",
+    address: "Almas allé 8, 756 51 Uppsala",
+    at: [59.8155, 17.6561],
+    faculties: {
+      // the four faculties (NJ and VH in Uppsala, LTV in Alnarp, S in Umeå), then the campuses
+      "NJ":     { name: "Faculty of Natural Resources and Agricultural Sciences", address: "Almas allé 8, 756 51 Uppsala", at: [59.8155, 17.6561] },
+      "VH":     { name: "Faculty of Veterinary Medicine and Animal Science", address: "Almas allé 8, 756 51 Uppsala", at: [59.8155, 17.6561] },
+      "LTV":    { name: "Faculty of Landscape Architecture, Horticulture and Crop Production Science", address: "Sundsvägen 6, 234 56 Alnarp", at: [55.657, 13.0833] },
+      "S":      { name: "Faculty of Forest Sciences", address: "Skogsmarksgränd 17, 907 36 Umeå", at: [63.8212, 20.3142] },
+      "Alnarp": { name: "SLU Alnarp", address: "Sundsvägen 6, 234 56 Alnarp", at: [55.657, 13.0833] },
+      "Umeå":   { name: "SLU Umeå", address: "Skogsmarksgränd 17, 907 36 Umeå", at: [63.8212, 20.3142] },
+    },
+  },
+  "UU": {
+    name: "Uppsala University",
+    address: "Biskopsgatan 3, 753 10 Uppsala",
+    at: [59.8576, 17.6295],
+    faculties: {
+      // all faculty offices but Pharmacy's are in Segerstedthuset
+      "Theology":               { name: "Faculty of Theology", address: "Dag Hammarskjölds väg 7, 752 37 Uppsala", at: [59.8516, 17.6325] },
+      "Law":                    { name: "Faculty of Law", address: "Dag Hammarskjölds väg 7, 752 37 Uppsala", at: [59.8516, 17.6325] },
+      "Arts":                   { name: "Faculty of Arts", address: "Dag Hammarskjölds väg 7, 752 37 Uppsala", at: [59.8516, 17.6325] },
+      "Languages":              { name: "Faculty of Languages", address: "Dag Hammarskjölds väg 7, 752 37 Uppsala", at: [59.8516, 17.6325] },
+      "Social Sciences":        { name: "Faculty of Social Sciences", address: "Dag Hammarskjölds väg 7, 752 37 Uppsala", at: [59.8516, 17.6325] },
+      "Educational Sciences":   { name: "Faculty of Educational Sciences", address: "Dag Hammarskjölds väg 7, 752 37 Uppsala", at: [59.8516, 17.6325] },
+      "Medicine":               { name: "Faculty of Medicine", address: "Dag Hammarskjölds väg 7, 752 37 Uppsala", at: [59.8516, 17.6325] },
+      "Pharmacy":               { name: "Faculty of Pharmacy", address: "Husargatan 3, 752 37 Uppsala", at: [59.8418, 17.6345] },
+      "Science and Technology": { name: "Faculty of Science and Technology", address: "Dag Hammarskjölds väg 7, 752 37 Uppsala", at: [59.8516, 17.6325] },
+      "Gotland":                { name: "Campus Gotland", address: "Cramérgatan 3, 621 57 Visby", at: [57.6394, 18.2893] },
+    },
+  },
+  "LU": {
+    name: "Lund University",
+    address: "Paradisgatan 2, Lund",
+    at: [55.7058, 13.1933],
+    faculties: {
+      "LTH":                      { name: "Faculty of Engineering (LTH)", address: "John Ericssons väg 3A, 223 62 Lund", at: [55.7123, 13.2094] },
+      "Science":                  { name: "Faculty of Science", address: "Sölvegatan 27A, 223 62 Lund", at: [55.7116, 13.2045] },
+      "Medicine":                 { name: "Faculty of Medicine", address: "Sölvegatan 19, 223 62 Lund", at: [55.7113, 13.2029] },
+      "Social Sciences":          { name: "Faculty of Social Sciences", address: "Bredgatan 26, Lund", at: [55.7082, 13.1936] },
+      "Humanities and Theology":  { name: "Joint Faculties of Humanities and Theology", address: "Helgonavägen 3, 223 62 Lund", at: [55.7099, 13.2003] },
+      "Law":                      { name: "Faculty of Law", address: "Lilla Gråbrödersgatan 4, Lund", at: [55.7051, 13.1915] },
+      "LUSEM":                    { name: "School of Economics and Management (LUSEM)", address: "Tycho Brahes väg 1, 223 63 Lund", at: [55.7098, 13.2138] },
+      "Fine and Performing Arts": { name: "Faculty of Fine and Performing Arts", address: "Bergsgatan 31B, Malmö", at: [55.594, 13.0081] },
+      "Helsingborg":              { name: "Campus Helsingborg", address: "Universitetsplatsen 2, 252 25 Helsingborg", at: [56.0388, 12.6987] },
+    },
+  },
+  "GU": {
+    name: "University of Gothenburg",
+    address: "Universitetsplatsen 1, 411 24 Göteborg",
+    at: [57.6985, 11.9702],
+    faculties: {
+      "Sahlgrenska Academy":         { name: "Sahlgrenska Academy", address: "Medicinaregatan 3, 413 90 Göteborg", at: [57.6844, 11.9609] },
+      "Business, Economics and Law": { name: "School of Business, Economics and Law", address: "Vasagatan 1, 411 24 Göteborg", at: [57.6974, 11.9617] },
+      "Science and Technology":      { name: "Faculty of Science and Technology", address: "Medicinaregatan 7B, 413 90 Göteborg", at: [57.6859, 11.96] },
+      "Social Sciences":             { name: "Faculty of Social Sciences", address: "Skanstorget 18, 411 22 Göteborg", at: [57.6961, 11.9588] },
+      "Humanities":                  { name: "Faculty of Humanities", address: "Renströmsgatan 6, 412 55 Göteborg", at: [57.6945, 11.9852] },
+      "Education":                   { name: "Faculty of Education", address: "Västra Hamngatan 25, 411 17 Göteborg", at: [57.702, 11.9642] },
+      "Artistic Faculty":            { name: "The Artistic Faculty", address: "Eklandagatan 86, 412 61 Göteborg", at: [57.6853, 11.9824] },
+    },
+  },
+  "Chalmers": {
+    name: "Chalmers",
+    address: "Chalmersplatsen 1, Göteborg",
+    at: [57.6893, 11.9737],
+    faculties: {
+      // Chalmers has departments instead of faculties: these are its other sites
+      "Lindholmen": { name: "Campus Lindholmen", address: "Hörselgången 4, Göteborg", at: [57.7053, 11.937] },
+      "Onsala":     { name: "Onsala Space Observatory", address: "Observatorievägen 90, Onsala", at: [57.3936, 11.9195] },
+    },
+  },
+  "LiU": {
+    name: "Linköping University",
+    address: "Olaus Magnus väg 37, 583 30 Linköping",
+    at: [58.395, 15.573],
+    faculties: {
+      // the four faculties, then the campuses outside Campus Valla
+      "FILFAK":     { name: "Faculty of Arts and Sciences", address: "Studenthuset, Campus Valla, 583 30 Linköping", at: [58.3971, 15.5784] },
+      "MEDFAK":     { name: "Faculty of Medicine and Health Sciences", address: "Sandbäcksgatan 7, 582 25 Linköping", at: [58.4044, 15.6239] },
+      "UV":         { name: "Faculty of Educational Sciences", address: "D-huset, Campus Valla, 583 30 Linköping", at: [58.3964, 15.5769] },
+      "LiTH":       { name: "Faculty of Science and Engineering", address: "D-huset, Campus Valla, 583 30 Linköping", at: [58.3964, 15.5769] },
+      "Campus US":  { name: "University Hospital Campus", address: "Sandbäcksgatan 7, 582 25 Linköping", at: [58.4044, 15.6239] },
+      "Norrköping": { name: "Campus Norrköping", address: "Bredgatan 33, Norrköping", at: [58.5899, 16.1766] },
+      "Lidingö":    { name: "Campus Lidingö", address: "Larsbergsvägen 8, 181 39 Lidingö", at: [59.351, 18.1435] },
+    },
+  },
+  "UmU": {
+    name: "Umeå University",
+    address: "Universitetstorget 16, Umeå",
+    at: [63.8206, 20.3003],
+    faculties: {
+      // all four faculty offices are in the administration building
+      "Arts and Humanities":    { name: "Faculty of Arts and Humanities", address: "Universitetstorget 16, Umeå", at: [63.8206, 20.3003] },
+      "Medicine":               { name: "Faculty of Medicine", address: "Universitetstorget 16, Umeå", at: [63.8206, 20.3003] },
+      "Science and Technology": { name: "Faculty of Science and Technology", address: "Universitetstorget 16, Umeå", at: [63.8206, 20.3003] },
+      "Social Sciences":        { name: "Faculty of Social Sciences", address: "Universitetstorget 16, Umeå", at: [63.8206, 20.3003] },
+    },
+  },
+  "LTU": {
+    name: "Luleå University of Technology",
+    address: "Laboratorievägen 12, 971 87 Luleå",
+    at: [65.6206, 22.1387],
+    faculties: {
+      // LTU has departments instead of faculties: these are its other campuses
+      "Skellefteå": { name: "Campus Skellefteå", address: "Forskargatan 1, 931 77 Skellefteå", at: [64.7455, 20.9567] },
+      "Kiruna":     { name: "Campus Kiruna (Space Campus)", address: "Bengt Hultqvists väg 1, 981 92 Kiruna", at: [67.8408, 20.4102] },
+      "Piteå":      { name: "Campus Piteå", address: "Kunskapsallén 12, 941 63 Piteå", at: [65.3288, 21.4621] },
+    },
+  },
+  "MAU": {
+    name: "Malmö University",
+    address: "Nordenskiöldsgatan 1, Malmö",
+    at: [55.609, 12.9943],
+    faculties: {
+      "Technology and Society": { name: "Faculty of Technology and Society", address: "Nordenskiöldsgatan 1, Malmö", at: [55.609, 12.9943] },
+      "Culture and Society":    { name: "Faculty of Culture and Society", address: "Nordenskiöldsgatan 1, Malmö", at: [55.609, 12.9943] },
+      "Education and Society":  { name: "Faculty of Education and Society", address: "Nordenskiöldsgatan 10, Malmö", at: [55.6111, 12.9953] },
+      "Health and Society":     { name: "Faculty of Health and Society", address: "Jan Waldenströms gata 25, 214 28 Malmö", at: [55.5898, 12.9995] },
+      "Odontology":             { name: "Faculty of Odontology", address: "Carl Gustafs väg 34, Malmö", at: [55.5913, 13.0018] },
+    },
+  },
+  "ORU": {
+    name: "Örebro University",
+    address: "Fakultetsgatan 1, Örebro",
+    at: [59.2551, 15.2499],
+    faculties: {
+      // the three faculties, then the other campuses
+      "ENT":        { name: "Faculty of Business, Science and Engineering", address: "Fakultetsgatan 1, Örebro", at: [59.2551, 15.2499] },
+      "HS":         { name: "Faculty of Humanities and Social Sciences", address: "Fakultetsgatan 1, Örebro", at: [59.2551, 15.2499] },
+      "MH":         { name: "Faculty of Medicine and Health", address: "Fakultetsgatan 1, Örebro", at: [59.2551, 15.2499] },
+      "Campus USÖ": { name: "Campus USÖ (Örebro University Hospital)", address: "Södra Grev Rosengatan 32, Örebro", at: [59.2753, 15.2354] },
+      "Grythyttan": { name: "Campus Grythyttan", address: "Sörälgsvägen 2, 712 60 Grythyttan", at: [59.7071, 14.5448] },
+    },
+  },
+  "LNU": {
+    name: "Linnaeus University",
+    address: "Universitetsplatsen 1, 352 52 Växjö",
+    at: [56.8547, 14.831],
+    faculties: {
+      // its five faculties are all in both cities: pick the campus
+      "Växjö":  { name: "Campus Växjö", address: "Universitetsplatsen 1, 352 52 Växjö", at: [56.8547, 14.831] },
+      "Kalmar": { name: "Campus Kalmar", address: "Universitetsplatsen 1, 392 31 Kalmar", at: [56.6592, 16.3629] },
+    },
+  },
 };
 
 const MEMBER_MAP = [
@@ -1031,6 +1220,7 @@ const MEMBER_MAP = [
     stage: "phd",
     city: "Stockholm",
     university: "KTH",
+    faculty: "EECS",
     current: true,
     history: [
       {
@@ -1128,6 +1318,7 @@ const MEMBER_MAP = [
     stage: "pi",
     city: "Stockholm",
     university: "KTH",
+    faculty: "SciLifeLab",
     current: true,
     history: [
       {
@@ -1215,6 +1406,7 @@ const MEMBER_MAP = [
   //   stage: "postdoc",
   //   city: "Lund",
   //   university: "LU",
+  //   faculty: "Science",
   //   current: false,
   //   history: [
   //     { years: "2021 – 2024", stage: "postdoc", role: { es: "Postdoctorado", en: "Postdoc", sv: "Postdoktor" }, place: "Lund University", city: "Lund", country: "Sweden" },

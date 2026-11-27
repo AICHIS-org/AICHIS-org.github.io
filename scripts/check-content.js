@@ -129,7 +129,26 @@ for (const entry of sandbox.BOARD_HISTORY || []) {
   }
 }
 
-/* --- 4. MEMBER_MAP: every member on it, with a known stage and city ----- */
+/* --- 4. UNIVERSITIES: an address and coordinates for each, and for each
+          of its faculties ------------------------------------------------ */
+const inSweden = (at) =>
+  Array.isArray(at) && at.length === 2 && at.every((n) => typeof n === "number") &&
+  at[0] > 55 && at[0] < 69.3 && at[1] > 10.8 && at[1] < 24.3;
+function checkPlace(place, label) {
+  if (!place.name) errors.push(`${label}: missing name`);
+  if (!place.address) errors.push(`${label}: missing address`);
+  if (!inSweden(place.at)) errors.push(`${label}: \`at\` must be [latitude, longitude] of its address in Sweden, e.g. [59.35, 18.07]`);
+}
+for (const [key, uni] of Object.entries(sandbox.UNIVERSITIES || {})) {
+  checkPlace(uni, `UNIVERSITIES "${key}"`);
+  for (const [fkey, faculty] of Object.entries(uni.faculties || {})) {
+    checkPlace(faculty, `UNIVERSITIES "${key}" faculty "${fkey}"`);
+  }
+}
+const kmBetween = ([lat1, lon1], [lat2, lon2]) =>
+  Math.hypot(lat2 - lat1, (lon2 - lon1) * Math.cos(((lat1 + lat2) / 2) * Math.PI / 180)) * 111;
+
+/* --- 5. MEMBER_MAP: every member on it, with a known stage and city ----- */
 for (const p of sandbox.PROFILES || []) {
   if (p.member && !(sandbox.MEMBER_MAP || []).some((m) => m.name === p.name)) {
     errors.push(`PROFILES "${p.name}" is a member but not on the map — add them to MEMBER_MAP`);
@@ -151,6 +170,20 @@ for (const m of sandbox.MEMBER_MAP || []) {
   }
   if (m.university !== undefined && !(sandbox.UNIVERSITIES || {})[m.university]) {
     errors.push(`MEMBER_MAP "${m.name}": university "${m.university}" is not in UNIVERSITIES — add it there with its coordinates`);
+  }
+  const uni = (sandbox.UNIVERSITIES || {})[m.university];
+  const faculty = uni && (uni.faculties || {})[m.faculty];
+  if (m.faculty !== undefined && !faculty) {
+    errors.push(uni
+      ? `MEMBER_MAP "${m.name}": faculty "${m.faculty}" is not one of ${m.university}'s faculties in UNIVERSITIES (${Object.keys(uni.faculties || {}).join(", ") || "it has none yet"}) — add it there with its address`
+      : `MEMBER_MAP "${m.name}": faculty "${m.faculty}" needs a university from UNIVERSITIES`);
+  }
+  // the pin goes to the faculty's address, or else the university's: make
+  // sure that isn't a campus in another part of the country
+  const spot = faculty || uni;
+  const city = (sandbox.CITIES || {})[m.city];
+  if (spot && inSweden(spot.at) && city && kmBetween(spot.at, city) > 30) {
+    errors.push(`MEMBER_MAP "${m.name}": would be drawn at ${spot.address}, ${Math.round(kmBetween(spot.at, city))} km from their city "${m.city}" — if they are at another campus, set \`faculty\` to it; otherwise set \`city\` to where they work`);
   }
   (m.history || []).forEach((step, n) => {
     const where = `MEMBER_MAP "${m.name}" history[${n}]`;
