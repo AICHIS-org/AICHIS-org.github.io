@@ -654,7 +654,13 @@ img { max-width: 100%; display: block; }
   aspect-ratio: 128 / 284;
   max-height: 680px;
   cursor: zoom-in;
+  -webkit-user-select: none;
+  user-select: none; /* dragging the map shouldn't select place names */
 }
+/* zoomed in, the map can be dragged around (and takes the touch away from
+   page scrolling; "Show all of Sweden" gives it back) */
+.member-map-canvas svg.is-zoomed { cursor: grab; touch-action: none; }
+.member-map-canvas svg.is-dragging { cursor: grabbing; }
 .map-zoom {
   position: absolute;
   top: 14px; right: 14px;

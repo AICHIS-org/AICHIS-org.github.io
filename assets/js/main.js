@@ -755,7 +755,7 @@
     // remember which zoom button had focus, so keyboard users keep their place
     const focused = document.activeElement && document.activeElement.dataset && document.activeElement.dataset.zoom;
     canvas.innerHTML = `
-      <svg viewBox="${f(viewX)} ${f(viewY)} ${f(viewW)} ${f(viewH)}" role="group" aria-label="${esc(t.mapLabel)}">
+      <svg viewBox="${f(viewX)} ${f(viewY)} ${f(viewW)} ${f(viewH)}"${k > 1 ? ' class="is-zoomed"' : ""} role="group" aria-label="${esc(t.mapLabel)}">
         ${swedenPaths
           ? `<g class="map-land" stroke-width="${f(0.45 / k)}">${swedenPaths.map((d) => `<path d="${esc(d)}" />`).join("")}</g>`
           : `<image href="assets/img/sweden-map.svg" width="${SWEDEN_MAP.width}" height="${SWEDEN_MAP.height}" />`}
@@ -965,8 +965,54 @@
       if (mapView.k === 1) mapView = { k: 1, x: SWEDEN_MAP.width / 2, y: SWEDEN_MAP.height / 2 };
       renderMemberMap(document.documentElement.lang);
     };
+    // the centre of a view that stays inside the map at zoom k
+    const clampCentre = (x, y, k = mapView.k) => {
+      const w = SWEDEN_MAP.width / k / 2, h = SWEDEN_MAP.height / k / 2;
+      return [Math.min(Math.max(x, w), SWEDEN_MAP.width - w), Math.min(Math.max(y, h), SWEDEN_MAP.height - h)];
+    };
+
+    // Zoomed in, dragging the map moves it around. While the pointer moves only
+    // the view changes (pins sit where they were drawn, and their places only
+    // depend on the zoom); letting go keeps the new view. A press that hardly
+    // moves is still a click, on a pin or on the map.
+    let drag = null;
+    let dragged = false; // the click that ends a drag must not zoom or pin
+    canvas.addEventListener("pointerdown", (event) => {
+      dragged = false;
+      const svg = event.target.closest && event.target.closest("svg");
+      if (!svg || mapView.k <= 1 || inWorldView() || event.button !== 0) return;
+      const box = svg.viewBox.baseVal;
+      drag = { svg, id: event.pointerId, x0: event.clientX, y0: event.clientY, scale: 1 / svg.getScreenCTM().a, box: { x: box.x, y: box.y, w: box.width, h: box.height } };
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const dx = event.clientX - drag.x0, dy = event.clientY - drag.y0;
+      if (!drag.moving) {
+        if (Math.hypot(dx, dy) < 5) return;
+        drag.moving = true;
+        // captured only now, so a plain click still reaches the pin under it
+        drag.svg.setPointerCapture(event.pointerId);
+        drag.svg.classList.add("is-dragging");
+      }
+      const { box, scale } = drag;
+      const [x, y] = clampCentre(box.x + box.w / 2 - dx * scale, box.y + box.h / 2 - dy * scale);
+      drag.centre = [x, y];
+      drag.svg.setAttribute("viewBox", `${(x - box.w / 2).toFixed(3)} ${(y - box.h / 2).toFixed(3)} ${box.w.toFixed(3)} ${box.h.toFixed(3)}`);
+    });
+    const endDrag = (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      if (drag.moving) {
+        drag.svg.classList.remove("is-dragging");
+        if (drag.centre) mapView = { k: mapView.k, x: drag.centre[0], y: drag.centre[1] };
+        dragged = true;
+      }
+      drag = null;
+    };
+    canvas.addEventListener("pointerup", endDrag);
+    canvas.addEventListener("pointercancel", endDrag);
 
     canvas.addEventListener("click", (event) => {
+      if (dragged) return (dragged = false);
       if (event.target.closest('[data-world="close"]')) return setWorld(false, event.detail === 0);
       if (inWorldView()) return;
       const g = pinOf(event);
@@ -991,12 +1037,25 @@
       const at = point.matrixTransform(svg.getScreenCTM().inverse());
       zoomTo(mapView.k * 2, at.x, at.y);
     });
+    const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
     canvas.addEventListener("keydown", (event) => {
       const g = pinOf(event);
       if (g && (event.key === "Enter" || event.key === " ")) {
         event.preventDefault();
         pin(Number(g.dataset.i), true);
+        return;
       }
+      // zoomed in, the arrow keys move the map by a quarter of the view
+      const arrow = ARROWS[event.key];
+      if (!arrow || mapView.k <= 1 || inWorldView()) return;
+      event.preventDefault();
+      const { k } = mapView;
+      const [x, y] = clampCentre(mapView.x + (arrow[0] * SWEDEN_MAP.width) / k / 4, mapView.y + (arrow[1] * SWEDEN_MAP.height) / k / 4);
+      mapView = { k, x, y };
+      renderMemberMap(document.documentElement.lang);
+      // the map is redrawn, so give keyboard users their pin back
+      const again = g && canvas.querySelector(`.map-pin[data-i="${g.dataset.i}"]`);
+      if (again) again.focus({ preventScroll: true });
     });
     detail.addEventListener("click", (event) => {
       if (event.target.closest(".map-close")) return pin(mapPinned, event.detail === 0);

@@ -107,7 +107,7 @@ const CONTENT = {
       zoomIn: "Acercar",
       zoomOut: "Alejar",
       zoomReset: "Ver toda Suecia",
-      zoomHint: "Haz clic en el mapa para acercarte.",
+      zoomHint: "Haz clic en el mapa para acercarte y arrástralo para moverte.",
       stages: {
         student: "Licenciatura o magíster",
         phd: "Doctorado",
@@ -224,7 +224,7 @@ const CONTENT = {
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",
       zoomReset: "Show all of Sweden",
-      zoomHint: "Click on the map to zoom in.",
+      zoomHint: "Click on the map to zoom in, and drag it to move around.",
       stages: {
         student: "Bachelor's or master's",
         phd: "PhD",
@@ -341,7 +341,7 @@ const CONTENT = {
       zoomIn: "Zooma in",
       zoomOut: "Zooma ut",
       zoomReset: "Visa hela Sverige",
-      zoomHint: "Klicka på kartan för att zooma in.",
+      zoomHint: "Klicka på kartan för att zooma in och dra i den för att flytta runt.",
       stages: {
         student: "Kandidat eller master",
         phd: "Doktorand",
